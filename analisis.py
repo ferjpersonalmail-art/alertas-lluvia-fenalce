@@ -209,6 +209,7 @@ class Evaluacion:
     centro_lluvia: tuple | None = None                  # (lon, lat)
     movimiento: dict | None = None
     proxima_hora: list = field(default_factory=list)   # [(municipio, minutos)]
+    rayos_15min: int | None = None                      # rayos GOES-GLM en el depto. (None = sin dato)
 
 
 class Analizador:

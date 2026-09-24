@@ -158,6 +158,8 @@ def texto_alerta(ev: Evaluacion, nombre_dep: str, cfg: dict, tipo: str = "inicio
     viento = texto_viento(clima)
     if viento:
         L.append(f"💨 *Viento:* {viento}")
+    if ev.rayos_15min:
+        L.append(f"⚡ *Actividad eléctrica:* {ev.rayos_15min} rayos en los últimos 15 min (satélite GOES)")
     if ev.proxima_hora:
         L.append(f"⚠️ *Próxima hora:* podría llegar a {lista([n for n, _ in ev.proxima_hora], 5)}")
     if clima and clima.get("lluvia_3h_mm") is not None:

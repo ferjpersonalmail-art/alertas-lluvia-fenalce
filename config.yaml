@@ -99,6 +99,10 @@ notificacion:
   consultar_viento: true          # viento actual de Open-Meteo en el centro de la lluvia
   incluir_pronostico_modelo: false  # agrega "próximas 3 h (modelo)"; los modelos fallan en tormentas locales
 
+rayos:
+  activo: true                    # rayos del satélite GOES-19 (GLM), datos abiertos de NOAA
+  ventana_min: 30
+
 # ---------------------------------------------------------------------
 radar:
   api_url: https://api.rainviewer.com/public/weather-maps.json

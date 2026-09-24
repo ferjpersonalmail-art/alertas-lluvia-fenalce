@@ -74,7 +74,7 @@ class Registro:
                 "notificado", "canales_ok", "motivo", "area_lluvia_km2", "area_moderada_km2", "area_fuerte_km2",
                 "area_muy_fuerte_km2", "pct_departamento", "dbz_max", "acum_1h_max_mm", "municipio_acum_1h_max",
                 "acum_evento_max_mm", "prom_municipal_1h_max_mm", "municipio_prom_max", "duracion_min",
-                "desplazamiento", "municipios", "mensaje"]
+                "desplazamiento", "rayos_15min", "municipios", "mensaje"]
 
     def __init__(self, dir_base: Path, persistir: bool = True):
         self.dir_estado = dir_base / "estado"
@@ -108,6 +108,7 @@ class Registro:
             "acum_evento_max_mm": round(ev.acum_evento_max, 1), "prom_municipal_1h_max_mm": round(ev.acum_mun_max, 1),
             "municipio_prom_max": ev.acum_mun_nombre, "duracion_min": ev.duracion_min,
             "desplazamiento": (f"{mov.get('hacia')} {mov.get('vel_kmh', 0):.0f} km/h" if mov.get("fiable") else ""),
+            "rayos_15min": "" if ev.rayos_15min is None else ev.rayos_15min,
             "municipios": "; ".join(ev.municipios), "mensaje": texto or ""})
         self.cambio = True
 
@@ -230,6 +231,19 @@ def ejecutar(cfg: dict, dir_base: Path, persistir: bool, solo_consola: bool,
         if ev.nivel or ev.activo:
             log.info("%-20s nivel=%d activo=%s  ≥30dBZ=%.0f km²  ≥40dBZ=%.0f km²  máx=%d dBZ  %s",
                      activos[cod]["nombre"], ev.nivel, ev.activo, ev.area[30], ev.area[40], ev.dbz_max, ev.motivo)
+
+    # rayos del satélite GOES-19 (GLM): capa para el portal y confirmación de tormentas
+    if cfg.get("rayos", {}).get("activo", True) and not api_url:
+        try:
+            import rayos_glm
+            rayos = rayos_glm.descargar_rayos(int(cfg.get("rayos", {}).get("ventana_min", 30)))
+            if persistir:
+                rayos_glm.guardar_geojson(rayos, dir_base / "salida" / "rayos.geojson")
+            conteo = rayos_glm.conteo_por_departamento(rayos, territorio, 15)
+            for ev in evaluaciones.values():
+                ev.rayos_15min = conteo.get(ev.indice, 0)
+        except Exception as e:
+            log.warning("Rayos GLM no disponibles: %s", e)
 
     registro = Registro(dir_base, persistir)
     acciones = decidir(evaluaciones, registro.estado, cfg)
