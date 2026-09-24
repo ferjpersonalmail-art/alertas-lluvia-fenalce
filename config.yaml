@@ -1,0 +1,141 @@
+# =====================================================================
+#  ALERTAS DE LLUVIA POR RADAR · FENALCE · Equipo de Agroclimatología
+#  Fase 1 (semiautomática): el sistema detecta el evento, redacta el
+#  mensaje y te avisa al celular; tú revisas y lo reenvías a la mesa
+#  técnica por WhatsApp con un toque.
+# =====================================================================
+
+general:
+  utc_offset_horas: -5                     # hora de Colombia
+  portal_url: https://agroclima-fenalce-portal.vercel.app/
+  firma: "FENALCE · Equipo de Agroclimatología"
+
+# ---------------------------------------------------------------------
+# Departamentos: activa solo los que tienen mesa técnica / grupo de
+# WhatsApp autorizado. "grupo" es el nombre que verás en la notificación
+# para saber a qué grupo reenviar (puede repetirse si una mesa regional
+# cubre varios departamentos).
+# ---------------------------------------------------------------------
+departamentos:
+  "05": {nombre: Antioquia,          activo: true, grupo: "Mesa Técnica Agroclimática Antioquia"}
+  "08": {nombre: Atlántico,          activo: true, grupo: "Mesa Técnica Agroclimática Atlántico"}
+  "11": {nombre: Bogotá D.C.,        activo: false, grupo: "Mesa Técnica Agroclimática Cundinamarca"}
+  "13": {nombre: Bolívar,            activo: true, grupo: "Mesa Técnica Agroclimática Bolívar"}
+  "15": {nombre: Boyacá,             activo: true, grupo: "Mesa Técnica Agroclimática Boyacá"}
+  "17": {nombre: Caldas,             activo: true, grupo: "Mesa Técnica Agroclimática Caldas"}
+  "18": {nombre: Caquetá,            activo: true, grupo: "Mesa Técnica Agroclimática Caquetá"}
+  "19": {nombre: Cauca,              activo: true, grupo: "Mesa Técnica Agroclimática Cauca"}
+  "20": {nombre: Cesar,              activo: true, grupo: "Mesa Técnica Agroclimática Cesar"}
+  "23": {nombre: Córdoba,            activo: true, grupo: "Mesa Técnica Agroclimática Córdoba"}
+  "25": {nombre: Cundinamarca,       activo: true, grupo: "Mesa Técnica Agroclimática Cundinamarca"}
+  "27": {nombre: Chocó,              activo: true, grupo: "Mesa Técnica Agroclimática Chocó"}
+  "41": {nombre: Huila,              activo: true, grupo: "Mesa Técnica Agroclimática Huila"}
+  "44": {nombre: La Guajira,         activo: true, grupo: "Mesa Técnica Agroclimática La Guajira"}
+  "47": {nombre: Magdalena,          activo: true, grupo: "Mesa Técnica Agroclimática Magdalena"}
+  "50": {nombre: Meta,               activo: true, grupo: "Mesa Técnica Agroclimática Meta"}
+  "52": {nombre: Nariño,             activo: true, grupo: "Mesa Técnica Agroclimática Nariño"}
+  "54": {nombre: Norte de Santander, activo: true, grupo: "Mesa Técnica Agroclimática Norte de Santander"}
+  "63": {nombre: Quindío,            activo: true, grupo: "Mesa Técnica Agroclimática Quindío"}
+  "66": {nombre: Risaralda,          activo: true, grupo: "Mesa Técnica Agroclimática Risaralda"}
+  "68": {nombre: Santander,          activo: true, grupo: "Mesa Técnica Agroclimática Santander"}
+  "70": {nombre: Sucre,              activo: true, grupo: "Mesa Técnica Agroclimática Sucre"}
+  "73": {nombre: Tolima,             activo: true, grupo: "Mesa Técnica Agroclimática Tolima"}
+  "76": {nombre: Valle del Cauca,    activo: true, grupo: "Mesa Técnica Agroclimática Valle del Cauca"}
+  "81": {nombre: Arauca,             activo: true, grupo: "Mesa Técnica Agroclimática Arauca"}
+  "85": {nombre: Casanare,           activo: true, grupo: "Mesa Técnica Agroclimática Casanare"}
+  "86": {nombre: Putumayo,           activo: true, grupo: "Mesa Técnica Agroclimática Putumayo"}
+  "88": {nombre: San Andrés,         activo: false, grupo: "Mesa Técnica Agroclimática San Andrés"}
+  "91": {nombre: Amazonas,           activo: false, grupo: "Mesa Técnica Agroclimática Amazonas"}
+  "94": {nombre: Guainía,            activo: false, grupo: "Mesa Técnica Agroclimática Guainía"}
+  "95": {nombre: Guaviare,           activo: true, grupo: "Mesa Técnica Agroclimática Guaviare"}
+  "97": {nombre: Vaupés,             activo: false, grupo: "Mesa Técnica Agroclimática Vaupés"}
+  "99": {nombre: Vichada,            activo: true, grupo: "Mesa Técnica Agroclimática Vichada"}
+
+# ---------------------------------------------------------------------
+# Umbrales de alerta. Valores INICIALES: calibrarlos con las estaciones
+# en las primeras semanas (la bitácora en historial/ sirve para eso).
+# Un nivel se cumple si se cumple CUALQUIERA de sus criterios.
+# Referencia de intensidad (Marshall-Palmer, clases de la OMM):
+#   ≥30 dBZ ≈ lluvia moderada (≥2,5 mm/h) · ≥40 dBZ ≈ fuerte (≥10 mm/h)
+#   ≥50 dBZ ≈ muy fuerte (≥50 mm/h)
+# ---------------------------------------------------------------------
+niveles:
+  activo:                         # mínimo para considerar que "está lloviendo" en el depto.
+    area_moderada_km2: 50         # km² con ≥30 dBZ
+    area_fuerte_km2: 10           # o km² con ≥40 dBZ
+  area_minima_acumulado_km2: 10   # los criterios de acumulado deben cumplirse en al menos esta área
+  amarilla:
+    area_moderada_km2: 200
+    area_fuerte_km2: 25
+  naranja:
+    area_fuerte_km2: 150
+    area_muy_fuerte_km2: 20       # km² con ≥50 dBZ
+    acumulado_1h_mm: 25           # lluvia estimada en la última hora
+    acumulado_2h_mm: 40           # lluvia estimada en las últimas 2 h (lluvia persistente)
+  roja:
+    area_fuerte_km2: 600
+    area_muy_fuerte_km2: 100
+    acumulado_1h_mm: 50
+    acumulado_2h_mm: 80
+
+intensidad:
+  pixeles_minimos_nucleo: 3       # un núcleo cuenta si tiene al menos 3 píxeles (~4,5 km²)
+  area_granizo_km2: 3             # área con ≥55 dBZ para mencionar posible granizo
+
+movimiento:
+  margen_km: 60                   # alrededor del depto. para ver tormentas que se acercan
+  calidad_minima: 10              # confianza mínima del cálculo de desplazamiento (ruido ≈ 7-8)
+  velocidad_minima_kmh: 5         # por debajo: "casi estacionaria"
+  velocidad_maxima_kmh: 90        # por encima: se descarta como error
+
+# ---------------------------------------------------------------------
+notificacion:
+  desde_nivel: naranja            # amarilla | naranja | roja  (los inferiores solo se registran)
+  avisar_fin: true                # avisa cuando termina un evento que ya se notificó
+  cuadros_para_fin: 3             # 3 cuadros (30 min) sin lluvia significativa = fin
+  recordatorio_min: 0             # >0: reenvía resumen si el evento sigue activo tras N minutos
+  enlace_whatsapp: app            # app = whatsapp://send  |  web = https://wa.me (si "app" no abre)
+  ntfy_servidor: https://ntfy.sh
+  consultar_viento: true          # viento actual de Open-Meteo en el centro de la lluvia
+  incluir_pronostico_modelo: false  # agrega "próximas 3 h (modelo)"; los modelos fallan en tormentas locales
+
+# ---------------------------------------------------------------------
+radar:
+  api_url: https://api.rainviewer.com/public/weather-maps.json
+  zoom: 6                         # la API gratuita llega a zoom 7; 6 con teselas de 512 px ≈ 1,2 km/píxel
+  tamano_tesela: 512
+  ventana_min: 120                # la API guarda 2 h de cuadros (uno cada 10 min)
+  max_solicitudes_por_minuto: 60  # RainViewer permite 100 por IP y minuto
+  antiguedad_maxima_min: 45       # si el último cuadro es más viejo, no se emiten alertas
+  relacion_zr: marshall_palmer    # o "tropical" (Z=250·R^1.2): estima más lluvia para el mismo dBZ
+  factor_calibracion: 1.0         # multiplica la lluvia estimada; ajustar comparando con estaciones
+
+territorio:
+  geojson: datos/municipios_mgn2018.geojson   # DANE MGN 2018 (1.122 municipios); puedes usar el del portal
+  campos:
+    codigo_departamento: DPTO_CCDGO
+    codigo_municipio: MPIO_CCNCT
+    nombre_municipio: MPIO_CNMBR
+
+# ---------------------------------------------------------------------
+mensajes:
+  max_municipios: 6
+  texto_portal: "Radar en vivo (plataforma en versión beta)"
+  pie: "Valores estimados por radar, aproximados; no reemplazan los avisos oficiales del IDEAM."
+  fin: "Antes de retomar labores, verifique el estado del suelo y de los drenajes."
+  niveles:
+    amarilla: {emoji: "🟡", nombre: "Nivel amarillo", descripcion: "lluvia moderada a fuerte localizada"}
+    naranja:  {emoji: "🟠", nombre: "Nivel naranja",  descripcion: "lluvia fuerte"}
+    roja:     {emoji: "🔴", nombre: "Nivel rojo",     descripcion: "lluvia muy fuerte, extensa o persistente"}
+  recomendaciones:
+    amarilla:
+      - "Se sugiere aplazar aplicaciones de agroquímicos si la lluvia llega en las próximas horas (riesgo de lavado)."
+      - "Consultar el radar antes de programar labores de campo."
+    naranja:
+      - "Se sugiere suspender aplicaciones foliares y de fertilizantes mientras dure el evento."
+      - "Revisar canales y drenajes para evitar encharcamientos."
+      - "Evitar el ingreso de maquinaria en suelos saturados."
+    roja:
+      - "Se sugiere suspender labores de campo y resguardar al personal (posibles tormentas eléctricas)."
+      - "Revisar drenajes y estar atentos a crecientes súbitas en quebradas y zonas bajas."
+      - "Proteger el grano cosechado o en secado a la intemperie."
