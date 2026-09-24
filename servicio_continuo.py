@@ -51,7 +51,7 @@ def guardar(mensaje: str, push: bool):
 
 def solo_rayos():
     import rayos_glm
-    r = rayos_glm.descargar_rayos(30)
+    r = rayos_glm.solo_colombia(rayos_glm.descargar_rayos(30), BASE / "datos" / "municipios_mgn2018.geojson")
     rayos_glm.guardar_geojson(r, BASE / "salida" / "rayos.geojson")
     return len(r)
 

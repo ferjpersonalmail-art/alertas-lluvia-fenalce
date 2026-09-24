@@ -87,6 +87,51 @@ def _leer_seguro(c):
         return None
 
 
+# --------------------------------------------------------------------------- solo Colombia
+_MASCARA = None
+PASO = 0.02   # grados (~2,2 km)
+
+
+def mascara_colombia(ruta_geojson: Path, margen_km: float = 25.0):
+    """Rejilla booleana de Colombia (municipios MGN) ampliada `margen_km` hacia afuera."""
+    global _MASCARA
+    if _MASCARA is not None:
+        return _MASCARA
+    from PIL import Image, ImageDraw, ImageFilter
+    lon0, lat0, lon1, lat1 = CAJA
+    w, h = int((lon1 - lon0) / PASO), int((lat1 - lat0) / PASO)
+    img = Image.new("L", (w, h), 0)
+    d = ImageDraw.Draw(img)
+    datos = json.loads(Path(ruta_geojson).read_text(encoding="utf-8"))
+
+    def anillo(coords):
+        return [((x - lon0) / PASO, (lat1 - y) / PASO) for x, y, *_ in coords]
+
+    for f in datos["features"]:
+        g = f.get("geometry") or {}
+        polis = g.get("coordinates", []) if g.get("type") == "MultiPolygon" else [g.get("coordinates", [])]
+        for p in polis:
+            if p:
+                d.polygon(anillo(p[0]), fill=255)
+    n = max(1, int(round(margen_km / (PASO * 111))))
+    img = img.filter(ImageFilter.MaxFilter(2 * n + 1))
+    _MASCARA = np.array(img) > 0
+    return _MASCARA
+
+
+def solo_colombia(rayos: np.ndarray, ruta_geojson: Path, margen_km: float = 25.0) -> np.ndarray:
+    if not len(rayos):
+        return rayos
+    m = mascara_colombia(ruta_geojson, margen_km)
+    lon0, _, _, lat1 = CAJA
+    ix = ((rayos[:, 0] - lon0) / PASO).astype(int)
+    iy = ((lat1 - rayos[:, 1]) / PASO).astype(int)
+    ok = (ix >= 0) & (iy >= 0) & (ix < m.shape[1]) & (iy < m.shape[0])
+    dentro = np.zeros(len(rayos), bool)
+    dentro[ok] = m[iy[ok], ix[ok]]
+    return rayos[dentro]
+
+
 def guardar_geojson(rayos: np.ndarray, ruta: Path, ahora: datetime | None = None):
     ahora = ahora or datetime.now(timezone.utc)
     feats = [{"type": "Feature", "geometry": {"type": "Point", "coordinates": [round(lo, 3), round(la, 3)]},
@@ -115,6 +160,6 @@ def conteo_por_departamento(rayos: np.ndarray, territorio, minutos: int = 15) ->
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    r = descargar_rayos(30)
+    r = solo_colombia(descargar_rayos(30), Path(__file__).parent / "datos" / "municipios_mgn2018.geojson")
     guardar_geojson(r, Path("salida/rayos.geojson"))
     print(len(r), "rayos")
