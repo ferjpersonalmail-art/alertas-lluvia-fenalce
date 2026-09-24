@@ -237,6 +237,8 @@ def ejecutar(cfg: dict, dir_base: Path, persistir: bool, solo_consola: bool,
         try:
             import rayos_glm
             rayos = rayos_glm.descargar_rayos(int(cfg.get("rayos", {}).get("ventana_min", 30)))
+            rayos = rayos_glm.solo_colombia(rayos, BASE / cfg["territorio"]["geojson"],
+                                            float(cfg.get("rayos", {}).get("margen_km", 25)))
             if persistir:
                 rayos_glm.guardar_geojson(rayos, dir_base / "salida" / "rayos.geojson")
             conteo = rayos_glm.conteo_por_departamento(rayos, territorio, 15)
