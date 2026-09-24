@@ -1,0 +1,80 @@
+name: Alertas de lluvia (radar)
+
+# Servicio continuo: cada ejecución dura ~5 h 40 min y corre el motor cada 5 min
+# (rayos cada ~2,5 min). Al terminar se relanza sola. El cron es solo una red de seguridad
+# por si la cadena se rompe (GitHub lo ejecuta cuando puede; con concurrency queda en cola).
+on:
+  schedule:
+    - cron: "7 * * * *"
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: "continuo | normal | simular | prueba | cobertura"
+        required: false
+        default: "continuo"
+
+permissions:
+  contents: write     # guardar estado/, historial/ y salida/ en el repositorio
+  actions: write      # relanzarse al terminar
+
+concurrency:
+  group: alertas-lluvia
+  cancel-in-progress: false
+
+jobs:
+  alertas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Recuperar cuadros de radar ya descargados
+        uses: actions/cache/restore@v6
+        with:
+          path: cache
+          key: radar-${{ github.run_id }}
+          restore-keys: radar-
+
+      - name: Preparar git
+        run: |
+          git config user.name "alertas-lluvia-bot"
+          git config user.email "alertas-lluvia-bot@users.noreply.github.com"
+
+      - name: Motor de alertas
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          NTFY_TOKEN: ${{ secrets.NTFY_TOKEN }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          MODO="${{ github.event.inputs.modo || 'continuo' }}"
+          if [ "$MODO" = "continuo" ]; then
+            python servicio_continuo.py --duracion-min 335
+          else
+            python motor_alertas.py --modo "$MODO"
+            for d in estado historial salida; do [ -d "$d" ] && git add -A "$d"; done
+            if ! git diff --cached --quiet; then
+              git commit -m "Bitácora de alertas $(date -u +'%Y-%m-%d %H:%M UTC')"
+              git pull --rebase --autostash && git push
+            fi
+          fi
+
+      - name: Guardar cuadros de radar
+        if: always()
+        uses: actions/cache/save@v6
+        with:
+          path: cache
+          key: radar-${{ github.run_id }}
+
+      - name: Relanzar el servicio
+        if: always() && (github.event.inputs.modo || 'continuo') == 'continuo'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run alertas_lluvia.yml --ref main -f modo=continuo
