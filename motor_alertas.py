@@ -210,7 +210,12 @@ def ejecutar(cfg: dict, dir_base: Path, persistir: bool, solo_consola: bool,
     r = cfg["radar"]
     descargador = fr.Descargador(int(r.get("max_solicitudes_por_minuto", 60)))
     try:
-        cuadros = fr.cargar_cuadros(api_url or r["api_url"], malla, dir_cache or (dir_base / "cache" / "radar"),
+        if r.get("fuente") == "goes" and not api_url:
+            import fuente_goes
+            cuadros = fuente_goes.cargar_cuadros(malla, dir_cache or (dir_base / "cache" / "goes"),
+                                                 int(r.get("ventana_min", 120)))
+        else:
+          cuadros = fr.cargar_cuadros(api_url or r["api_url"], malla, dir_cache or (dir_base / "cache" / "radar"),
                                     descargador, int(r.get("ventana_min", 120)))
     except Exception as e:
         log.error("No se pudo leer el radar: %s", e)

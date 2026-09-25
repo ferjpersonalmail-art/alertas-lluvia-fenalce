@@ -90,7 +90,7 @@ movimiento:
 
 # ---------------------------------------------------------------------
 notificacion:
-  desde_nivel: naranja            # amarilla | naranja | roja  (los inferiores solo se registran)
+  desde_nivel: amarilla            # amarilla | naranja | roja  (los inferiores solo se registran)
   avisar_fin: true                # avisa cuando termina un evento que ya se notificó
   cuadros_para_fin: 3             # 3 cuadros (30 min) sin lluvia significativa = fin
   recordatorio_min: 0             # >0: reenvía resumen si el evento sigue activo tras N minutos
@@ -105,6 +105,7 @@ rayos:
 
 # ---------------------------------------------------------------------
 radar:
+  fuente: radar                   # goes = lluvia del satélite GOES-19 (NOAA, mm/h); radar = api_url (LibreWXR/RainViewer)
   api_url: https://api.librewxr.net/public/weather-maps.json   # misma fuente del radar del portal; RainViewer casi no tiene radares de Colombia
   zoom: 6                         # la API gratuita llega a zoom 7; 6 con teselas de 512 px ≈ 1,2 km/píxel
   tamano_tesela: 512
