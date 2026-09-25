@@ -27,6 +27,8 @@ ZONA = timezone(timedelta(hours=-5))
 HORAS_REPORTE = (1, 5, 7, 13, 17, 19)
 ESTADO = BASE / "estado" / "reporte_nubes.json"
 OSPA = "http://www.pronosticosyalertas.gov.co"
+PORTAL = "https://agroclima-fenalce-portal.vercel.app/"
+QR_URL = "https://raw.githubusercontent.com/ferjpersonalmail-art/alertas-lluvia-fenalce/main/datos/qr_portal.png"
 COLOR = {"ALTA": ("🔴", "ROJA"), "MEDIA": ("🟡", "AMARILLA"), "BAJA": ("🟢", "VERDE")}
 ORDEN = {"BAJA": 0, "MEDIA": 1, "ALTA": 2}
 DIR_VIENTO = ["norte", "nororiente", "oriente", "suroriente", "sur", "suroccidente", "occidente", "noroccidente"]
@@ -108,16 +110,21 @@ def texto_departamento(r: dict, hora_sat: str, tipo: str = "reporte", prueba: bo
               "• Estar atentos a la evolución del tiempo en las próximas horas."]
     L.append("")
     L.append(f"📢 Consulte también los avisos oficiales de la *Oficina del Servicio de Pronósticos y Alertas (OSPA) del IDEAM*: {OSPA}")
+    L.append(f"🌐 Siga el radar, las estaciones y el clima en nuestro *Portal Agroclimático FENALCE* (versión en desarrollo): {PORTAL}")
     L.append("_FENALCE · Equipo de Agroclimatología. Estimación con imágenes de satélite; puede haber diferencias con lo que ocurra en cada finca._")
     return "\n".join(L)
 
 
 # --------------------------------------------------------------------------- envío
-def _ntfy(titulo, texto, prioridad=3, tags=None):
+def _ntfy(titulo, texto, prioridad=3, tags=None, qr=False):
     tema = os.environ.get("NTFY_TOPIC") or "fenalce-lluvia-2ifz77fnqg"
     wa = "whatsapp://send?text=" + urllib.parse.quote(texto)
     cuerpo = {"topic": tema, "title": titulo, "message": texto, "priority": prioridad, "tags": tags or [],
-              "click": wa, "actions": [{"action": "view", "label": "Enviar por WhatsApp", "url": wa}]}
+              "click": wa, "actions": [{"action": "view", "label": "Enviar por WhatsApp", "url": wa},
+                                       {"action": "view", "label": "Abrir portal", "url": PORTAL}]}
+    if qr:   # imagen del código QR del portal, para compartirla en el grupo
+        cuerpo["attach"] = QR_URL
+        cuerpo["filename"] = "QR_portal_agroclimatico_FENALCE.png"
     if len(json.dumps(cuerpo).encode()) > 8000:   # ntfy limita el tamaño; el botón lleva el texto completo
         cuerpo["message"] = texto[:1500] + "…"
     h = {"Content-Type": "application/json"}
@@ -134,6 +141,7 @@ def _resumen(hora_sat, res, prueba):
     L.append(f"🔴 Roja: {_lista(rojas) or 'ninguno'}")
     L.append(f"🟡 Amarilla: {_lista(amar) or 'ninguno'}")
     L.append("🟢 Resto del país: sin lluvias fuertes previstas.")
+    L.append(f"🌐 Portal: {PORTAL} (código QR adjunto)")
     return "\n".join(L)
 
 
@@ -162,7 +170,7 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
     # 2) reporte programado
     if toca_reporte:
         activos = [r for r in res if r["probabilidad"] != "BAJA"]
-        _ntfy(("🧪 " if prueba else "") + f"📋 Reporte de lluvias ({len(activos)} departamentos)", _resumen(hora_sat, res, prueba), 3, ["clipboard"])
+        _ntfy(("🧪 " if prueba else "") + f"📋 Reporte de lluvias ({len(activos)} departamentos)", _resumen(hora_sat, res, prueba), 3, ["clipboard"], qr=True)
         for r in sorted(activos, key=lambda r: -ORDEN[r["probabilidad"]])[:10]:
             emo, nom = COLOR[r["probabilidad"]]
             _ntfy(("🧪 " if prueba else "") + f"{emo} {r['departamento']}: alerta {nom.lower()} por lluvias",
