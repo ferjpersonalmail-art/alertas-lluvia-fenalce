@@ -363,8 +363,15 @@ def main() -> int:
     if args.modo == "demo":
         import demo_escenario
         return demo_escenario.correr(cfg)
-    return ejecutar(cfg, BASE, persistir=(args.modo == "normal"), solo_consola=(args.modo == "simular"),
+    rc = ejecutar(cfg, BASE, persistir=(args.modo == "normal"), solo_consola=(args.modo == "simular"),
                     api_url=args.api_url)
+    if args.modo == "normal" and cfg.get("reporte_nubes", {}).get("activo", True):
+        try:
+            import reporte_nubes
+            reporte_nubes.ejecutar()
+        except Exception as e:  # el reporte nunca debe tumbar las alertas
+            log.warning("Reporte de nubes: %s", e)
+    return rc
 
 
 if __name__ == "__main__":

@@ -113,7 +113,8 @@ def leer_campo(clave, variable, malla):
 def open_meteo(puntos):
     lat = ",".join(f"{la:.3f}" for _, la in puntos); lon = ",".join(f"{lo:.3f}" for lo, _ in puntos)
     url = ("https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon +
-           "&hourly=precipitation_probability,total_column_integrated_water_vapour,cape"
+           "&hourly=precipitation_probability,total_column_integrated_water_vapour,cape,"
+           "wind_speed_10m,wind_direction_10m,wind_speed_500hPa,wind_direction_500hPa"
            "&forecast_hours=3&timezone=UTC")
     r = json.load(urllib.request.urlopen(url, timeout=60))
     r = r if isinstance(r, list) else [r]
@@ -121,9 +122,29 @@ def open_meteo(puntos):
     for x in r:
         h = x["hourly"]
         mx = lambda k: max([v for v in h[k] if v is not None] or [0])
+        p0 = lambda k: (h.get(k) or [None])[0]
         out.append({"prob": mx("precipitation_probability"), "tcwv": mx("total_column_integrated_water_vapour"),
-                    "cape": mx("cape")})
+                    "cape": mx("cape"), "viento_kmh": p0("wind_speed_10m"), "viento_dir": p0("wind_direction_10m"),
+                    "alto_kmh": p0("wind_speed_500hPa"), "alto_dir": p0("wind_direction_500hPa")})
     return out
+
+
+# --------------------------------------------------------------------------- desplazamiento
+def movimiento(bt, bt0, t, d, minutos=30):
+    """Hacia dónde se mueven las nubes densas del departamento (correlación entre la imagen
+    de hace `minutos` y la actual). Devuelve None si no hay nubes o el cálculo no es confiable."""
+    y0, y1, x0, x1 = t.ventana(d, 80)
+    a = np.clip(-40 - np.nan_to_num(bt0[y0:y1, x0:x1], nan=0), 0, None)
+    b = np.clip(-40 - np.nan_to_num(bt[y0:y1, x0:x1], nan=0), 0, None)
+    if (a > 0).sum() < 50 or (b > 0).sum() < 50:
+        return None
+    dy, dx, calidad = an.correlacion_fase(a, b)
+    km = float(t.km_px_filas[(y0 + y1) // 2])
+    vel = (dy * dy + dx * dx) ** 0.5 * km * 60 / minutos
+    if calidad < 8 or vel > 90:
+        return None
+    grados = float(np.degrees(np.arctan2(dx, -dy)) % 360)
+    return {"hacia": an.rumbo(grados), "vel_kmh": vel, "grados": grados}
 
 
 # --------------------------------------------------------------------------- índice
@@ -159,9 +180,8 @@ def puntaje(s, codigo=""):
     return p, nivel, razones
 
 
-def main():
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(message)s")
-    cfg = yaml.safe_load(open(BASE / "config.yaml", encoding="utf-8"))
+def calcular(cfg=None):
+    cfg = cfg or yaml.safe_load(open(BASE / "config.yaml", encoding="utf-8"))
     act = ma.departamentos_activos(cfg); cod = sorted(act)
     malla = ma.construir_malla(cfg, cod)
     t = an.Territorio(BASE / cfg["territorio"]["geojson"], malla, cfg["territorio"]["campos"])
@@ -230,13 +250,21 @@ def main():
         m = (bt < -40) & (t.dep_raster == d)
         mun = np.bincount(t.etiquetas[m], weights=t.area_px[m], minlength=t.n_mun + 1)
         top = [t.mun_nombre[i] for i in np.argsort(-mun)[:4] if mun[i] >= 20]
-        res.append({"codigo": c, "region": REGION.get(c, ("", 1))[0], "departamento": act[c]["nombre"], "puntaje": p, "probabilidad": nivel,
+        res.append({"movimiento": movimiento(bt, bt0, t, d) if s["frio40"] >= 100 else None,
+                    "viento": {k: v for k, v in (s["modelo"] or {}).items() if "dir" in k or "kmh" in k},
+                    "codigo": c, "region": REGION.get(c, ("", 1))[0], "departamento": act[c]["nombre"], "puntaje": p, "probabilidad": nivel,
                     "municipios": top, "razones": razones, **{k: v for k, v in s.items() if k != "modelo"}})
     res.sort(key=lambda r: -r["puntaje"])
     hora = _inicio(ahora_k).astimezone(timezone(timedelta(hours=-5))).strftime("%Y-%m-%d %H:%M")
     (BASE / "salida").mkdir(exist_ok=True)
     (BASE / "salida" / "indice_nubes.json").write_text(json.dumps({"hora_satelite": hora, "departamentos": res},
                                                                ensure_ascii=False, indent=1), encoding="utf-8")
+    return hora, res
+
+
+def main():
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(message)s")
+    hora, res = calcular()
     print(f"\nÍNDICE DE PROBABILIDAD DE LLUVIA FUERTE (próximas 1–2 h) · satélite {hora} hora Colombia")
     print(f"{'Departamento':18} {'Prob.':6} {'pts':>3} {'<-40°C':>8} {'<-60°C':>7} {'cima':>6} {'crec.':>6} {'rayos':>5}  municipios")
     for r in res:
