@@ -76,12 +76,20 @@ def texto_zona(ev: Evaluacion, maximo: int) -> str:
 
 
 def texto_extension(ev: Evaluacion) -> str:
+    """Área real con lluvia (>=1 mm/h, sin bordes del radar). El % solo se da cuando es claro."""
+    km2 = ev.area_lluvia_km2 or ev.area[30]
     pct = ev.pct_lluvia * 100
-    txt = f"lluvia en el {fmt_num(pct)} % del departamento" if pct >= 1 else "lluvia en menos del 1 % del departamento"
+    if km2 < 5:
+        txt = "lluvia en un área pequeña (menos de 5 km²)"
+    else:
+        redondo = 10 if km2 < 100 else 50 if km2 < 1000 else 100
+        txt = f"lluvia sobre ~{fmt_num(round(km2 / redondo) * redondo)} km²"
+        if pct >= 5:
+            txt += f" (~{fmt_num(round(pct / 5) * 5)} % del departamento)"
+        elif pct >= 1:
+            txt += f" ({fmt_num(pct)} % del departamento)"
     if ev.area[40] >= 5:
         txt += f"; fuerte en ~{fmt_num(ev.area[40])} km²"
-    elif ev.area[30] >= 5:
-        txt += f"; moderada en ~{fmt_num(ev.area[30])} km²"
     return txt
 
 

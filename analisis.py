@@ -148,6 +148,22 @@ def quitar_pixeles_aislados(d: np.ndarray) -> np.ndarray:
     return np.minimum(d, vecino.astype(np.int16) + 5).astype(np.uint8)
 
 
+def _vecindad(m, op):
+    h, w = m.shape
+    p = np.pad(m, 1, constant_values=bool(op is np.logical_and))
+    r = m.copy()
+    for dy in range(3):
+        for dx in range(3):
+            if dy != 1 or dx != 1:
+                op(r, p[dy:dy + h, dx:dx + w], out=r)
+    return r
+
+
+def limpiar_mascara(m):
+    """Apertura morfológica 3x3: quita bordes suavizados y ecos sueltos que inflan el área."""
+    return _vecindad(_vecindad(m, np.logical_and), np.logical_or)
+
+
 def correlacion_fase(a: np.ndarray, b: np.ndarray, blanqueo: float = 0.5):
     """Desplazamiento (dy, dx) en píxeles que lleva el campo `a` al campo `b`, y la calidad
     del pico (qué tanto sobresale del ruido). blanqueo=1 es correlación de fase pura."""
@@ -195,6 +211,7 @@ class Evaluacion:
     area_dep_km2: float = 0.0
     area: dict = field(default_factory=dict)          # dBZ -> km² en el cuadro actual
     pct_lluvia: float = 0.0
+    area_lluvia_km2: float = 0.0
     dbz_max: int = 0
     tasa_max: float = 0.0
     granizo: bool = False
@@ -373,6 +390,12 @@ class Analizador:
                 m = campo >= u
                 area_acum[(ventana, u)] = np.bincount(t.dep_raster[m], weights=t.area_px[m], minlength=nd1)
 
+        u_ll = int(cfg.get("intensidad", {}).get("lluvia_minima_dbz", 25))
+        m_ll = D0 >= u_ll
+        if cfg.get("intensidad", {}).get("limpiar_bordes", True):
+            m_ll = limpiar_mascara(m_ll)
+        area_lluvia = np.bincount(t.dep_raster[m_ll], weights=t.area_px[m_ll], minlength=nd1)
+
         # histograma de intensidades por departamento (para la intensidad máxima "robusta")
         m10 = D0 >= 10
         hist = np.bincount(t.dep_raster[m10].astype(np.int64) * 17 + D0[m10] // 5,
@@ -402,7 +425,8 @@ class Analizador:
             ev = Evaluacion(codigo=codigo, indice=d, t0=t0)
             ev.area_dep_km2 = float(t.dep_area[d])
             ev.area = {u: float(serie[u][-1, d]) for u in UMBRALES_DBZ}
-            ev.pct_lluvia = ev.area[20] / ev.area_dep_km2 if ev.area_dep_km2 else 0.0
+            ev.area_lluvia_km2 = float(area_lluvia[d])
+            ev.pct_lluvia = ev.area_lluvia_km2 / ev.area_dep_km2 if ev.area_dep_km2 else 0.0
             ev.area_acum = {k: float(v[d]) for k, v in area_acum.items()}
             a30, a40 = serie[30][:, d], serie[40][:, d]
             activo_s = (a30 >= c_act["area_moderada_km2"]) | (a40 >= c_act["area_fuerte_km2"])

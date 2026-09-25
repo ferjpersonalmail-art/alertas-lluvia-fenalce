@@ -105,7 +105,7 @@ rayos:
 
 # ---------------------------------------------------------------------
 radar:
-  api_url: https://api.rainviewer.com/public/weather-maps.json
+  api_url: https://api.librewxr.net/public/weather-maps.json   # misma fuente del radar del portal; RainViewer casi no tiene radares de Colombia
   zoom: 6                         # la API gratuita llega a zoom 7; 6 con teselas de 512 px ≈ 1,2 km/píxel
   tamano_tesela: 512
   ventana_min: 120                # la API guarda 2 h de cuadros (uno cada 10 min)
