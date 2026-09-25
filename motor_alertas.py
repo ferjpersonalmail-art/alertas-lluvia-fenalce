@@ -221,6 +221,13 @@ def ejecutar(cfg: dict, dir_base: Path, persistir: bool, solo_consola: bool,
         log.error("No se pudo leer el radar: %s", e)
         return 1
     log.info("%d cuadros de radar (%d descargas)", len(cuadros), descargador.solicitudes)
+    if r.get("radares_ideam", True) and not api_url:
+        try:   # dentro del alcance de los radares IDEAM se usa su reflectividad (más precisa)
+            import fuente_ideam
+            ideam, cob = fuente_ideam.cargar_cuadros(malla, dir_base / "cache" / "ideam", int(r.get("ventana_min", 120)))
+            cuadros = fuente_ideam.combinar(cuadros, ideam, cob)
+        except Exception as e:
+            log.warning("Radares IDEAM no disponibles: %s", e)
     if not cuadros:
         log.error("Sin cuadros de radar disponibles")
         return 1
