@@ -127,8 +127,18 @@ def open_meteo(puntos):
 
 
 # --------------------------------------------------------------------------- índice
-def puntaje(s):
+# En la Orinoquía, Amazonía y el Pacífico las nubes frías extensas son lo normal: se exige más área.
+REGION = {**{c: ("andina", 1.0) for c in "05 11 15 17 25 41 54 63 66 68 73 19 76".split()},
+          **{c: ("caribe", 1.5) for c in "08 13 20 23 44 47 70 88".split()},
+          **{c: ("pacífico", 1.5) for c in "27 52".split()},
+          **{c: ("oriente", 2.0) for c in "50 81 85 99 18 86 91 94 95 97".split()}}
+
+
+def puntaje(s, codigo=""):
     p, razones = 0, []
+    _, f = REGION.get(codigo, ("", 1.0))
+    s = dict(s, frio40=s["frio40"] / f, frio60=s["frio60"] / f,
+             cod_gruesa=(s["cod_gruesa"] / f if s["cod_gruesa"] is not None else None))
     if s["frio40"] >= 2000: p += 3; razones.append(f"nubes densas (cima < −40 °C) en ~{s['frio40']:,.0f} km²")
     elif s["frio40"] >= 500: p += 2; razones.append(f"nubes densas en ~{s['frio40']:,.0f} km²")
     elif s["frio40"] >= 100: p += 1; razones.append(f"nubes densas en ~{s['frio40']:,.0f} km²")
@@ -192,7 +202,15 @@ def main():
         log.warning("Rayos: %s", e)
 
     ds = [t.dep_indice[c] for c in cod if c in t.dep_indice]
-    puntos = [tuple(float(v) for v in malla.a_lonlat(*t.dep_centro[d])) for d in ds]
+    puntos = []
+    frio = bt < -40
+    for d in ds:
+        yy, xx = np.nonzero(frio & (t.dep_raster == d))
+        if len(yy) >= 20:   # centro de las nubes densas del departamento
+            cx, cy = xx.mean(), yy.mean()
+        else:
+            cx, cy = t.dep_centro[d]
+        puntos.append(tuple(float(v) for v in malla.a_lonlat(cx, cy)))
     try:
         modelo = dict(zip(ds, open_meteo(puntos)))
     except Exception as e:
@@ -207,12 +225,12 @@ def main():
              "crec": (float(f40[d]) / float(f40_0[d])) if f40_0[d] >= 50 else (2.0 if f40[d] >= 100 else None),
              "rayos": int(rayos.get(d, 0)), "cod_gruesa": float(cod_g[d]) if cod_g is not None else None,
              "modelo": modelo.get(d)}
-        p, nivel, razones = puntaje(s)
+        p, nivel, razones = puntaje(s, c)
         # municipios con más nube densa
         m = (bt < -40) & (t.dep_raster == d)
         mun = np.bincount(t.etiquetas[m], weights=t.area_px[m], minlength=t.n_mun + 1)
         top = [t.mun_nombre[i] for i in np.argsort(-mun)[:4] if mun[i] >= 20]
-        res.append({"codigo": c, "departamento": act[c]["nombre"], "puntaje": p, "probabilidad": nivel,
+        res.append({"codigo": c, "region": REGION.get(c, ("", 1))[0], "departamento": act[c]["nombre"], "puntaje": p, "probabilidad": nivel,
                     "municipios": top, "razones": razones, **{k: v for k, v in s.items() if k != "modelo"}})
     res.sort(key=lambda r: -r["puntaje"])
     hora = _inicio(ahora_k).astimezone(timezone(timedelta(hours=-5))).strftime("%Y-%m-%d %H:%M")
