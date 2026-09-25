@@ -26,7 +26,7 @@ BASE = Path(__file__).resolve().parent
 ZONA = timezone(timedelta(hours=-5))
 HORAS_REPORTE = (1, 5, 7, 13, 17, 19)
 ESTADO = BASE / "estado" / "reporte_nubes.json"
-OSPA = "http://www.pronosticosyalertas.gov.co"
+OSPA = "https://www.ideam.gov.co/nuestra-entidad/servicio-de-pronosticos-y-alertas"   # pronosticosyalertas.gov.co tiene el certificado vencido
 PORTAL = "https://agroclima-fenalce-portal.vercel.app/"
 QR_URL = "https://raw.githubusercontent.com/ferjpersonalmail-art/alertas-lluvia-fenalce/main/datos/qr_portal.png"
 COLOR = {"ALTA": ("🔴", "ROJA"), "MEDIA": ("🟡", "AMARILLA"), "BAJA": ("🟢", "VERDE")}
@@ -109,8 +109,8 @@ def texto_departamento(r: dict, hora_sat: str, tipo: str = "reporte", prueba: bo
         L += ["• Se sugiere programar las labores de campo fuera de la franja de lluvia.",
               "• Estar atentos a la evolución del tiempo en las próximas horas."]
     L.append("")
-    L.append(f"📢 Consulte también los avisos oficiales de la *Oficina del Servicio de Pronósticos y Alertas (OSPA) del IDEAM*: {OSPA}")
     L.append(f"🌐 Siga el radar, las estaciones y el clima en nuestro *Portal Agroclimático FENALCE* (versión en desarrollo): {PORTAL}")
+    L.append(f"📢 Consulte también los avisos oficiales de la *Oficina del Servicio de Pronósticos y Alertas (OSPA) del IDEAM*: {OSPA}")
     L.append("_FENALCE · Equipo de Agroclimatología. Estimación con imágenes de satélite; puede haber diferencias con lo que ocurra en cada finca._")
     return "\n".join(L)
 
