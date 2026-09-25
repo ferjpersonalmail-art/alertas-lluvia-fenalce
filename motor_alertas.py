@@ -261,7 +261,7 @@ def ejecutar(cfg: dict, dir_base: Path, persistir: bool, solo_consola: bool,
 
     registro = Registro(dir_base, persistir)
     acciones = decidir(evaluaciones, registro.estado, cfg)
-    canales = notificar.crear_notificadores(cfg, solo_consola)
+    canales = notificar.crear_notificadores(cfg, solo_consola or not cfg["notificacion"].get("enviar_eventos_radar", False))
 
     # viento en el centro de la lluvia de los departamentos a notificar (una sola consulta)
     a_notificar = [a for a in acciones if a.notificar and a.tipo != "fin" and a.ev.centro_lluvia]

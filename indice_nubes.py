@@ -176,7 +176,10 @@ def puntaje(s, codigo=""):
         if m["prob"] >= 70 and m["tcwv"] >= 45: p += 1
         if m["cape"] >= 1500: p += 1
         razones.append(f"modelo: prob. lluvia {m['prob']:.0f} %, agua precipitable {m['tcwv']:.0f} mm, CAPE {m['cape']:.0f} J/kg")
-    nivel = "ALTA" if p >= 6 else "MEDIA" if p >= 3 else "BAJA"
+    nivel = "ALTA" if p >= 7 else "MEDIA" if p >= 3 else "BAJA"
+    # ROJA exige tormenta activa confirmada: rayos o núcleos de tormenta profunda
+    if nivel == "ALTA" and not (s["rayos"] >= 10 or s["frio60"] >= 200):
+        nivel = "MEDIA"
     return p, nivel, razones
 
 

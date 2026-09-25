@@ -160,10 +160,28 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
     previos = est.get("niveles", {})
     enviados = 0
 
-    # 1) subidas a ROJA, a cualquier hora
+    # 1) subidas a ROJA, a cualquier hora (fuera de los reportes programados)
+    rojo_desde = est.get("rojo_desde", {})
+    suben = []
     for r in res:
         antes = previos.get(r["codigo"], "BAJA")
-        if r["probabilidad"] == "ALTA" and ORDEN[antes] < ORDEN["ALTA"]:
+        ult = rojo_desde.get(r["codigo"])
+        reciente = ult and (ahora - datetime.fromisoformat(ult)).total_seconds() < 3 * 3600
+        if r["probabilidad"] == "ALTA" and ORDEN[antes] < ORDEN["ALTA"] and not reciente:
+            suben.append(r)
+    for r in res:
+        if r["probabilidad"] == "ALTA":
+            rojo_desde.setdefault(r["codigo"], ahora.isoformat())
+        elif r["codigo"] in rojo_desde and (ahora - datetime.fromisoformat(rojo_desde[r["codigo"]])).total_seconds() >= 3 * 3600:
+            rojo_desde.pop(r["codigo"])
+    for r in suben:
+        rojo_desde[r["codigo"]] = ahora.isoformat()
+    est["rojo_desde"] = rojo_desde
+    if suben and not toca_reporte:
+        nombres = _lista([r["departamento"] for r in suben])
+        _ntfy(("🧪 " if prueba else "") + f"⬆️🔴 Suben a alerta ROJA: {nombres}",
+              f"⬆️ Suben a alerta roja: {nombres}.\nAbajo va el mensaje de cada departamento para reenviar.", 5, ["warning"])
+        for r in sorted(suben, key=lambda r: -r["puntaje"])[:5]:
             _ntfy(f"⬆️🔴 {r['departamento']}: sube a alerta ROJA", texto_departamento(r, hora_sat, "sube", prueba), 5, ["warning"])
             enviados += 1
 
