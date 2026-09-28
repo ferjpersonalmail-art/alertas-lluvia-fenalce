@@ -24,7 +24,7 @@ from pathlib import Path
 log = logging.getLogger("reporte")
 BASE = Path(__file__).resolve().parent
 ZONA = timezone(timedelta(hours=-5))
-HORAS_REPORTE = (1, 5, 7, 13, 17, 19)
+HORAS_REPORTE = (5, 13, 19)   # 5 a. m., 1 p. m. y 7 p. m.
 ESTADO = BASE / "estado" / "reporte_nubes.json"
 OSPA = "https://www.ideam.gov.co/nuestra-entidad/servicio-de-pronosticos-y-alertas"   # pronosticosyalertas.gov.co tiene el certificado vencido
 PORTAL = "https://agroclima-fenalce-portal.vercel.app/"
@@ -115,18 +115,64 @@ def texto_departamento(r: dict, hora_sat: str, tipo: str = "reporte", prueba: bo
     return "\n".join(L)
 
 
+def texto_nacional(res, hora_sat, prueba=False):
+    """Un solo mensaje con todo el país, para publicar en el Canal de WhatsApp."""
+    dt = datetime.strptime(hora_sat, "%Y-%m-%d %H:%M")
+    rojas = [r for r in res if r["probabilidad"] == "ALTA"]
+    amar = [r for r in res if r["probabilidad"] == "MEDIA"]
+    L = (["🧪 *MENSAJE DE PRUEBA* (no reenviar)"] if prueba else [])
+    L += ["🌦️ *REPORTE DE LLUVIAS · FENALCE*",
+          f"🕘 Imagen de satélite de las {_hora(dt)} · válido para las próximas 2 horas", ""]
+
+    def linea(r):
+        zona = _lista((r.get("municipios") or [])[:3])
+        extra = []
+        mov = r.get("movimiento")
+        if mov and mov["vel_kmh"] >= 5:
+            extra.append(f"se mueven hacia el {mov['hacia']}")
+        if r["rayos"] >= 5:
+            extra.append("con rayos ⚡")
+        return f"• *{r['departamento']}*" + (f": {zona}" if zona else "") + (f" ({', '.join(extra)})" if extra else "")
+
+    if rojas:
+        L.append("🔴 *ALERTA ROJA* — es muy probable que se presenten lluvias fuertes:")
+        L += [linea(r) for r in rojas[:10]]
+        L.append("")
+    if amar:
+        L.append("🟡 *ALERTA AMARILLA* — podrían presentarse lluvias fuertes:")
+        L += [linea(r) for r in amar[:10]]
+        if len(amar) > 10:
+            L.append(f"• y {len(amar) - 10} departamentos más")
+        L.append("")
+    if not rojas and not amar:
+        L += ["🟢 No se prevén lluvias fuertes en el país en las próximas 2 horas.", ""]
+    else:
+        L += ["🟢 En el resto del país no se prevén lluvias fuertes.", ""]
+    L += ["*Recomendaciones:*",
+          "• En zonas en rojo, se sugiere suspender aplicaciones de agroquímicos y fertilizantes.",
+          "• Revisar drenajes y evitar labores en lotes que se encharcan o cerca de quebradas.",
+          "• Si hay rayos, no permanecer en campo abierto ni bajo árboles aislados.", "",
+          f"🌐 Radar y estaciones en nuestro *Portal Agroclimático FENALCE* (versión en desarrollo): {PORTAL}",
+          f"📢 Avisos oficiales de la *OSPA – IDEAM*: {OSPA}",
+          "_FENALCE · Equipo de Agroclimatología. Estimación con imágenes de satélite; puede haber diferencias con lo que ocurra en cada finca._"]
+    return "\n".join(L)
+
+
 # --------------------------------------------------------------------------- envío
 def _ntfy(titulo, texto, prioridad=3, tags=None, qr=False):
     tema = os.environ.get("NTFY_TOPIC") or "fenalce-lluvia-2ifz77fnqg"
     wa = "whatsapp://send?text=" + urllib.parse.quote(texto)
     cuerpo = {"topic": tema, "title": titulo, "message": texto, "priority": prioridad, "tags": tags or [],
-              "click": wa, "actions": [{"action": "view", "label": "Enviar por WhatsApp", "url": wa},
+              "actions": [{"action": "view", "label": "Enviar por WhatsApp", "url": wa},
                                        {"action": "view", "label": "Abrir portal", "url": PORTAL}]}
     if qr:   # imagen del código QR del portal, para compartirla en el grupo
         cuerpo["attach"] = QR_URL
         cuerpo["filename"] = "QR_portal_agroclimatico_FENALCE.png"
-    if len(json.dumps(cuerpo).encode()) > 8000:   # ntfy limita el tamaño; el botón lleva el texto completo
-        cuerpo["message"] = texto[:1500] + "…"
+    if len(json.dumps(cuerpo).encode()) > 7800:   # ntfy acepta ~8 KB; el botón de WhatsApp lleva el texto completo
+        cuerpo["message"] = texto[:500] + "…\n\n👉 Toque «Enviar por WhatsApp» para el texto completo."
+    if len(json.dumps(cuerpo).encode()) > 7800:
+        cuerpo["actions"] = cuerpo["actions"][1:]
+        cuerpo["message"] = texto[:3500]
     h = {"Content-Type": "application/json"}
     if os.environ.get("NTFY_TOKEN"):
         h["Authorization"] = "Bearer " + os.environ["NTFY_TOKEN"]
@@ -166,13 +212,13 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
     for r in res:
         antes = previos.get(r["codigo"], "BAJA")
         ult = rojo_desde.get(r["codigo"])
-        reciente = ult and (ahora - datetime.fromisoformat(ult)).total_seconds() < 3 * 3600
-        if r["probabilidad"] == "ALTA" and ORDEN[antes] < ORDEN["ALTA"] and not reciente:
+        reciente = ult and (ahora - datetime.fromisoformat(ult)).total_seconds() < 6 * 3600
+        if r["probabilidad"] == "ALTA" and ORDEN[antes] < ORDEN["ALTA"] and not reciente and r["rayos"] >= 20:
             suben.append(r)
     for r in res:
         if r["probabilidad"] == "ALTA":
             rojo_desde.setdefault(r["codigo"], ahora.isoformat())
-        elif r["codigo"] in rojo_desde and (ahora - datetime.fromisoformat(rojo_desde[r["codigo"]])).total_seconds() >= 3 * 3600:
+        elif r["codigo"] in rojo_desde and (ahora - datetime.fromisoformat(rojo_desde[r["codigo"]])).total_seconds() >= 6 * 3600:
             rojo_desde.pop(r["codigo"])
     for r in suben:
         rojo_desde[r["codigo"]] = ahora.isoformat()
@@ -185,14 +231,16 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
             _ntfy(f"⬆️🔴 {r['departamento']}: sube a alerta ROJA", texto_departamento(r, hora_sat, "sube", prueba), 5, ["warning"])
             enviados += 1
 
-    # 2) reporte programado
+    # 2) reporte programado: un mensaje nacional (para el Canal) y los departamentos en roja (para sus grupos)
     if toca_reporte:
-        activos = [r for r in res if r["probabilidad"] != "BAJA"]
-        _ntfy(("🧪 " if prueba else "") + f"📋 Reporte de lluvias ({len(activos)} departamentos)", _resumen(hora_sat, res, prueba), 3, ["clipboard"], qr=True)
-        for r in sorted(activos, key=lambda r: -ORDEN[r["probabilidad"]])[:10]:
-            emo, nom = COLOR[r["probabilidad"]]
-            _ntfy(("🧪 " if prueba else "") + f"{emo} {r['departamento']}: alerta {nom.lower()} por lluvias",
-                  texto_departamento(r, hora_sat, "reporte", prueba), 4 if r["probabilidad"] == "ALTA" else 3)
+        rojas = [r for r in res if r["probabilidad"] == "ALTA"]
+        amar = [r for r in res if r["probabilidad"] == "MEDIA"]
+        _ntfy(("🧪 " if prueba else "") + f"📋 Reporte nacional: {len(rojas)} en roja, {len(amar)} en amarilla",
+              texto_nacional(res, hora_sat, prueba), 4 if rojas else 3, ["clipboard"], qr=True)
+        enviados += 1
+        for r in sorted(rojas, key=lambda r: -r["puntaje"])[:5]:
+            _ntfy(("🧪 " if prueba else "") + f"🔴 {r['departamento']}: alerta roja por lluvias",
+                  texto_departamento(r, hora_sat, "reporte", prueba), 4)
             enviados += 1
         if franja and not forzar:
             est["ultima_franja"] = franja
