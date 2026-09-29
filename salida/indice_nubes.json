@@ -1,5 +1,5 @@
 {
- "hora_satelite": "2026-09-29 00:00",
+ "hora_satelite": "2026-09-29 00:10",
  "departamentos": [
   {
    "movimiento": {
@@ -19,31 +19,32 @@
    "puntaje": 7,
    "probabilidad": "ALTA",
    "municipios": [
-    "Buenaventura"
+    "Buenaventura",
+    "Dagua"
    ],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~2,712 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~736 km²",
-    "nubes creciendo (+184 % en 30 min)",
-    "10 rayos en 15 min",
+    "nubes densas (cima < −40 °C) en ~3,287 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~1,084 km²",
+    "nubes creciendo (+130 % en 30 min)",
+    "11 rayos en 15 min",
     "modelo: prob. lluvia 23 %, agua precipitable 65 mm, CAPE 1190 J/kg"
    ],
-   "frio40": 2712.3758813142776,
-   "frio60": 735.5937708616257,
-   "btmin": -74.08163452148438,
-   "crec": 2.8445653873406878,
-   "rayos": 10,
+   "frio40": 3287.1191215515137,
+   "frio60": 1084.0377852916718,
+   "btmin": -72.42239379882812,
+   "crec": 2.3008366525679693,
+   "rayos": 11,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": {
     "hacia": "nororiente",
-    "vel_kmh": 15.656424544316643,
-    "grados": 51.34019174590991
+    "vel_kmh": 14.257392950380499,
+    "grados": 30.96375653207352
    },
    "viento": {
-    "viento_kmh": 2.5,
-    "viento_dir": 315,
+    "viento_kmh": 0.5,
+    "viento_dir": 90,
     "alto_kmh": 6.0,
     "alto_dir": 143
    },
@@ -56,18 +57,53 @@
     "Barbacoas",
     "Magüí",
     "Roberto Payán",
-    "El Charco"
+    "Los Andes"
    ],
    "razones": [
-    "nubes densas en ~1,539 km²",
+    "nubes densas en ~1,345 km²",
     "nubes disipándose",
-    "modelo: prob. lluvia 96 %, agua precipitable 62 mm, CAPE 1790 J/kg"
+    "modelo: prob. lluvia 96 %, agua precipitable 64 mm, CAPE 1690 J/kg"
    ],
-   "frio40": 2308.6976803541183,
+   "frio40": 2017.3833026885986,
    "frio60": 0.0,
-   "btmin": -57.120513916015625,
-   "crec": 0.6855408378295967,
+   "btmin": -55.522735595703125,
+   "crec": 0.6727361372197606,
    "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": {
+    "hacia": "sur",
+    "vel_kmh": 7.2651894092559814,
+    "grados": 180.0
+   },
+   "viento": {
+    "viento_kmh": 2.7,
+    "viento_dir": 53,
+    "alto_kmh": 15.6,
+    "alto_dir": 122
+   },
+   "codigo": "54",
+   "region": "andina",
+   "departamento": "Norte de Santander",
+   "puntaje": 3,
+   "probabilidad": "MEDIA",
+   "municipios": [
+    "Teorama",
+    "El Tarra",
+    "Convención",
+    "El Carmen"
+   ],
+   "razones": [
+    "nubes densas (cima < −40 °C) en ~3,383 km²",
+    "nubes disipándose",
+    "modelo: prob. lluvia 59 %, agua precipitable 43 mm, CAPE 1530 J/kg"
+   ],
+   "frio40": 3383.2075152397156,
+   "frio60": 17.497851133346558,
+   "btmin": -64.18765258789062,
+   "crec": 0.5618583705887442,
+   "rayos": 1,
    "cod_gruesa": 0.0
   },
   {
@@ -77,8 +113,8 @@
     "grados": 315.0
    },
    "viento": {
-    "viento_kmh": 6.8,
-    "viento_dir": 143,
+    "viento_kmh": 4.8,
+    "viento_dir": 115,
     "alto_kmh": 9.4,
     "alto_dir": 140
    },
@@ -88,89 +124,20 @@
    "puntaje": 2,
    "probabilidad": "BAJA",
    "municipios": [
-    "Istmina",
     "El Litoral del San Juan",
+    "Istmina",
     "Medio San Juan",
-    "El Carmen de Atrato"
+    "Lloró"
    ],
    "razones": [
-    "nubes densas en ~1,486 km²",
-    "modelo: prob. lluvia 12 %, agua precipitable 62 mm, CAPE 1470 J/kg"
+    "nubes densas en ~1,573 km²",
+    "modelo: prob. lluvia 12 %, agua precipitable 62 mm, CAPE 1480 J/kg"
    ],
-   "frio40": 2229.294326543808,
-   "frio60": 26.755318641662598,
-   "btmin": -61.91387939453125,
-   "crec": 1.2673151152553168,
-   "rayos": 2,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": {
-    "hacia": "sur",
-    "vel_kmh": 4.843459606170654,
-    "grados": 180.0
-   },
-   "viento": {
-    "viento_kmh": 2.8,
-    "viento_dir": 18,
-    "alto_kmh": 15.6,
-    "alto_dir": 122
-   },
-   "codigo": "54",
-   "region": "andina",
-   "departamento": "Norte de Santander",
-   "puntaje": 2,
-   "probabilidad": "BAJA",
-   "municipios": [
-    "Teorama",
-    "El Tarra",
-    "El Carmen",
-    "Convención"
-   ],
-   "razones": [
-    "nubes densas (cima < −40 °C) en ~4,233 km²",
-    "nubes disipándose",
-    "modelo: prob. lluvia 59 %, agua precipitable 48 mm, CAPE 1370 J/kg"
-   ],
-   "frio40": 4232.95895242691,
-   "frio60": 0.0,
-   "btmin": -55.461273193359375,
-   "crec": 0.6586673438217022,
+   "frio40": 2360.080057501793,
+   "frio60": 23.80082905292511,
+   "btmin": -65.23236083984375,
+   "crec": 1.275063870705898,
    "rayos": 1,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": {
-    "hacia": "occidente",
-    "vel_kmh": 7.3149497509002686,
-    "grados": 270.0
-   },
-   "viento": {
-    "viento_kmh": 8.6,
-    "viento_dir": 53,
-    "alto_kmh": 22.4,
-    "alto_dir": 106
-   },
-   "codigo": "99",
-   "region": "oriente",
-   "departamento": "Vichada",
-   "puntaje": 2,
-   "probabilidad": "BAJA",
-   "municipios": [
-    "Cumaribo",
-    "Puerto Carreño",
-    "La Primavera"
-   ],
-   "razones": [
-    "nubes densas en ~1,735 km²",
-    "nubes disipándose",
-    "modelo: prob. lluvia 2 %, agua precipitable 54 mm, CAPE 1500 J/kg"
-   ],
-   "frio40": 3469.8639781475067,
-   "frio60": 0.0,
-   "btmin": -48.947235107421875,
-   "crec": 0.4728223239491457,
-   "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
@@ -192,7 +159,7 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -16.80712890625,
+   "btmin": -21.723388671875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -216,7 +183,7 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -32.60064697265625,
+   "btmin": -33.276611328125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -240,8 +207,40 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 1.198699951171875,
+   "btmin": 3.04229736328125,
    "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": {
+    "hacia": "nororiente",
+    "vel_kmh": 14.252302011373951,
+    "grados": 30.96375653207352
+   },
+   "viento": {
+    "viento_kmh": 3.7,
+    "viento_dir": 125,
+    "alto_kmh": 6.0,
+    "alto_dir": 127
+   },
+   "codigo": "19",
+   "region": "andina",
+   "departamento": "Cauca",
+   "puntaje": 1,
+   "probabilidad": "BAJA",
+   "municipios": [
+    "Timbiquí",
+    "Guapi"
+   ],
+   "razones": [
+    "nubes densas en ~224 km²",
+    "modelo: prob. lluvia 49 %, agua precipitable 62 mm, CAPE 1370 J/kg"
+   ],
+   "frio40": 223.88678073883057,
+   "frio60": 2.986758589744568,
+   "btmin": -62.22113037109375,
+   "crec": 1.2709143584062739,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
@@ -264,7 +263,7 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -38.623077392578125,
+   "btmin": -38.37725830078125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -288,7 +287,7 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -8.51092529296875,
+   "btmin": -9.186920166015625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -312,7 +311,7 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -35.36602783203125,
+   "btmin": -36.718017578125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -334,9 +333,9 @@
    "razones": [
     "modelo: prob. lluvia 0 %, agua precipitable 55 mm, CAPE 2020 J/kg"
    ],
-   "frio40": 2.876086473464966,
+   "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -40.958282470703125,
+   "btmin": -34.50567626953125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -360,7 +359,7 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -29.58941650390625,
+   "btmin": -23.321197509765625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -384,7 +383,7 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -33.706787109375,
+   "btmin": -29.405059814453125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -408,8 +407,42 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -7.650604248046875,
+   "btmin": -14.71771240234375,
    "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": {
+    "hacia": "occidente",
+    "vel_kmh": 4.876633167266846,
+    "grados": 270.0
+   },
+   "viento": {
+    "viento_kmh": 7.7,
+    "viento_dir": 41,
+    "alto_kmh": 21.0,
+    "alto_dir": 103
+   },
+   "codigo": "99",
+   "region": "oriente",
+   "departamento": "Vichada",
+   "puntaje": 1,
+   "probabilidad": "BAJA",
+   "municipios": [
+    "Cumaribo",
+    "Puerto Carreño",
+    "La Primavera"
+   ],
+   "razones": [
+    "nubes densas en ~1,085 km²",
+    "nubes disipándose",
+    "modelo: prob. lluvia 2 %, agua precipitable 54 mm, CAPE 1450 J/kg"
+   ],
+   "frio40": 2170.07966029644,
+   "frio60": 0.0,
+   "btmin": -47.595245361328125,
+   "crec": 0.3765686904178561,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
@@ -432,7 +465,7 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -29.036346435546875,
+   "btmin": -24.427337646484375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -456,7 +489,7 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -3.103057861328125,
+   "btmin": -3.041595458984375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -486,39 +519,6 @@
    "cod_gruesa": 0.0
   },
   {
-   "movimiento": {
-    "hacia": "nororiente",
-    "vel_kmh": 14.252302011373951,
-    "grados": 59.03624346792648
-   },
-   "viento": {
-    "viento_kmh": 2.8,
-    "viento_dir": 125,
-    "alto_kmh": 6.0,
-    "alto_dir": 127
-   },
-   "codigo": "19",
-   "region": "andina",
-   "departamento": "Cauca",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [
-    "Timbiquí",
-    "Guapi"
-   ],
-   "razones": [
-    "nubes densas en ~167 km²",
-    "nubes disipándose",
-    "modelo: prob. lluvia 35 %, agua precipitable 61 mm, CAPE 1440 J/kg"
-   ],
-   "frio40": 167.16137158870697,
-   "frio60": 0.0,
-   "btmin": -48.762847900390625,
-   "crec": 0.6785454391786391,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
    "movimiento": null,
    "viento": {
     "viento_kmh": 3.2,
@@ -537,7 +537,7 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -6.298614501953125,
+   "btmin": -9.985809326171875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -561,7 +561,7 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -1.56671142578125,
+   "btmin": -1.443817138671875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -585,7 +585,7 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -8.1422119140625,
+   "btmin": -1.87396240234375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -609,7 +609,7 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 0.58416748046875,
+   "btmin": 0.46124267578125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -633,7 +633,7 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -0.70635986328125,
+   "btmin": -0.767822265625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -657,7 +657,7 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -5.868438720703125,
+   "btmin": -9.8629150390625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -681,7 +681,7 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -5.62261962890625,
+   "btmin": -5.806976318359375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -705,7 +705,7 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 3.288116455078125,
+   "btmin": 3.103729248046875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -729,7 +729,7 @@
    ],
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -3.041595458984375,
+   "btmin": -3.348846435546875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
