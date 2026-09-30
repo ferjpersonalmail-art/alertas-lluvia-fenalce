@@ -27,14 +27,51 @@
    "razones": [
     "nubes densas (cima < −40 °C) en ~10,380 km²",
     "núcleos de tormenta (cima < −60 °C) en ~6,257 km²",
-    "73 rayos en 15 min",
+    "72 rayos en 15 min",
     "modelo: prob. lluvia 95 %, agua precipitable 66 mm, CAPE 2550 J/kg"
    ],
    "frio40": 10379.576624274254,
    "frio60": 6256.873207330704,
    "btmin": -84.34432983398438,
    "crec": 0.9585144022437345,
-   "rayos": 73,
+   "rayos": 72,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": {
+    "hacia": "sur",
+    "vel_kmh": 24.442496299743652,
+    "grados": 180.0
+   },
+   "viento": {
+    "viento_kmh": 0.4,
+    "viento_dir": 153,
+    "alto_kmh": 22.1,
+    "alto_dir": 22
+   },
+   "codigo": "19",
+   "region": "andina",
+   "departamento": "Cauca",
+   "puntaje": 8,
+   "probabilidad": "ALTA",
+   "municipios": [
+    "López de Micay",
+    "Timbiquí",
+    "Buenos Aires",
+    "Villa Rica"
+   ],
+   "razones": [
+    "nubes densas (cima < −40 °C) en ~2,398 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~867 km²",
+    "nubes creciendo (+35 % en 30 min)",
+    "16 rayos en 15 min",
+    "modelo: prob. lluvia 86 %, agua precipitable 65 mm, CAPE 1360 J/kg"
+   ],
+   "frio40": 2398.349652528763,
+   "frio60": 866.5396497249603,
+   "btmin": -73.4056396484375,
+   "crec": 1.3547137296627003,
+   "rayos": 16,
    "cod_gruesa": 0.0
   },
   {
@@ -63,50 +100,14 @@
    "razones": [
     "nubes densas (cima < −40 °C) en ~3,299 km²",
     "núcleos de tormenta (cima < −60 °C) en ~801 km²",
-    "40 rayos en 15 min",
+    "38 rayos en 15 min",
     "modelo: prob. lluvia 96 %, agua precipitable 67 mm, CAPE 1730 J/kg"
    ],
    "frio40": 4948.06416785717,
    "frio60": 1201.5202553272247,
    "btmin": -75.31069946289062,
    "crec": 0.8325799435979353,
-   "rayos": 40,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": {
-    "hacia": "sur",
-    "vel_kmh": 24.442496299743652,
-    "grados": 180.0
-   },
-   "viento": {
-    "viento_kmh": 0.4,
-    "viento_dir": 153,
-    "alto_kmh": 22.1,
-    "alto_dir": 22
-   },
-   "codigo": "19",
-   "region": "andina",
-   "departamento": "Cauca",
-   "puntaje": 7,
-   "probabilidad": "ALTA",
-   "municipios": [
-    "López de Micay",
-    "Timbiquí",
-    "Buenos Aires",
-    "Villa Rica"
-   ],
-   "razones": [
-    "nubes densas (cima < −40 °C) en ~2,398 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~867 km²",
-    "nubes creciendo (+35 % en 30 min)",
-    "modelo: prob. lluvia 86 %, agua precipitable 65 mm, CAPE 1360 J/kg"
-   ],
-   "frio40": 2398.349652528763,
-   "frio60": 866.5396497249603,
-   "btmin": -73.4056396484375,
-   "crec": 1.3547137296627003,
-   "rayos": 3,
+   "rayos": 38,
    "cod_gruesa": 0.0
   },
   {
@@ -180,39 +181,6 @@
   },
   {
    "movimiento": {
-    "hacia": "suroccidente",
-    "vel_kmh": 20.71272970071606,
-    "grados": 215.53767779197437
-   },
-   "viento": {
-    "viento_kmh": 4.9,
-    "viento_dir": 213,
-    "alto_kmh": 7.3,
-    "alto_dir": 351
-   },
-   "codigo": "47",
-   "region": "caribe",
-   "departamento": "Magdalena",
-   "puntaje": 6,
-   "probabilidad": "MEDIA",
-   "municipios": [
-    "Santa Marta"
-   ],
-   "razones": [
-    "nubes densas en ~515 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~345 km²",
-    "51 rayos en 15 min",
-    "modelo: prob. lluvia 32 %, agua precipitable 55 mm, CAPE 1150 J/kg"
-   ],
-   "frio40": 771.8616225719452,
-   "frio60": 517.0388556718826,
-   "btmin": -69.71844482421875,
-   "crec": 0.8606453785293336,
-   "rayos": 51,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": {
     "hacia": "nororiente",
     "vel_kmh": 17.205619768719853,
     "grados": 45.0
@@ -281,6 +249,39 @@
    "cod_gruesa": 0.0
   },
   {
+   "movimiento": {
+    "hacia": "suroccidente",
+    "vel_kmh": 20.71272970071606,
+    "grados": 215.53767779197437
+   },
+   "viento": {
+    "viento_kmh": 4.9,
+    "viento_dir": 213,
+    "alto_kmh": 7.3,
+    "alto_dir": 351
+   },
+   "codigo": "47",
+   "region": "caribe",
+   "departamento": "Magdalena",
+   "puntaje": 5,
+   "probabilidad": "MEDIA",
+   "municipios": [
+    "Santa Marta"
+   ],
+   "razones": [
+    "nubes densas en ~515 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~345 km²",
+    "48 rayos en 15 min",
+    "modelo: prob. lluvia 32 %, agua precipitable 55 mm, CAPE 1150 J/kg"
+   ],
+   "frio40": 771.8616225719452,
+   "frio60": 517.0388556718826,
+   "btmin": -69.71844482421875,
+   "crec": 0.8606453785293336,
+   "rayos": 48,
+   "cod_gruesa": 0.0
+  },
+  {
    "movimiento": null,
    "viento": {
     "viento_kmh": 5.1,
@@ -299,14 +300,14 @@
    "razones": [
     "nubes densas en ~155 km²",
     "nubes creciendo (+100 % en 30 min)",
-    "29 rayos en 15 min",
+    "14 rayos en 15 min",
     "modelo: prob. lluvia 13 %, agua precipitable 56 mm, CAPE 2060 J/kg"
    ],
    "frio40": 232.19920313358307,
    "frio60": 36.28058731555939,
    "btmin": -65.10943603515625,
    "crec": 2.0,
-   "rayos": 29,
+   "rayos": 14,
    "cod_gruesa": 0.0
   },
   {
@@ -335,14 +336,14 @@
    "razones": [
     "nubes densas en ~835 km²",
     "núcleos de tormenta en ~163 km²",
-    "16 rayos en 15 min",
+    "23 rayos en 15 min",
     "modelo: prob. lluvia 100 %, agua precipitable 36 mm, CAPE 810 J/kg"
    ],
    "frio40": 834.6185132265091,
    "frio60": 163.06759107112885,
    "btmin": -66.7686767578125,
    "crec": 0.7818891361812608,
-   "rayos": 16,
+   "rayos": 23,
    "cod_gruesa": 0.0
   },
   {
@@ -377,7 +378,7 @@
    "frio60": 165.55525815486908,
    "btmin": -62.958587646484375,
    "crec": 1.0323032953414892,
-   "rayos": 1,
+   "rayos": 2,
    "cod_gruesa": 0.0
   },
   {
