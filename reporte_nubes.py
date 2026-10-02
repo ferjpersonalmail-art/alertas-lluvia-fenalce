@@ -225,8 +225,9 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
     est["rojo_desde"] = rojo_desde
     if suben and not toca_reporte:
         nombres = _lista([r["departamento"] for r in suben])
-        _ntfy(("🧪 " if prueba else "") + f"⬆️🔴 Suben a alerta ROJA: {nombres}",
-              f"⬆️ Suben a alerta roja: {nombres}.\nAbajo va el mensaje de cada departamento para reenviar.", 5, ["warning"])
+        if len(suben) > 1:   # con un solo departamento basta su propio mensaje
+            _ntfy(("🧪 " if prueba else "") + f"⬆️🔴 Suben a alerta ROJA: {nombres}",
+                  f"⬆️ Suben a alerta roja: {nombres}.\nAbajo va el mensaje de cada departamento para reenviar.", 5, ["warning"])
         for r in sorted(suben, key=lambda r: -r["puntaje"])[:5]:
             _ntfy(f"⬆️🔴 {r['departamento']}: sube a alerta ROJA", texto_departamento(r, hora_sat, "sube", prueba), 5, ["warning"])
             enviados += 1
