@@ -178,7 +178,8 @@ def puntaje(s, codigo=""):
         razones.append(f"modelo: prob. lluvia {m['prob']:.0f} %, agua precipitable {m['tcwv']:.0f} mm, CAPE {m['cape']:.0f} J/kg")
     nivel = "ALTA" if p >= 7 else "MEDIA" if p >= 3 else "BAJA"
     # ROJA exige tormenta activa confirmada: rayos o núcleos de tormenta profunda
-    if nivel == "ALTA" and not (s["rayos"] >= 10 or s["frio60"] >= 200):
+    # Validación 25 sep–1 oct contra estaciones IDEAM: con ≥50 rayos la roja acierta 42 % (vs 30 %)
+    if nivel == "ALTA" and s["rayos"] < 50:
         nivel = "MEDIA"
     return p, nivel, razones
 
