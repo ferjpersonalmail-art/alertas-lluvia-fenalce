@@ -225,6 +225,15 @@ def calcular(cfg=None):
     except Exception as e:
         log.warning("Rayos: %s", e)
 
+    ra = None   # radar Rain-Alarm: dónde ya está lloviendo (clases 0-3)
+    try:
+        import fuente_rainalarm
+        ra = fuente_rainalarm.lluvia_actual(malla)
+    except Exception as e:
+        log.warning("Rain-Alarm: %s", e)
+    ll1 = area(ra >= 1) if ra is not None else None
+    ll2 = area(ra >= 2) if ra is not None else None
+
     ds = [t.dep_indice[c] for c in cod if c in t.dep_indice]
     puntos = []
     frio = bt < -40
@@ -250,20 +259,54 @@ def calcular(cfg=None):
              "rayos": int(rayos.get(d, 0)), "cod_gruesa": float(cod_g[d]) if cod_g is not None else None,
              "modelo": modelo.get(d)}
         p, nivel, razones = puntaje(s, c)
-        # municipios con más nube densa
-        m = (bt < -40) & (t.dep_raster == d)
-        mun = np.bincount(t.etiquetas[m], weights=t.area_px[m], minlength=t.n_mun + 1)
-        top = [t.mun_nombre[i] for i in np.argsort(-mun)[:4] if mun[i] >= 20]
+        # municipios: donde el radar ya muestra lluvia; si no, donde están los núcleos de tormenta
+        dep = t.dep_raster == d
+        top, llueve = [], []
+        if ra is not None:
+            m = dep & (ra >= 1)
+            mun = np.bincount(t.etiquetas[m], weights=t.area_px[m] * ra[m], minlength=t.n_mun + 1)
+            llueve = [t.mun_nombre[i] for i in np.argsort(-mun)[:4] if mun[i] >= 15]
+            top = list(llueve)
+        for umbral in (-60, -40):
+            if len(top) >= 2:
+                break
+            m = dep & (bt < umbral)
+            mun = np.bincount(t.etiquetas[m], weights=t.area_px[m], minlength=t.n_mun + 1)
+            top += [t.mun_nombre[i] for i in np.argsort(-mun)[:4] if mun[i] >= 20 and t.mun_nombre[i] not in top]
+        top = top[:4]
         res.append({"movimiento": movimiento(bt, bt0, t, d) if s["frio40"] >= 100 else None,
                     "viento": {k: v for k, v in (s["modelo"] or {}).items() if "dir" in k or "kmh" in k},
                     "codigo": c, "region": REGION.get(c, ("", 1))[0], "departamento": act[c]["nombre"], "puntaje": p, "probabilidad": nivel,
-                    "municipios": top, "razones": razones, **{k: v for k, v in s.items() if k != "modelo"}})
+                    "municipios": top, "llueve_en": llueve, "razones": razones,
+                    "lluvia_km2": round(float(ll1[d])) if ll1 is not None else None,
+                    "lluvia_moderada_km2": round(float(ll2[d])) if ll2 is not None else None, **{k: v for k, v in s.items() if k != "modelo"}})
     res.sort(key=lambda r: -r["puntaje"])
     hora = _inicio(ahora_k).astimezone(timezone(timedelta(hours=-5))).strftime("%Y-%m-%d %H:%M")
     (BASE / "salida").mkdir(exist_ok=True)
     (BASE / "salida" / "indice_nubes.json").write_text(json.dumps({"hora_satelite": hora, "departamentos": res},
                                                                ensure_ascii=False, indent=1), encoding="utf-8")
+    _bitacora(hora, res)
     return hora, res
+
+
+def _bitacora(hora, res):
+    """Una fila por departamento y cálculo, para validar luego contra estaciones (validar_alertas.py)."""
+    try:
+        import csv
+        p = BASE / "historial" / f"indice_{hora[:7]}.csv"
+        p.parent.mkdir(exist_ok=True)
+        nuevo = not p.exists()
+        with p.open("a", newline="", encoding="utf-8") as f:
+            w = csv.writer(f)
+            if nuevo:
+                w.writerow(["hora", "codigo", "departamento", "nivel", "puntaje", "rayos", "frio40", "frio60",
+                            "lluvia_km2", "lluvia_moderada_km2", "municipios", "llueve_en"])
+            for r in res:
+                w.writerow([hora, r["codigo"], r["departamento"], r["probabilidad"], r["puntaje"], r["rayos"],
+                            round(r["frio40"]), round(r["frio60"]), r.get("lluvia_km2"), r.get("lluvia_moderada_km2"),
+                            "|".join(r["municipios"]), "|".join(r.get("llueve_en") or [])])
+    except Exception as e:
+        log.warning("bitácora: %s", e)
 
 
 def main():

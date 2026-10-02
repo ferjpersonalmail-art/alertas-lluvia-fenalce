@@ -65,6 +65,8 @@ def texto_departamento(r: dict, hora_sat: str, tipo: str = "reporte", prueba: bo
              "MEDIA": "*Podrían* presentarse lluvias fuertes", "BAJA": "Baja posibilidad de lluvias fuertes"}
     zona = _lista(r.get("municipios") or [])
     L.append(f"🌧️ {frase[r['probabilidad']]}" + (f" en *{zona}* y alrededores." if zona else " en el departamento."))
+    if r.get("llueve_en"):
+        L.append(f"☔ El radar de lluvia *ya muestra lluvia* en {_lista(r['llueve_en'])}.")
 
     # nubes, en palabras
     if r["frio60"] >= 30:
