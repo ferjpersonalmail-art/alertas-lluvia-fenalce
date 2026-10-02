@@ -17,6 +17,7 @@ import json
 import logging
 import os
 import sys
+import unicodedata
 import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
@@ -190,13 +191,17 @@ def _enviar_clip(r, prueba=False):
     """Clip animado de la lluvia de la última hora en el departamento (para reenviar al grupo)."""
     try:
         import clip_radar
-        f = clip_radar.generar(r["codigo"], r["departamento"], r.get("llueve_en") or r.get("municipios") or [])
-        if not f:
+        info = clip_radar.generar(r["codigo"], r["departamento"], r.get("llueve_en") or r.get("municipios") or [],
+                                  nivel=r.get("probabilidad"), movimiento=r.get("movimiento"))
+        if not info:
             return
+        f = info["archivo"]
         tema = os.environ.get("NTFY_TOPIC") or "fenalce-lluvia-2ifz77fnqg"
-        h = {"Filename": f"lluvia_{r['departamento'].replace(' ', '_')}.gif",
-             "Title": _h(("🧪 " if prueba else "") + f"🎞️ Clip del radar · {r['departamento']}"),
-             "Message": _h("Mantenga presionada la imagen → Compartir → WhatsApp para enviarla al grupo."),
+        nombre = unicodedata.normalize("NFKD", r["departamento"]).encode("ascii", "ignore").decode().replace(" ", "_")
+        h = {"Filename": f"radar_{nombre}_{info['hora'].split()[0].replace(':', 'h')}.gif",
+             "Title": _h(("🧪 " if prueba else "") + f"🎞️ Radar {r['departamento']} · {info['hora']}"),
+             "Message": _h(f"Imagen más reciente del radar: {info['hora']} (hace {info['hace_min']} min). "
+                           "Ábrala y use Compartir → WhatsApp para enviarla al grupo."),
              "Tags": "film_frames"}
         if os.environ.get("NTFY_TOKEN"):
             h["Authorization"] = "Bearer " + os.environ["NTFY_TOKEN"]

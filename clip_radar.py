@@ -1,11 +1,16 @@
 """
-clip_radar.py — Clip animado (GIF) de la lluvia de la última hora sobre un departamento,
+clip_radar.py — Clip animado (GIF) de la lluvia y los rayos de la última hora sobre un departamento,
 para acompañar las alertas en WhatsApp (como los clips que comparte el IDEAM).
 
-Capas: mapa base (OpenStreetMap / CARTO), lluvia del radar Rain-Alarm (12 cuadros, cada 5 min),
-límites de municipios, municipios donde llueve resaltados y rayos de los últimos 15 min.
+  • El PRIMER cuadro es la imagen MÁS RECIENTE del radar (es la que se ve en la vista previa del
+    celular y de WhatsApp), con los rayos de los últimos 15 min.
+  • Después viene la animación de la última hora (cada 5 min), con los rayos de cada momento.
+  • La hora de cada imagen es la que publica Rain-Alarm (se busca la última disponible, ~5 min de
+    retraso), no la del reloj del computador.
+  • Capas: mapa base (Esri), lluvia del radar Rain-Alarm, municipios, departamento resaltado,
+    municipios donde llueve, la capital, rayos GOES-19 (GLM) y hacia dónde se mueven las nubes.
 
-   python clip_radar.py 73 "Ibagué,Chaparral"   → salida/clips/clip_73.gif
+   python clip_radar.py 73 "Ibagué,Chaparral" Tolima ALTA   → salida/clips/clip_73.gif
 """
 from __future__ import annotations
 
@@ -14,188 +19,473 @@ import json
 import logging
 import math
 import sys
+import time
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 
+import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 log = logging.getLogger("clip")
 BASE = Path(__file__).resolve().parent
-H = {"User-Agent": "Mozilla/5.0 (FENALCE agroclimatologia)", "Referer": "https://agroclima-fenalce-portal.vercel.app/"}
+CACHE = BASE / ".cache_clip"
+CAB = {"User-Agent": "Mozilla/5.0 (FENALCE agroclimatologia)", "Referer": "https://agroclima-fenalce-portal.vercel.app/"}
 MAPA = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
-LLUVIA = "https://images.rain-alarm.com/rain/g2/z{z}/{bx}_{by}/{x}_{y}{suf}.png"
+LLUVIA = "https://images.rain-alarm.com/rain/g2/z{z}/{bx}_{by}/{x}_{y}_{hhmm}.png"
 ZONA = timezone(timedelta(hours=-5))
-MAX_LADO = 620
+ANCHO, ALTO_CAB, ALTO_MAPA, ALTO_PIE = 640, 66, 500, 58
+ALTO = ALTO_CAB + ALTO_MAPA + ALTO_PIE
+N_CUADROS = 12                       # última hora, cada 5 min
+AZUL = (21, 52, 84)                  # azul FENALCE
+NIVELES = {"ALTA": ((176, 28, 32), "ALERTA ROJA"), "MEDIA": ((190, 110, 0), "ALERTA AMARILLA")}
+PALETA = [(4, 233, 231), (3, 0, 244), (2, 253, 2), (0, 142, 0), (253, 248, 2), (255, 148, 0), (230, 20, 20)]
+CAPITAL = {"25": "11001"}            # Cundinamarca: se marca Bogotá
+DIAS = "lunes martes miércoles jueves viernes sábado domingo".split()
+MESES = "enero febrero marzo abril mayo junio julio agosto septiembre octubre noviembre diciembre".split()
 _GEO = None
+_RAYOS = {"t": 0.0, "datos": None}
 
 
-def _fuente(t):
-    for f in ("DejaVuSans-Bold.ttf", "arialbd.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"):
+# --------------------------------------------------------------------------- utilidades
+def _fuente(t, negrita=True):
+    nombres = (["DejaVuSans-Bold.ttf", "arialbd.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"] if negrita
+               else ["DejaVuSans.ttf", "arial.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"])
+    for f in nombres:
         try:
             return ImageFont.truetype(f, t)
         except OSError:
             pass
-    return ImageFont.load_default()
+    try:
+        return ImageFont.load_default(size=t)
+    except TypeError:
+        return ImageFont.load_default()
+
+
+def _h12(dt):
+    dt = dt.astimezone(ZONA)
+    return f"{dt.hour % 12 or 12}:{dt.minute:02d} {'a. m.' if dt.hour < 12 else 'p. m.'}"
 
 
 def _px(lon, lat, z):
     n = 256 * 2 ** z
-    s = math.sin(math.radians(max(-85, min(85, lat))))
+    s = math.sin(math.radians(max(-85.0, min(85.0, lat))))
     return (lon + 180) / 360 * n, (0.5 - math.log((1 + s) / (1 - s)) / (4 * math.pi)) * n
 
 
-def _baja(url):
+def _px_np(lon, lat, z):
+    n = 256 * 2 ** z
+    s = np.sin(np.radians(np.clip(lat, -85, 85)))
+    return (lon + 180) / 360 * n, (0.5 - np.log((1 + s) / (1 - s)) / (4 * np.pi)) * n
+
+
+def _bajar(url, cache: Path | None = None):
+    if cache is not None and cache.exists():
+        return cache.read_bytes(), None
     try:
-        b = urllib.request.urlopen(urllib.request.Request(url, headers=H), timeout=30).read()
-        return Image.open(io.BytesIO(b)).convert("RGBA")
+        r = urllib.request.urlopen(urllib.request.Request(url, headers=CAB), timeout=30)
+        b = r.read()
+        if cache is not None:
+            cache.parent.mkdir(parents=True, exist_ok=True)
+            cache.write_bytes(b)
+        return b, r.headers.get("Date")
+    except Exception:
+        return None, None
+
+
+def _imagen(b):
+    try:
+        return Image.open(io.BytesIO(b)).convert("RGBA") if b else None
     except Exception:
         return None
+
+
+def _teselas(url, z, tx, ty, cache_dir: Path | None = None, **kw):
+    def una(p):
+        x, y = p
+        c = cache_dir / f"{z}_{x}_{y}.png" if cache_dir else None
+        return p, _imagen(_bajar(url.format(z=z, x=x, y=y, bx=x // 8, by=y // 8, **kw), c)[0])
+    with ThreadPoolExecutor(6) as ex:
+        return dict(ex.map(una, [(x, y) for x in tx for y in ty]))
+
+
+def _mosaico(teselas, tx, ty, corte):
+    img = Image.new("RGBA", (len(tx) * 256, len(ty) * 256), (0, 0, 0, 0))
+    for (x, y), t in teselas.items():
+        if t is not None:
+            img.paste(t, ((x - tx[0]) * 256, (y - ty[0]) * 256))
+    return img.crop(corte)
 
 
 def _municipios(codigo):
     global _GEO
     if _GEO is None:
         _GEO = json.loads((BASE / "datos" / "municipios_mgn2018.geojson").read_text(encoding="utf-8"))["features"]
-    out = []
+    cod = str(codigo).zfill(2)
+    cod_cap = CAPITAL.get(cod, cod + "001")
+    muns, capital = [], None
     for f in _GEO:
-        p = f["properties"]
-        if str(p.get("DPTO_CCDGO")).zfill(2) != str(codigo).zfill(2):
-            continue
-        g = f["geometry"]
+        p, g = f["properties"], f["geometry"]
         polys = g["coordinates"] if g["type"] == "MultiPolygon" else [g["coordinates"]]
-        out.append((p.get("MPIO_CNMBR", ""), [ring for poly in polys for ring in poly[:1]]))
-    return out
+        m = (str(p.get("MPIO_CCNCT")), p.get("MPIO_CNMBR", ""), [[(c[0], c[1]) for c in poly[0]] for poly in polys])
+        if str(p.get("DPTO_CCDGO")).zfill(2) == cod:
+            muns.append(m)
+        if m[0] == cod_cap:
+            capital = m
+    return muns, capital
 
 
-def _mosaico(tpl, z, x0, x1, y0, y1, suf=""):
-    img = Image.new("RGBA", ((x1 - x0 + 1) * 256, (y1 - y0 + 1) * 256), (0, 0, 0, 0))
-    pares = [(x, y) for x in range(x0, x1 + 1) for y in range(y0, y1 + 1)]
-    with ThreadPoolExecutor(8) as ex:
-        res = ex.map(lambda p: (p, _baja(tpl.format(z=z, x=p[0], y=p[1], bx=p[0] // 8, by=p[1] // 8, suf=suf))), pares)
-    ok = 0
-    for (x, y), t in res:
-        if t is not None:
-            img.paste(t, ((x - x0) * 256, (y - y0) * 256)); ok += 1
-    return img if ok else None
+def _titulo(s):
+    """'SAN JOSÉ DEL GUAVIARE' -> 'San José del Guaviare'."""
+    out = []
+    for i, w in enumerate(str(s).lower().split()):
+        out.append(w.upper() if "." in w else w if i and w in ("de", "del", "la", "las", "los", "el", "y", "e")
+                   else w[:1].upper() + w[1:])
+    return " ".join(out)
 
 
-def _rayos(z, ox, oy):
+def _centro(anillos):
+    """Centroide del polígono más grande del municipio."""
+    mejor, area_max = None, 0.0
+    for r in anillos:
+        a = cx = cy = 0.0
+        for (x0, y0), (x1, y1) in zip(r, r[1:] + r[:1]):
+            c = x0 * y1 - x1 * y0
+            a += c; cx += (x0 + x1) * c; cy += (y0 + y1) * c
+        if a and abs(a) > area_max:
+            area_max, mejor = abs(a), (cx / (3 * a), cy / (3 * a))
+    return mejor
+
+
+def _ultimo_cuadro(z, x, y):
+    """Hora (UTC) de la imagen de radar más reciente que ya publicó Rain-Alarm, y la hora del servidor."""
+    _, fecha = _bajar(f"https://images.rain-alarm.com/rain/g2/z{z}/{x // 8}_{y // 8}/{x}_{y}.png")
+    ahora = parsedate_to_datetime(fecha) if fecha else datetime.now(timezone.utc)
+    t = ahora.replace(second=0, microsecond=0) - timedelta(minutes=ahora.minute % 5)
+    for i in range(8):
+        tt = t - timedelta(minutes=5 * i)
+        if _bajar(LLUVIA.format(z=z, x=x, y=y, bx=x // 8, by=y // 8, hhmm=f"{tt:%H%M}"))[0]:
+            return tt, ahora
+    return None, ahora
+
+
+def _rayos(minutos=65):
+    """Rayos GOES-19 GLM [lon, lat, t, energía] de la última hora (se reutilizan 4 min entre clips)."""
+    if _RAYOS["datos"] is not None and time.time() - _RAYOS["t"] < 240:
+        return _RAYOS["datos"]
+    datos = np.zeros((0, 4))
     try:
-        g = json.loads((BASE / "salida" / "rayos.geojson").read_text(encoding="utf-8"))
-        lim = datetime.now(timezone.utc).timestamp() - 15 * 60
-        pts = set()
-        for f in g.get("features", []):
-            if (f["properties"].get("t") or 0) < lim:
-                continue
-            lon, lat = f["geometry"]["coordinates"][:2]
-            x, y = _px(lon, lat, z)
-            pts.add((int(x - ox) // 6 * 6, int(y - oy) // 6 * 6))
-        return sorted(pts)
-    except Exception:
-        return []
+        import rayos_glm
+        datos = rayos_glm.descargar_rayos(minutos)
+    except Exception as e:
+        log.warning("Rayos para el clip: %s", e)
+        try:
+            g = json.loads((BASE / "salida" / "rayos.geojson").read_text(encoding="utf-8"))
+            datos = np.array([[*f["geometry"]["coordinates"][:2], f["properties"]["t"], 0] for f in g["features"]])
+        except Exception:
+            pass
+    _RAYOS.update(t=time.time(), datos=datos)
+    return datos
 
 
-def generar(codigo, departamento="", resaltar=(), salida=None) -> Path | None:
-    muns = _municipios(codigo)
+def _rayo(d, x, y, s=1.0):
+    p = [(x + 1 * s, y - 6 * s), (x - 3 * s, y + 1 * s), (x, y + 1 * s), (x - 1 * s, y + 6 * s),
+         (x + 4 * s, y - 1 * s), (x + 1 * s, y - 1 * s)]
+    d.polygon(p, fill=(255, 205, 0, 255), outline=(95, 55, 0, 255))
+
+
+def _capa_lluvia(arr):
+    """Radar Rain-Alarm: la nubosidad (gris) queda tenue y la lluvia casi opaca."""
+    r, g, b, a = (arr[..., i].astype(np.int16) for i in range(4))
+    gris = (np.abs(r - g) < 12) & (np.abs(g - b) < 12) & (a > 0)
+    lluvia = (a > 0) & ~gris
+    out = arr.copy()
+    out[..., 3] = np.where(lluvia, 235, np.where(gris, 50, 0)).astype(np.uint8)
+    return Image.fromarray(out, "RGBA"), lluvia
+
+
+# --------------------------------------------------------------------------- clip
+def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, salida=None):
+    """Genera el GIF. Devuelve {archivo, hora, hace_min, lluvia_km2, rayos} o None si no hay qué mostrar."""
+    muns, capital = _municipios(codigo)
     if not muns:
         return None
-    lons = [c[0] for _, rings in muns for r in rings for c in r]
-    lats = [c[1] for _, rings in muns for r in rings for c in r]
-    lo0, lo1, la0, la1 = min(lons), max(lons), min(lats), max(lats)
-    z = 6
-    for zz in range(9, 5, -1):
-        ax, ay = _px(lo0, la1, zz); bx_, by_ = _px(lo1, la0, zz)
-        if max(bx_ - ax, by_ - ay) * 1.15 <= MAX_LADO:
-            z = zz; break
-    ax, ay = _px(lo0, la1, z); bx_, by_ = _px(lo1, la0, z)
-    cx, cy = (ax + bx_) / 2, (ay + by_) / 2
-    lado = max(bx_ - ax, by_ - ay) * 1.15
-    w = int(max(lado, 420)); h = int(max(lado, 420))
-    ox, oy = int(cx - w / 2), int(cy - h / 2)
-    tx0, ty0, tx1, ty1 = ox // 256, oy // 256, (ox + w) // 256, (oy + h) // 256
-    corte = (ox - tx0 * 256, oy - ty0 * 256, ox - tx0 * 256 + w, oy - ty0 * 256 + h)
+    pts = [c for _, _, an in muns for r in an for c in r]
+    lo0, lo1 = min(p[0] for p in pts), max(p[0] for p in pts)
+    la0, la1 = min(p[1] for p in pts), max(p[1] for p in pts)
+    for z in range(9, 5, -1):
+        x0, y0 = _px(lo0, la1, z)
+        x1, y1 = _px(lo1, la0, z)
+        if (x1 - x0) * 1.12 <= ANCHO and (y1 - y0) * 1.12 <= ALTO_MAPA:
+            break
+    ox, oy = int((x0 + x1) / 2 - ANCHO / 2), int((y0 + y1) / 2 - ALTO_MAPA / 2)
+    tx = range(ox // 256, (ox + ANCHO - 1) // 256 + 1)
+    ty = range(oy // 256, (oy + ALTO_MAPA - 1) // 256 + 1)
+    corte = (ox - tx[0] * 256, oy - ty[0] * 256, ox - tx[0] * 256 + ANCHO, oy - ty[0] * 256 + ALTO_MAPA)
 
-    base = _mosaico(MAPA.replace("{x}", "{x}").replace("{y}", "{y}"), z, tx0, tx1, ty0, ty1)
-    base = base.crop(corte) if base else Image.new("RGBA", (w, h), (235, 238, 240, 255))
+    def a_px(lon, lat):
+        x, y = _px(lon, lat, z)
+        return x - ox, y - oy
 
-    # límites de municipios
-    lineas = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    d = ImageDraw.Draw(lineas)
-    mascara = Image.new("L", (w, h), 0)
+    # ---- capas fijas: mapa base, municipios, departamento resaltado
+    fondo = Image.new("RGBA", (ANCHO, ALTO_MAPA), (236, 238, 240, 255))
+    fondo = Image.alpha_composite(fondo, _mosaico(_teselas(MAPA, z, tx, ty, CACHE / "mapa"), tx, ty, corte))
+    lineas = Image.new("RGBA", (ANCHO, ALTO_MAPA), (0, 0, 0, 0))
+    dl = ImageDraw.Draw(lineas)
+    mascara = Image.new("L", (ANCHO, ALTO_MAPA), 0)
     dm = ImageDraw.Draw(mascara)
-    res = {m.lower() for m in resaltar}
     centros = {}
-    for nom, rings in muns:
-        for r in rings:
-            pts = [(_px(lo, la, z)[0] - ox, _px(lo, la, z)[1] - oy) for lo, la in r[:: max(1, len(r) // 300)]]
-            if len(pts) > 2:
-                d.line(pts + [pts[0]], fill=(60, 70, 90, 120), width=1)
-                dm.polygon(pts, fill=255)
-                if nom.lower() in res and nom not in centros:
-                    centros[nom] = (sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts))
+    for _, nom, anillos in muns:
+        for r in anillos:
+            p = [a_px(*c) for c in r[:: max(1, len(r) // 400)]]
+            if len(p) > 2:
+                dm.polygon(p, fill=255)
+                dl.line(p + [p[0]], fill=(70, 80, 100, 110), width=1)
+        c = _centro(anillos)
+        if c:
+            centros[nom.casefold()] = (nom, a_px(*c))
+    m_dep = np.array(mascara) > 0
+    fuera = np.zeros((ALTO_MAPA, ANCHO, 4), np.uint8)
+    fuera[..., :3] = 255
+    fuera[..., 3] = np.where(m_dep, 0, 125)
+    bordes = mascara.filter(ImageFilter.FIND_EDGES)
+    halo = np.array(bordes.filter(ImageFilter.MaxFilter(7))) > 0
+    linea = np.array(bordes.filter(ImageFilter.MaxFilter(3))) > 0
+    borde = np.zeros((ALTO_MAPA, ANCHO, 4), np.uint8)
+    borde[halo] = (255, 255, 255, 170)
+    borde[linea] = (*AZUL, 255)
+    encima = Image.alpha_composite(Image.alpha_composite(lineas, Image.fromarray(fuera, "RGBA")),
+                                   Image.fromarray(borde, "RGBA"))
 
-    # cuadros de lluvia: última hora cada 5 min
-    ahora = datetime.now(timezone.utc)
-    t0 = ahora.replace(second=0, microsecond=0) - timedelta(minutes=ahora.minute % 5)
-    tiempos = [t0 - timedelta(minutes=5 * i) for i in range(11, 0, -1)]
-    with ThreadPoolExecutor(4) as ex:
-        capas = list(ex.map(lambda t: (t, _mosaico(LLUVIA, z, tx0, tx1, ty0, ty1, f"_{t:%H%M}")), tiempos))
-    capas.append((t0, _mosaico(LLUVIA, z, tx0, tx1, ty0, ty1)))
-    capas = [(t, c.crop(corte)) for t, c in capas if c is not None]
-    if not capas:
-        log.warning("Clip %s: sin cuadros de radar", codigo)
+    # ---- radar: última imagen publicada y la hora anterior, cada 5 min
+    cx_t, cy_t = (ox + ANCHO // 2) // 256, (oy + ALTO_MAPA // 2) // 256
+    t_ult, ahora = _ultimo_cuadro(z, cx_t, cy_t)
+    if t_ult is None:
+        log.warning("Clip %s: Rain-Alarm sin imágenes recientes", codigo)
+        return None
+    tiempos = [t_ult - timedelta(minutes=5 * i) for i in range(N_CUADROS - 1, -1, -1)]
+    with ThreadPoolExecutor(2) as ex:
+        crudos = list(ex.map(lambda t: _teselas(LLUVIA, z, tx, ty, hhmm=f"{t:%H%M}"), tiempos))
+    cuadros, previo = [], {}
+    for t, tes in zip(tiempos, crudos):
+        tes = {k: (v if v is not None else previo.get(k)) for k, v in tes.items()}   # tesela faltante: la anterior
+        if not any(v is not None for v in tes.values()):
+            continue
+        previo = tes
+        arr = np.array(_mosaico(tes, tx, ty, corte))
+        if cuadros and np.array_equal(arr, cuadros[-1][1]):
+            if t == tiempos[-1]:
+                cuadros[-1] = (t, arr)     # misma imagen: se deja con la hora más reciente
+            continue
+        cuadros.append((t, arr))
+    if not cuadros:
+        return None
+    capas = [(t, *_capa_lluvia(arr)) for t, arr in cuadros]
+    lat_c = (la0 + la1) / 2
+    km2_px = (40075.0 * math.cos(math.radians(lat_c)) / (256 * 2 ** z)) ** 2
+    lluvia_km2 = [float((ll & m_dep).sum() * km2_px) for _, _, ll in capas]
+
+    # ---- rayos
+    ry = _rayos()
+    if len(ry):
+        rx, ryy = _px_np(ry[:, 0], ry[:, 1], z)
+        rx, ryy = rx - ox, ryy - oy
+        ok = (rx >= 0) & (rx < ANCHO) & (ryy >= 0) & (ryy < ALTO_MAPA)
+        rx, ryy, rt = rx[ok], ryy[ok], ry[ok, 2]
+    else:
+        rx = ryy = rt = np.zeros(0)
+    en_dep = m_dep[ryy.astype(int), rx.astype(int)] if len(rx) else np.zeros(0, bool)
+    rayos_dep = int((en_dep & (rt >= ahora.timestamp() - 3600)).sum())
+    if max(lluvia_km2) < 20 and rayos_dep < 15:
+        log.info("Clip %s: sin lluvia en el radar ni rayos que mostrar", codigo)
         return None
 
-    # fuera del departamento se aclara el mapa; el borde del departamento va grueso
-    fuera = Image.new("RGBA", (w, h), (255, 255, 255, 120))
-    fuera.putalpha(mascara.point(lambda v: 0 if v else 120))
-    borde = mascara.filter(ImageFilter.FIND_EDGES).filter(ImageFilter.MaxFilter(3))
-    capa_borde = Image.new("RGBA", (w, h), (15, 60, 110, 255))
-    capa_borde.putalpha(borde.point(lambda v: 255 if v else 0))
-    rayos = _rayos(z, ox, oy)
-    f_tit, f_txt, f_peq = _fuente(17), _fuente(13), _fuente(10)
-    cuadros = []
-    for i, (t, lluvia) in enumerate(capas):
-        # en Rain-Alarm el gris es nubosidad: se suaviza para que resalte la lluvia
-        px = lluvia.load()
-        for yy in range(0, h):
-            for xx in range(0, w):
-                r_, g_, b_, a_ = px[xx, yy]
-                if a_ and abs(r_ - g_) < 12 and abs(g_ - b_) < 12:
-                    px[xx, yy] = (r_, g_, b_, 70)
-        f = Image.alpha_composite(base, lluvia)
-        f = Image.alpha_composite(f, lineas)
-        f = Image.alpha_composite(f, fuera)
-        f = Image.alpha_composite(f, capa_borde)
-        dd = ImageDraw.Draw(f)
-        if i >= len(capas) - 3:
-            for x, y in rayos:
-                dd.polygon([(x + 1, y - 5), (x - 3, y + 1), (x, y + 1), (x - 1, y + 6), (x + 4, y - 1), (x + 1, y - 1)],
-                           fill=(255, 200, 0, 255), outline=(90, 50, 0, 255))
-        for nom, (x, y) in centros.items():
-            dd.ellipse((x - 3, y - 3, x + 3, y + 3), fill=(220, 30, 30, 255))
-            dd.text((x + 5, y - 7), nom, font=f_txt, fill=(20, 20, 20, 255), stroke_width=2, stroke_fill=(255, 255, 255, 255))
-        dd.rectangle((0, 0, w, 44), fill=(15, 60, 110, 230))
-        dd.text((8, 4), f"Lluvia última hora · {departamento}", font=f_tit, fill="white")
-        loc = t.astimezone(ZONA)
-        dd.text((8, 25), f"{loc:%d/%m}  {loc.hour % 12 or 12}:{loc:%M} {'a. m.' if loc.hour < 12 else 'p. m.'}"
-                + ("   · rayos: últimos 15 min (amarillo)" if rayos and i >= len(capas) - 3 else ""), font=f_txt, fill=(220, 235, 255))
-        dd.rectangle((0, h - 16, w, h), fill=(255, 255, 255, 200))
-        dd.text((6, h - 14), "FENALCE Agroclimatología · Radar: Rain-Alarm · Rayos: GOES-19 · Mapa: Esri",
-                font=f_peq, fill=(60, 60, 60))
-        cuadros.append(f.convert("RGB").quantize(colors=128, method=Image.Quantize.MEDIANCUT))
+    def puntos(t0, t1):
+        sel = (rt > t0) & (rt <= t1)
+        return sorted({(int(x) // 8 * 8 + 4, int(y) // 8 * 8 + 4) for x, y in zip(rx[sel], ryy[sel])})
+
+    # ---- fuentes y elementos fijos sobre el mapa
+    color, titulo = NIVELES.get(nivel, (AZUL, "LLUVIA"))
+    f_hora, f_chip, f_chip_r = _fuente(28), _fuente(12), _fuente(13, False)
+    f_mun, f_ley, f_ley_r, f_pie = _fuente(15), _fuente(12), _fuente(11, False), _fuente(11, False)
+    medir = ImageDraw.Draw(Image.new("RGB", (1, 1)))
+    w_chip = int(max(medir.textlength("ÚLTIMA IMAGEN DEL RADAR", font=f_chip),
+                     medir.textlength("ANIMACIÓN · ÚLTIMA HORA", font=f_chip),
+                     medir.textlength("12:55 p. m.", font=f_hora),
+                     medir.textlength("hace 55 min  ·  rayos: 15 min", font=f_chip_r))) + 24
+    caja_hora = (10, 10, 10 + w_chip, 10 + 78)
+    ocupado = [caja_hora]
+    etiquetas = Image.new("RGBA", (ANCHO, ALTO_MAPA), (0, 0, 0, 0))
+    de = ImageDraw.Draw(etiquetas)
+
+    # leyenda
+    x_sw = 10 + int(medir.textlength("Lluvia", font=f_ley)) + 10
+    lx, ly, lh = 10, ALTO_MAPA - 10 - 46, 46
+    lw = x_sw + 7 * 17 + 22 + int(medir.textlength("rayo", font=f_ley)) + 12
+    de.rounded_rectangle((lx, ly, lx + lw, ly + lh), radius=9, fill=(255, 255, 255, 255), outline=(205, 212, 220, 255))
+    de.text((lx + 10, ly + 8), "Lluvia", font=f_ley, fill=(30, 35, 45, 255))
+    for i, c in enumerate(PALETA):
+        de.rectangle((lx + x_sw + i * 17, ly + 9, lx + x_sw + i * 17 + 16, ly + 21), fill=(*c, 255))
+    de.text((lx + x_sw, ly + 25), "débil", font=f_ley_r, fill=(70, 80, 90, 255))
+    de.text((lx + x_sw + 7 * 17 - medir.textlength("fuerte", font=f_ley_r), ly + 25), "fuerte", font=f_ley_r,
+            fill=(70, 80, 90, 255))
+    xr = lx + x_sw + 7 * 17 + 14
+    _rayo(de, xr, ly + 16, 1.3)
+    de.text((xr + 10, ly + 9), "rayo", font=f_ley, fill=(30, 35, 45, 255))
+    ocupado.append((lx, ly, lx + lw, ly + lh))
+
+    # movimiento de las nubes
+    if movimiento and movimiento.get("vel_kmh", 0) >= 5 and movimiento.get("grados") is not None:
+        mw = int(max(medir.textlength("Las nubes se mueven", font=f_ley_r),
+                     medir.textlength(f"hacia el {movimiento.get('hacia', '')}", font=f_ley))) + 62
+        mh = 46
+        mx, my = ANCHO - 10 - mw, ALTO_MAPA - 10 - mh
+        de.rounded_rectangle((mx, my, mx + mw, my + mh), radius=9, fill=(255, 255, 255, 255), outline=(205, 212, 220, 255))
+        ccx, ccy, rr = mx + 25, my + 23, 17
+        de.ellipse((ccx - rr, ccy - rr, ccx + rr, ccy + rr), fill=(*AZUL, 255))
+        th = math.radians(movimiento["grados"])
+        ux, uy = math.sin(th), -math.cos(th)
+        px_, py_ = -uy, ux
+        p1 = (ccx + ux * 12, ccy + uy * 12)
+        p0 = (ccx - ux * 11, ccy - uy * 11)
+        de.line([p0, (ccx + ux * 3, ccy + uy * 3)], fill=(255, 255, 255, 255), width=4)
+        de.polygon([p1, (ccx + ux * 1 + px_ * 8, ccy + uy * 1 + py_ * 8), (ccx + ux * 1 - px_ * 8, ccy + uy * 1 - py_ * 8)],
+                   fill=(255, 255, 255, 255))
+        de.text((mx + 50, my + 7), "Las nubes se mueven", font=f_ley_r, fill=(70, 80, 90, 255))
+        de.text((mx + 50, my + 23), f"hacia el {movimiento.get('hacia', '')}", font=f_ley, fill=(20, 25, 35, 255))
+        ocupado.append((mx, my, mx + mw, my + mh))
+
+    # aviso cuando el radar no muestra lluvia en el departamento (fuera de su alcance o aún sin lluvia)
+    if lluvia_km2[-1] < 20 and rayos_dep >= 15:
+        txt = ["El radar no muestra lluvia en esta zona;", "los rayos (satélite) indican la tormenta."]
+        nw = int(max(medir.textlength(t, font=f_chip_r) for t in txt)) + 20
+        nx, ny = ANCHO - 10 - nw, 10
+        de.rounded_rectangle((nx, ny, nx + nw, ny + 42), radius=9, fill=(255, 248, 225, 255), outline=(220, 190, 120, 255))
+        for i, t in enumerate(txt):
+            de.text((nx + 10, ny + 6 + i * 16), t, font=f_chip_r, fill=(90, 60, 0, 255))
+        ocupado.append((nx, ny, nx + nw, ny + 42))
+
+    # municipios donde llueve (punto rojo) y la capital (cuadro azul)
+    marcas = []
+    for nom in resaltar:
+        c = centros.get(str(nom).casefold())
+        if c:
+            marcas.append((_titulo(nom) if str(nom).isupper() else str(nom), c[1], "llueve"))
+    if capital and capital[1].casefold() not in {m[0].casefold() for m in marcas}:
+        c = _centro(capital[2])
+        if c:
+            marcas.append((_titulo(capital[1]), a_px(*c), "capital"))
+
+    def libre(b):
+        return (b[0] >= 4 and b[1] >= 4 and b[2] <= ANCHO - 4 and b[3] <= ALTO_MAPA - 4 and
+                all(b[2] < o[0] or b[0] > o[2] or b[3] < o[1] or b[1] > o[3] for o in ocupado))
+
+    for nom, (x, y), tipo in marcas:
+        if not (0 <= x < ANCHO and 0 <= y < ALTO_MAPA):
+            continue
+        if tipo == "llueve":
+            de.ellipse((x - 5, y - 5, x + 5, y + 5), fill=(215, 25, 30, 255), outline=(255, 255, 255, 255), width=2)
+        else:
+            de.rectangle((x - 4, y - 4, x + 4, y + 4), fill=(*AZUL, 255), outline=(255, 255, 255, 255), width=2)
+        bb = medir.textbbox((0, 0), nom, font=f_mun, stroke_width=3)
+        tw, th_ = bb[2] - bb[0], bb[3] - bb[1]
+        for dx, dy in ((10, -th_ / 2 - 2), (-10 - tw, -th_ / 2 - 2), (-tw / 2, -th_ - 10), (-tw / 2, 8)):
+            caja = (x + dx, y + dy, x + dx + tw, y + dy + th_)
+            if libre(caja):
+                de.text((x + dx, y + dy), nom, font=f_mun, fill=(20, 25, 35, 255), stroke_width=3,
+                        stroke_fill=(255, 255, 255, 255))
+                ocupado.append(caja)
+                break
+
+    # ---- cabecera
+    cab = Image.new("RGB", (ANCHO, ALTO_CAB), color)
+    dc = ImageDraw.Draw(cab)
+    logo = None
+    try:
+        logo = Image.open(BASE / "datos" / "logo_fenalce_blanco.png").convert("RGBA")
+        logo = logo.resize((round(logo.width * 30 / logo.height), 30), Image.LANCZOS)
+    except Exception:
+        pass
+    lw_ = logo.width if logo else 0
+    texto = f"{titulo} · {departamento.upper()}"
+    tam = 25
+    while tam > 14 and dc.textlength(texto, font=_fuente(tam)) > ANCHO - lw_ - 44:
+        tam -= 1
+    dc.text((16, 8), texto, font=_fuente(tam), fill=(255, 255, 255))
+    loc = t_ult.astimezone(ZONA)
+    dc.text((16, 41), f"{DIAS[loc.weekday()].capitalize()} {loc.day} de {MESES[loc.month - 1]} · radar de lluvia y rayos",
+            font=_fuente(14, False), fill=(240, 242, 245))
+    if logo:
+        cab.paste(logo, (ANCHO - lw_ - 14, (ALTO_CAB - logo.height) // 2), logo)
+
+    tiempos_ok = [t for t, _, _ in capas]
+
+    def pie(idx):
+        im = Image.new("RGB", (ANCHO, ALTO_PIE), (246, 248, 250))
+        d = ImageDraw.Draw(im)
+        n, xa0, xa1, sep = len(tiempos_ok), 16, ANCHO - 16, 3
+        w = (xa1 - xa0 - sep * (n - 1)) / n
+        for k in range(n):
+            xa = xa0 + k * (w + sep)
+            col = color if k == idx else ((150, 165, 180) if k < idx else (215, 222, 230))
+            d.rectangle((xa, 8, xa + w, 15), fill=col)
+        d.text((xa0, 19), _h12(tiempos_ok[0]), font=f_ley, fill=(80, 90, 100))
+        fin = _h12(tiempos_ok[-1])
+        d.text((xa1 - d.textlength(fin, font=f_ley), 19), fin, font=f_ley, fill=(80, 90, 100))
+        fuentes = "FENALCE · Agroclimatología   |   Radar: Rain-Alarm · Rayos: GOES-19 (NOAA) · Mapa: Esri"
+        d.text(((ANCHO - d.textlength(fuentes, font=f_pie)) / 2, 39), fuentes, font=f_pie, fill=(110, 120, 130))
+        return im
+
+    # ---- cuadros: portada (imagen más reciente) + animación de la última hora
+    secuencia = [(True, capas[-1], len(capas) - 1)] + [(False, c, i) for i, c in enumerate(capas)]
+    finales = []
+    for portada, (t, img_ll, _), idx in secuencia:
+        m = Image.alpha_composite(fondo, img_ll)
+        m = Image.alpha_composite(m, encima)
+        d = ImageDraw.Draw(m)
+        if portada:
+            t0, t1 = ahora.timestamp() - 15 * 60, ahora.timestamp()
+        else:
+            t0, t1 = (t - timedelta(minutes=5)).timestamp(), t.timestamp()
+        for x, y in puntos(t0, t1):
+            _rayo(d, x, y)
+        m = Image.alpha_composite(m, etiquetas)
+        d = ImageDraw.Draw(m)
+        x, y, x2, y2 = caja_hora
+        d.rounded_rectangle(caja_hora, radius=10, fill=(255, 255, 255, 255), outline=(205, 212, 220, 255))
+        d.text((x + 11, y + 8), "ÚLTIMA IMAGEN DEL RADAR" if portada else "ANIMACIÓN · ÚLTIMA HORA", font=f_chip,
+               fill=(*color, 255) if portada else (*AZUL, 255))
+        d.text((x + 10, y + 22), _h12(t), font=f_hora, fill=(20, 25, 35, 255))
+        hace = max(0, round((ahora - t).total_seconds() / 60))
+        d.text((x + 11, y + 57), f"hace {hace} min" + ("  ·  rayos: 15 min" if portada else ""), font=f_chip_r,
+               fill=(90, 100, 110, 255))
+        lienzo = Image.new("RGB", (ANCHO, ALTO), (255, 255, 255))
+        lienzo.paste(cab, (0, 0))
+        lienzo.paste(m.convert("RGB"), (0, ALTO_CAB))
+        lienzo.paste(pie(idx), (0, ALTO_CAB + ALTO_MAPA))
+        finales.append(lienzo)
+
+    # una sola paleta para todos los cuadros (sin parpadeo de colores)
+    muestra = Image.new("RGB", (ANCHO, ALTO * 3))
+    for i, f in enumerate((finales[0], finales[len(finales) // 2], finales[1])):
+        muestra.paste(f, (0, i * ALTO))
+    pal = muestra.quantize(colors=200, method=Image.Quantize.MEDIANCUT)
+    gif = [f.quantize(palette=pal, dither=Image.Dither.NONE) for f in finales]
+    dur = [2600] + [420] * (len(gif) - 2) + [1600]
     salida = Path(salida or BASE / "salida" / "clips" / f"clip_{str(codigo).zfill(2)}.gif")
     salida.parent.mkdir(parents=True, exist_ok=True)
-    dur = [450] * (len(cuadros) - 1) + [1800]
-    cuadros[0].save(salida, save_all=True, append_images=cuadros[1:], duration=dur, loop=0, optimize=True)
-    log.info("Clip %s: %d cuadros, %.0f KB", salida.name, len(cuadros), salida.stat().st_size / 1024)
-    return salida
+    gif[0].save(salida, save_all=True, append_images=gif[1:], duration=dur, loop=0, optimize=False, disposal=1)
+    info = {"archivo": salida, "hora": _h12(t_ult), "hace_min": max(0, round((ahora - t_ult).total_seconds() / 60)),
+            "lluvia_km2": round(lluvia_km2[-1]), "rayos": rayos_dep, "cuadros": len(capas)}
+    log.info("Clip %s: %d cuadros, última imagen %s (hace %d min), %.0f KB", salida.name, len(capas), info["hora"],
+             info["hace_min"], salida.stat().st_size / 1024)
+    return info
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    cod = sys.argv[1]
-    mun = sys.argv[2].split(",") if len(sys.argv) > 2 else []
-    print(generar(cod, sys.argv[3] if len(sys.argv) > 3 else cod, mun))
+    a = sys.argv[1:]
+    print(generar(a[0], a[2] if len(a) > 2 else a[0], [m for m in (a[1].split(",") if len(a) > 1 else []) if m],
+                  nivel=a[3] if len(a) > 3 else None))
