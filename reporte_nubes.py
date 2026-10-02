@@ -12,6 +12,7 @@ Lo llama el motor en cada ciclo (python reporte_nubes.py también funciona solo)
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import logging
 import os
@@ -181,6 +182,29 @@ def _ntfy(titulo, texto, prioridad=3, tags=None, qr=False):
     urllib.request.urlopen(urllib.request.Request("https://ntfy.sh", data=json.dumps(cuerpo).encode(), headers=h), timeout=20)
 
 
+def _h(t):   # encabezado HTTP con tildes/emojis (RFC 2047)
+    return "=?UTF-8?B?" + base64.b64encode(t.encode()).decode() + "?="
+
+
+def _enviar_clip(r, prueba=False):
+    """Clip animado de la lluvia de la última hora en el departamento (para reenviar al grupo)."""
+    try:
+        import clip_radar
+        f = clip_radar.generar(r["codigo"], r["departamento"], r.get("llueve_en") or r.get("municipios") or [])
+        if not f:
+            return
+        tema = os.environ.get("NTFY_TOPIC") or "fenalce-lluvia-2ifz77fnqg"
+        h = {"Filename": f"lluvia_{r['departamento'].replace(' ', '_')}.gif",
+             "Title": _h(("🧪 " if prueba else "") + f"🎞️ Clip del radar · {r['departamento']}"),
+             "Message": _h("Mantenga presionada la imagen → Compartir → WhatsApp para enviarla al grupo."),
+             "Tags": "film_frames"}
+        if os.environ.get("NTFY_TOKEN"):
+            h["Authorization"] = "Bearer " + os.environ["NTFY_TOKEN"]
+        urllib.request.urlopen(urllib.request.Request(f"https://ntfy.sh/{tema}", data=f.read_bytes(), headers=h, method="PUT"), timeout=60)
+    except Exception as e:
+        log.warning("Clip %s: %s", r.get("departamento"), e)
+
+
 def _resumen(hora_sat, res, prueba):
     dt = datetime.strptime(hora_sat, "%Y-%m-%d %H:%M")
     rojas = [r["departamento"] for r in res if r["probabilidad"] == "ALTA"]
@@ -232,6 +256,7 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
                   f"⬆️ Suben a alerta roja: {nombres}.\nAbajo va el mensaje de cada departamento para reenviar.", 5, ["warning"])
         for r in sorted(suben, key=lambda r: -r["puntaje"])[:5]:
             _ntfy(f"⬆️🔴 {r['departamento']}: sube a alerta ROJA", texto_departamento(r, hora_sat, "sube", prueba), 5, ["warning"])
+            _enviar_clip(r, prueba)
             enviados += 1
 
     # 2) reporte programado: un mensaje nacional (para el Canal) y los departamentos en roja (para sus grupos)
@@ -244,6 +269,7 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
         for r in sorted(rojas, key=lambda r: -r["puntaje"])[:5]:
             _ntfy(("🧪 " if prueba else "") + f"🔴 {r['departamento']}: alerta roja por lluvias",
                   texto_departamento(r, hora_sat, "reporte", prueba), 4)
+            _enviar_clip(r, prueba)
             enviados += 1
         if franja and not forzar:
             est["ultima_franja"] = franja
