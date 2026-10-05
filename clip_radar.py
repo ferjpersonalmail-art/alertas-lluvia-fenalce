@@ -201,13 +201,13 @@ def _rayo(d, x, y, s=1.0):
     d.polygon(p, fill=(255, 205, 0, 255), outline=(95, 55, 0, 255))
 
 
-def _capa_lluvia(arr):
+def _capa_lluvia(arr, alfa_gris=50):
     """Radar Rain-Alarm: la nubosidad (gris) queda tenue y la lluvia casi opaca."""
     r, g, b, a = (arr[..., i].astype(np.int16) for i in range(4))
     gris = (np.abs(r - g) < 12) & (np.abs(g - b) < 12) & (a > 0)
     lluvia = (a > 0) & ~gris
     out = arr.copy()
-    out[..., 3] = np.where(lluvia, 235, np.where(gris, 50, 0)).astype(np.uint8)
+    out[..., 3] = np.where(lluvia, 235, np.where(gris, alfa_gris, 0)).astype(np.uint8)
     return Image.fromarray(out, "RGBA"), lluvia
 
 
@@ -261,6 +261,61 @@ def _ideam(tiempos, lon, lat):
             v = np.where(dentro, fi._a_dbz(np.array(im), cols, dbz)[r, c], 0).astype(np.uint8)
             capas[t] = v if t not in capas else np.maximum(capas[t], v)
     return capas
+
+
+# temperatura de la cima de la nube (°C) -> color (más fría = nube de tormenta más alta)
+RAMPA_T = [-75, -62, -50, -38, -25, -12, 0]
+RAMPA_C = [(125, 45, 150, 225), (70, 60, 140, 205), (65, 90, 140, 180), (85, 110, 145, 150), (110, 128, 150, 115),
+           (130, 142, 160, 75), (140, 150, 165, 0)]
+
+
+def _capa_ir(tc):
+    out = np.zeros(tc.shape + (4,), np.uint8)
+    v = np.nan_to_num(tc, nan=99.0)
+    for i in range(4):
+        out[..., i] = np.interp(v, RAMPA_T, [c[i] for c in RAMPA_C]).astype(np.uint8)
+    return Image.fromarray(out, "RGBA")
+
+
+def _goes_ir(tiempos, z, tx, ty, corte):
+    """Imagen infrarroja GOES-19 (banda 13) más reciente anterior a cada tiempo, sobre la ventana del clip."""
+    try:
+        import h5py
+        import indice_nubes as inu
+        from fuente_radar import Malla
+        ks = inu.claves("ABI-L2-CMIPF", "M6C13", 2)
+    except Exception as e:
+        log.warning("Satélite para el clip: %s", e)
+        return {}
+    malla = Malla(z, 256, tx[0], tx[-1], ty[0], ty[-1])
+    eleg = {}
+    for t in tiempos:
+        c = [k for k in ks if inu._inicio(k) <= t]
+        if c:
+            eleg[t] = c[-1]
+    dir_c = CACHE / "goes"
+    dir_c.mkdir(parents=True, exist_ok=True)
+    for f in dir_c.glob("*.nc"):
+        if time.time() - f.stat().st_mtime > 3 * 3600:
+            f.unlink(missing_ok=True)
+
+    def leer(k):
+        f = dir_c / k.rsplit("/", 1)[-1]
+        try:
+            if not f.exists():
+                f.write_bytes(urllib.request.urlopen(f"{inu.BUCKET}/{k}", timeout=180).read())
+            with h5py.File(f, "r") as h:
+                iy, ix = inu._indice(malla, h)
+                y0, y1, x0, x1 = int(iy.min()), int(iy.max()) + 1, int(ix.min()), int(ix.max()) + 1
+                v = inu._escalar(h["CMI"], (slice(y0, y1), slice(x0, x1)))[iy - y0, ix - x0] - 273.15
+            return k, _capa_ir(v[corte[1]:corte[3], corte[0]:corte[2]])
+        except Exception as e:
+            log.warning("Satélite %s: %s", k, e)
+            f.unlink(missing_ok=True)
+            return k, None
+    with ThreadPoolExecutor(3) as ex:
+        imgs = dict(ex.map(leer, sorted(set(eleg.values()))))
+    return {t: imgs[k] for t, k in eleg.items() if imgs.get(k) is not None}
 
 
 # --------------------------------------------------------------------------- clip
@@ -355,7 +410,9 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
             arr[m, 3] = 255
             cuadros[i] = (t, arr)
             usa_ideam = True
-    capas = [(t, *_capa_lluvia(arr)) for t, arr in cuadros]
+    ir = _goes_ir([t for t, _ in cuadros], z, tx, ty, corte)
+    usa_sat = bool(ir)
+    capas = [(t, *_capa_lluvia(arr, 0 if usa_sat else 50)) for t, arr in cuadros]
     lat_c = (la0 + la1) / 2
     km2_px = (40075.0 * math.cos(math.radians(lat_c)) / (256 * 2 ** z)) ** 2
     lluvia_km2 = [float((ll & m_dep).sum() * km2_px) for _, _, ll in capas]
@@ -395,7 +452,8 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
 
     # leyenda
     x_sw = 10 + int(medir.textlength("Lluvia", font=f_ley)) + 10
-    lx, ly, lh = 10, ALTO_MAPA - 10 - 46, 46
+    lh = 66 if usa_sat else 46
+    lx, ly = 10, ALTO_MAPA - 10 - lh
     lw = x_sw + 7 * 17 + 22 + int(medir.textlength("rayo", font=f_ley)) + 12
     de.rounded_rectangle((lx, ly, lx + lw, ly + lh), radius=9, fill=(255, 255, 255, 255), outline=(205, 212, 220, 255))
     de.text((lx + 10, ly + 8), "Lluvia", font=f_ley, fill=(30, 35, 45, 255))
@@ -407,6 +465,16 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
     xr = lx + x_sw + 7 * 17 + 14
     _rayo(de, xr, ly + 16, 1.3)
     de.text((xr + 10, ly + 9), "rayo", font=f_ley, fill=(30, 35, 45, 255))
+    if usa_sat:
+        de.text((lx + 10, ly + 44), "Nubes", font=f_ley, fill=(30, 35, 45, 255))
+        ancho_b = 7 * 17
+        for k in range(ancho_b):
+            tk = RAMPA_T[-2] + (RAMPA_T[0] - RAMPA_T[-2]) * k / (ancho_b - 1)
+            c = [float(np.interp(tk, RAMPA_T, [cc[i] for cc in RAMPA_C])) for i in range(4)]
+            a = c[3] / 255
+            de.line([(lx + x_sw + k, ly + 45), (lx + x_sw + k, ly + 56)],
+                    fill=tuple(int(c[i] * a + 255 * (1 - a)) for i in range(3)) + (255,))
+        de.text((lx + x_sw + ancho_b + 6, ly + 44), "altas", font=f_ley_r, fill=(70, 80, 90, 255))
     ocupado.append((lx, ly, lx + lw, ly + lh))
 
     # movimiento de las nubes
@@ -432,7 +500,9 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
 
     # aviso cuando el radar no muestra lluvia en el departamento (fuera de su alcance o aún sin lluvia)
     if lluvia_km2[-1] < 20 and rayos_dep >= 15:
-        txt = ["El radar no muestra lluvia en esta zona;", "los rayos (satélite) indican la tormenta."]
+        txt = ["El radar no muestra lluvia en esta zona;",
+               ("las nubes y los rayos (satélite) indican la tormenta." if usa_sat else
+                "los rayos (satélite) indican la tormenta.")]
         nw = int(max(medir.textlength(t, font=f_chip_r) for t in txt)) + 20
         nx, ny = ANCHO - 10 - nw, 10
         de.rounded_rectangle((nx, ny, nx + nw, ny + 42), radius=9, fill=(255, 248, 225, 255), outline=(220, 190, 120, 255))
@@ -495,7 +565,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         tam -= 1
     dc.text((xt, 8 + (23 - tam) // 2), texto, font=_fuente(tam), fill=(255, 255, 255))
     loc = t_ult.astimezone(ZONA)
-    dc.text((14, 40), f"Lluvia fuerte · {DIAS[loc.weekday()]} {loc.day} de {MESES[loc.month - 1]} · radar y rayos",
+    dc.text((14, 40), f"Lluvia fuerte · {DIAS[loc.weekday()]} {loc.day} de {MESES[loc.month - 1]} · radar, satélite y rayos",
             font=_fuente(14, False), fill=(200, 214, 228))
     wf = ANCHO / len(MARCA)
     for i, cm in enumerate(MARCA):
@@ -517,8 +587,8 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         d.text((xa0, 19), _h12(tiempos_ok[0]), font=f_ley, fill=AZUL)
         fin = _h12(tiempos_ok[-1])
         d.text((xa1 - d.textlength(fin, font=f_ley), 19), fin, font=f_ley, fill=AZUL)
-        fuentes = ("FENALCE · Agroclimatología   |   Radar: Rain-Alarm" + (" e IDEAM" if usa_ideam else "")
-                   + " · Rayos: GOES-19 (NOAA) · Mapa: Esri")
+        fuentes = ("FENALCE   |   Radar: Rain-Alarm" + (" e IDEAM" if usa_ideam else "")
+                   + (" · Satélite y rayos: GOES-19 (NOAA)" if usa_sat else " · Rayos: GOES-19 (NOAA)") + " · Mapa: Esri")
         d.text(((ANCHO - d.textlength(fuentes, font=f_pie)) / 2, 39), fuentes, font=f_pie, fill=(95, 105, 115))
         return im
 
@@ -526,7 +596,8 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
     secuencia = [(True, capas[-1], len(capas) - 1)] + [(False, c, i) for i, c in enumerate(capas)]
     finales = []
     for portada, (t, img_ll, _), idx in secuencia:
-        m = Image.alpha_composite(fondo, img_ll)
+        m = Image.alpha_composite(fondo, ir[t]) if t in ir else fondo
+        m = Image.alpha_composite(m, img_ll)
         m = Image.alpha_composite(m, encima)
         d = ImageDraw.Draw(m)
         if portada:
@@ -552,9 +623,12 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         finales.append(lienzo)
 
     # una sola paleta para todos los cuadros (sin parpadeo de colores)
-    muestra = Image.new("RGB", (ANCHO, ALTO * 3))
+    muestra = Image.new("RGB", (ANCHO, ALTO * 3 + 60), (255, 255, 255))
     for i, f in enumerate((finales[0], finales[len(finales) // 2], finales[1])):
         muestra.paste(f, (0, i * ALTO))
+    dmu = ImageDraw.Draw(muestra)          # los colores de la leyenda siempre entran en la paleta
+    for i, c in enumerate(PALETA + MARCA + [(*cc[:3],) for cc in RAMPA_C]):
+        dmu.rectangle((i * 28, ALTO * 3, i * 28 + 27, ALTO * 3 + 59), fill=c)
     pal = muestra.quantize(colors=200, method=Image.Quantize.MEDIANCUT)
     gif = [f.quantize(palette=pal, dither=Image.Dither.NONE) for f in finales]
     dur = [2600] + [420] * (len(gif) - 2) + [1600]
