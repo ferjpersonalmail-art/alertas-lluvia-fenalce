@@ -31,7 +31,7 @@ ESTADO = BASE / "estado" / "reporte_nubes.json"
 OSPA = "https://www.ideam.gov.co/nuestra-entidad/servicio-de-pronosticos-y-alertas"   # pronosticosyalertas.gov.co tiene el certificado vencido
 PORTAL = "https://agroclima-fenalce-portal.vercel.app/"
 QR_URL = "https://raw.githubusercontent.com/ferjpersonalmail-art/alertas-lluvia-fenalce/main/datos/qr_portal.png"
-COLOR = {"ALTA": ("🔴", "ROJA"), "MEDIA": ("🟡", "AMARILLA"), "BAJA": ("🟢", "VERDE")}
+COLOR = {"ALTA": ("⛈️", "ALTA"), "MEDIA": ("🌦️", "MEDIA"), "BAJA": ("🌤️", "BAJA")}
 ORDEN = {"BAJA": 0, "MEDIA": 1, "ALTA": 2}
 DIR_VIENTO = ["norte", "nororiente", "oriente", "suroriente", "sur", "suroccidente", "occidente", "noroccidente"]
 
@@ -58,9 +58,9 @@ def texto_departamento(r: dict, hora_sat: str, tipo: str = "reporte", prueba: bo
     if prueba:
         L.append("🧪 *MENSAJE DE PRUEBA* (no reenviar)")
     if tipo == "sube":
-        L.append(f"⬆️ *AVISO: SUBE A ALERTA ROJA · {r['departamento'].upper()}*")
+        L.append(f"⬆️⛈️ *SUBE A PROBABILIDAD ALTA DE LLUVIA FUERTE · {r['departamento'].upper()}*")
     else:
-        L.append(f"{emo} *ALERTA {nombre} POR LLUVIAS FUERTES · {r['departamento'].upper()}*")
+        L.append(f"{emo} *PROBABILIDAD {nombre} DE LLUVIA FUERTE · {r['departamento'].upper()}*")
     L.append(f"🕘 Imagen de satélite de las {_hora(dt)} · válido para las próximas 2 horas")
     L.append("")
     frase = {"ALTA": "Es *muy probable* que se presenten lluvias fuertes",
@@ -139,21 +139,21 @@ def texto_nacional(res, hora_sat, prueba=False):
         return f"• *{r['departamento']}*" + (f": {zona}" if zona else "") + (f" ({', '.join(extra)})" if extra else "")
 
     if rojas:
-        L.append("🔴 *ALERTA ROJA* — es muy probable que se presenten lluvias fuertes:")
+        L.append("⛈️ *PROBABILIDAD ALTA* — es muy probable que se presenten lluvias fuertes:")
         L += [linea(r) for r in rojas[:10]]
         L.append("")
     if amar:
-        L.append("🟡 *ALERTA AMARILLA* — podrían presentarse lluvias fuertes:")
+        L.append("🌦️ *PROBABILIDAD MEDIA* — podrían presentarse lluvias fuertes:")
         L += [linea(r) for r in amar[:10]]
         if len(amar) > 10:
             L.append(f"• y {len(amar) - 10} departamentos más")
         L.append("")
     if not rojas and not amar:
-        L += ["🟢 No se prevén lluvias fuertes en el país en las próximas 2 horas.", ""]
+        L += ["🌤️ No se prevén lluvias fuertes en el país en las próximas 2 horas.", ""]
     else:
-        L += ["🟢 En el resto del país no se prevén lluvias fuertes.", ""]
+        L += ["🌤️ En el resto del país no se prevén lluvias fuertes.", ""]
     L += ["*Recomendaciones:*",
-          "• En zonas en rojo, se sugiere suspender aplicaciones de agroquímicos y fertilizantes.",
+          "• En zonas con probabilidad alta, se sugiere suspender aplicaciones de agroquímicos y fertilizantes.",
           "• Revisar drenajes y evitar labores en lotes que se encharcan o cerca de quebradas.",
           "• Si hay rayos, no permanecer en campo abierto ni bajo árboles aislados.", "",
           f"🌐 Radar y estaciones en nuestro *Portal Agroclimático FENALCE* (versión en desarrollo): {PORTAL}",
@@ -215,9 +215,9 @@ def _resumen(hora_sat, res, prueba):
     rojas = [r["departamento"] for r in res if r["probabilidad"] == "ALTA"]
     amar = [r["departamento"] for r in res if r["probabilidad"] == "MEDIA"]
     L = (["🧪 PRUEBA"] if prueba else []) + [f"📋 Reporte de lluvias · {_hora(dt)}"]
-    L.append(f"🔴 Roja: {_lista(rojas) or 'ninguno'}")
-    L.append(f"🟡 Amarilla: {_lista(amar) or 'ninguno'}")
-    L.append("🟢 Resto del país: sin lluvias fuertes previstas.")
+    L.append(f"⛈️ Probabilidad alta: {_lista(rojas) or 'ninguno'}")
+    L.append(f"🌦️ Probabilidad media: {_lista(amar) or 'ninguno'}")
+    L.append("🌤️ Resto del país: sin lluvias fuertes previstas.")
     L.append(f"🌐 Portal: {PORTAL} (código QR adjunto)")
     return "\n".join(L)
 
@@ -257,10 +257,10 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
     if suben and not toca_reporte:
         nombres = _lista([r["departamento"] for r in suben])
         if len(suben) > 1:   # con un solo departamento basta su propio mensaje
-            _ntfy(("🧪 " if prueba else "") + f"⬆️🔴 Suben a alerta ROJA: {nombres}",
-                  f"⬆️ Suben a alerta roja: {nombres}.\nAbajo va el mensaje de cada departamento para reenviar.", 5, ["warning"])
+            _ntfy(("🧪 " if prueba else "") + f"⬆️⛈️ Suben a probabilidad alta: {nombres}",
+                  f"⬆️ Suben a probabilidad alta de lluvia fuerte: {nombres}.\nAbajo va el mensaje de cada departamento para reenviar.", 5, ["warning"])
         for r in sorted(suben, key=lambda r: -r["puntaje"])[:5]:
-            _ntfy(f"⬆️🔴 {r['departamento']}: sube a alerta ROJA", texto_departamento(r, hora_sat, "sube", prueba), 5, ["warning"])
+            _ntfy(f"⬆️⛈️ {r['departamento']}: sube a probabilidad alta", texto_departamento(r, hora_sat, "sube", prueba), 5, ["warning"])
             _enviar_clip(r, prueba)
             enviados += 1
 
@@ -268,11 +268,11 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
     if toca_reporte:
         rojas = [r for r in res if r["probabilidad"] == "ALTA"]
         amar = [r for r in res if r["probabilidad"] == "MEDIA"]
-        _ntfy(("🧪 " if prueba else "") + f"📋 Reporte nacional: {len(rojas)} en roja, {len(amar)} en amarilla",
+        _ntfy(("🧪 " if prueba else "") + f"📋 Reporte nacional: {len(rojas)} con probabilidad alta, {len(amar)} media",
               texto_nacional(res, hora_sat, prueba), 4 if rojas else 3, ["clipboard"], qr=True)
         enviados += 1
         for r in sorted(rojas, key=lambda r: -r["puntaje"])[:5]:
-            _ntfy(("🧪 " if prueba else "") + f"🔴 {r['departamento']}: alerta roja por lluvias",
+            _ntfy(("🧪 " if prueba else "") + f"⛈️ {r['departamento']}: probabilidad alta de lluvia fuerte",
                   texto_departamento(r, hora_sat, "reporte", prueba), 4)
             _enviar_clip(r, prueba)
             enviados += 1

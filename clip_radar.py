@@ -40,7 +40,7 @@ ANCHO, ALTO_CAB, ALTO_MAPA, ALTO_PIE = 640, 66, 500, 58
 ALTO = ALTO_CAB + ALTO_MAPA + ALTO_PIE
 N_CUADROS = 12                       # última hora, cada 5 min
 AZUL = (21, 52, 84)                  # azul FENALCE
-NIVELES = {"ALTA": ((176, 28, 32), "ALERTA ROJA"), "MEDIA": ((190, 110, 0), "ALERTA AMARILLA")}
+NIVELES = {"ALTA": ((246, 165, 113), "PROBABILIDAD ALTA"), "MEDIA": ((244, 196, 108), "PROBABILIDAD MEDIA")}
 PALETA = [(4, 233, 231), (3, 0, 244), (2, 253, 2), (0, 142, 0), (253, 248, 2), (255, 148, 0), (230, 20, 20)]
 MARCA = [(191, 114, 117), (244, 196, 108), (246, 165, 113), (110, 140, 161), (106, 160, 130),
          (233, 226, 208), (103, 178, 183), (176, 199, 144)]      # colores del logo FENALCE
@@ -487,7 +487,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         f_b = _fuente(15)
         bw = dc.textlength(titulo, font=f_b) + 18
         dc.rounded_rectangle((xt, 9, xt + bw, 33), radius=7, fill=color)
-        dc.text((xt + 9, 12), titulo, font=f_b, fill=(255, 255, 255))
+        dc.text((xt + 9, 12), titulo, font=f_b, fill=AZUL)
         xt += bw + 10
     texto = departamento.upper() if nivel in NIVELES else f"LLUVIA · {departamento.upper()}"
     tam = 23
@@ -495,7 +495,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         tam -= 1
     dc.text((xt, 8 + (23 - tam) // 2), texto, font=_fuente(tam), fill=(255, 255, 255))
     loc = t_ult.astimezone(ZONA)
-    dc.text((14, 40), f"{DIAS[loc.weekday()].capitalize()} {loc.day} de {MESES[loc.month - 1]} · radar de lluvia y rayos",
+    dc.text((14, 40), f"Lluvia fuerte · {DIAS[loc.weekday()]} {loc.day} de {MESES[loc.month - 1]} · radar y rayos",
             font=_fuente(14, False), fill=(200, 214, 228))
     wf = ANCHO / len(MARCA)
     for i, cm in enumerate(MARCA):
@@ -540,7 +540,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         x, y, x2, y2 = caja_hora
         d.rounded_rectangle(caja_hora, radius=10, fill=(255, 255, 255, 255), outline=(205, 212, 220, 255))
         d.text((x + 11, y + 8), "ÚLTIMA IMAGEN DEL RADAR" if portada else "ANIMACIÓN · ÚLTIMA HORA", font=f_chip,
-               fill=(*color, 255) if portada else (*AZUL, 255))
+               fill=(*AZUL, 255))
         d.text((x + 10, y + 22), _h12(t), font=f_hora, fill=(20, 25, 35, 255))
         hace = max(0, round((ahora - t).total_seconds() / 60))
         d.text((x + 11, y + 57), f"hace {hace} min" + ("  ·  rayos: 15 min" if portada else ""), font=f_chip_r,
