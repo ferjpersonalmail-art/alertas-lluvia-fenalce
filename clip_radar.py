@@ -202,12 +202,23 @@ def _rayo(d, x, y, s=1.0):
 
 
 def _capa_lluvia(arr, alfa_gris=50):
-    """Radar Rain-Alarm: la nubosidad (gris) queda tenue y la lluvia casi opaca."""
-    r, g, b, a = (arr[..., i].astype(np.int16) for i in range(4))
-    gris = (np.abs(r - g) < 12) & (np.abs(g - b) < 12) & (a > 0)
-    lluvia = (a > 0) & ~gris
-    out = arr.copy()
-    out[..., 3] = np.where(lluvia, 235, np.where(gris, alfa_gris, 0)).astype(np.uint8)
+    """Radar: la nubosidad (gris) queda tenue y la lluvia se repinta con los colores de la leyenda según su tono
+    (al acercar el mapa Rain-Alarm suaviza los bordes y salen tonos pálidos que no corresponden a la leyenda)."""
+    rgb = arr[..., :3].astype(np.int16)
+    a = arr[..., 3]
+    mx, mn = rgb.max(-1), rgb.min(-1)
+    gris = (mx - mn < 30) & (a > 0)
+    lluvia = (a > 40) & ~gris
+    r, g, b = (rgb[..., i].astype(np.float32) for i in range(3))
+    d = np.maximum(mx - mn, 1).astype(np.float32)
+    h = np.where(mx == r, ((g - b) / d) % 6, np.where(mx == g, (b - r) / d + 2, (r - g) / d + 4)) * 60
+    clase = np.select([(h >= 160) & (h < 205), (h >= 205) & (h < 300), (h >= 75) & (h < 160) & (mx > 190),
+                       (h >= 75) & (h < 160), (h >= 45) & (h < 75), (h >= 15) & (h < 45)], [0, 1, 2, 3, 4, 5], 6)
+    out = np.zeros_like(arr)
+    out[lluvia, :3] = np.array(PALETA, np.uint8)[clase[lluvia]]
+    out[lluvia, 3] = 255
+    out[gris, :3] = arr[gris, :3]
+    out[gris, 3] = alfa_gris
     return Image.fromarray(out, "RGBA"), lluvia
 
 
@@ -330,7 +341,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
     for z in range(9, 5, -1):
         x0, y0 = _px(lo0, la1, z)
         x1, y1 = _px(lo1, la0, z)
-        if (x1 - x0) * 1.12 <= ANCHO and (y1 - y0) * 1.12 <= ALTO_MAPA:
+        if (x1 - x0) * 1.06 <= ANCHO and (y1 - y0) * 1.06 <= ALTO_MAPA:
             break
     ox, oy = int((x0 + x1) / 2 - ANCHO / 2), int((y0 + y1) / 2 - ALTO_MAPA / 2)
     tx = range(ox // 256, (ox + ANCHO - 1) // 256 + 1)
@@ -368,8 +379,8 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
     borde = np.zeros((ALTO_MAPA, ANCHO, 4), np.uint8)
     borde[halo] = (255, 255, 255, 170)
     borde[linea] = (*AZUL, 255)
-    encima = Image.alpha_composite(Image.alpha_composite(lineas, Image.fromarray(fuera, "RGBA")),
-                                   Image.fromarray(borde, "RGBA"))
+    capa_fuera = Image.fromarray(fuera, "RGBA")      # aclara el mapa y las nubes fuera del departamento (no la lluvia)
+    encima = Image.alpha_composite(lineas, Image.fromarray(borde, "RGBA"))
 
     # ---- radar: última imagen publicada y la hora anterior, cada 5 min
     cx_t, cy_t = (ox + ANCHO // 2) // 256, (oy + ALTO_MAPA // 2) // 256
@@ -597,6 +608,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
     finales = []
     for portada, (t, img_ll, _), idx in secuencia:
         m = Image.alpha_composite(fondo, ir[t]) if t in ir else fondo
+        m = Image.alpha_composite(m, capa_fuera)
         m = Image.alpha_composite(m, img_ll)
         m = Image.alpha_composite(m, encima)
         d = ImageDraw.Draw(m)
