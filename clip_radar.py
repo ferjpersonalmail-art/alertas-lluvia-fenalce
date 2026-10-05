@@ -42,6 +42,11 @@ N_CUADROS = 12                       # última hora, cada 5 min
 AZUL = (21, 52, 84)                  # azul FENALCE
 NIVELES = {"ALTA": ((176, 28, 32), "ALERTA ROJA"), "MEDIA": ((190, 110, 0), "ALERTA AMARILLA")}
 PALETA = [(4, 233, 231), (3, 0, 244), (2, 253, 2), (0, 142, 0), (253, 248, 2), (255, 148, 0), (230, 20, 20)]
+MARCA = [(191, 114, 117), (244, 196, 108), (246, 165, 113), (110, 140, 161), (106, 160, 130),
+         (233, 226, 208), (103, 178, 183), (176, 199, 144)]      # colores del logo FENALCE
+TEAL, CREMA = (103, 178, 183), (247, 244, 236)
+IDEAM_URL = "https://bart.ideam.gov.co/ospa/radarcol/transparent/{r}/z/{d}/"
+_LISTAS = {}
 CAPITAL = {"25": "11001"}            # Cundinamarca: se marca Bogotá
 DIAS = "lunes martes miércoles jueves viernes sábado domingo".split()
 MESES = "enero febrero marzo abril mayo junio julio agosto septiembre octubre noviembre diciembre".split()
@@ -206,8 +211,60 @@ def _capa_lluvia(arr):
     return Image.fromarray(out, "RGBA"), lluvia
 
 
+def _lista_ideam(radar, dias):
+    """[(hora UTC, url)] de las imágenes transparentes publicadas por el IDEAM (se guarda 3 min)."""
+    import re
+    k = (radar, tuple(dias))
+    if k in _LISTAS and time.time() - _LISTAS[k][0] < 180:
+        return _LISTAS[k][1]
+    out = []
+    for d in dias:
+        url = IDEAM_URL.format(r=radar, d=d)
+        b, _ = _bajar(url)
+        for nom in sorted(set(re.findall(r"([A-Z]{3}\d{10}_z_Transp\.png)", (b or b"").decode("latin-1")))):
+            t = datetime.strptime(nom[3:13], "%y%m%d%H%M").replace(tzinfo=timezone.utc) + timedelta(hours=5)
+            out.append((t, url + nom))
+    out.sort()
+    _LISTAS[k] = (time.time(), out)
+    return out
+
+
+def _ideam(tiempos, lon, lat):
+    """Reflectividad (dBZ, clases de 5) de los radares IDEAM en la ventana, para cada tiempo."""
+    try:
+        import fuente_ideam as fi
+        cols, dbz = fi._paleta()
+    except Exception as e:
+        log.warning("IDEAM para el clip: %s", e)
+        return {}
+    capas = {}
+    dias = sorted({(t - timedelta(hours=5)).strftime("%Y/%m/%d") for t in tiempos})
+    for nombre, (la0, lo0, km) in fi.RADARES.items():
+        hy = km / 111.32
+        hx = hy / np.cos(np.radians(la0))
+        c = ((lon - (lo0 - hx)) / (2 * hx) * 800).astype(int)
+        r = (((la0 + hy) - lat) / (2 * hy) * 800).astype(int)
+        dentro = ((c >= 0) & (c < 800) & (r >= 0) & (r < 800) &
+                  (np.hypot((lat - la0) * 111.32, (lon - lo0) * 111.32 * np.cos(np.radians(la0))) <= km * 0.97))
+        if not dentro.any():
+            continue
+        archivos = _lista_ideam(nombre, dias)
+        r, c = np.clip(r, 0, 799), np.clip(c, 0, 799)
+        for t in tiempos:
+            cand = [a for a in archivos if t - timedelta(minutes=10) <= a[0] <= t + timedelta(minutes=2)]
+            if not cand:
+                continue
+            u = cand[-1][1]
+            im = _imagen(_bajar(u, CACHE / "ideam" / u.rsplit("/", 1)[-1])[0])
+            if im is None:
+                continue
+            v = np.where(dentro, fi._a_dbz(np.array(im), cols, dbz)[r, c], 0).astype(np.uint8)
+            capas[t] = v if t not in capas else np.maximum(capas[t], v)
+    return capas
+
+
 # --------------------------------------------------------------------------- clip
-def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, salida=None):
+def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, salida=None, forzar=False):
     """Genera el GIF. Devuelve {archivo, hora, hace_min, lluvia_km2, rayos} o None si no hay qué mostrar."""
     muns, capital = _municipios(codigo)
     if not muns:
@@ -282,6 +339,22 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         cuadros.append((t, arr))
     if not cuadros:
         return None
+    # radar IDEAM (Munchique, Barrancabermeja): donde tiene dato, manda sobre Rain-Alarm
+    n_px = 256 * 2 ** z
+    lon_v = (ox + np.arange(ANCHO) + 0.5) / n_px * 360 - 180
+    lat_v = np.degrees(np.arctan(np.sinh(np.pi * (1 - 2 * (oy + np.arange(ALTO_MAPA) + 0.5) / n_px))))
+    LON, LAT = np.meshgrid(lon_v, lat_v)
+    ideam = _ideam([t for t, _ in cuadros], LON, LAT)
+    usa_ideam = False
+    for i, (t, arr) in enumerate(cuadros):
+        v = ideam.get(t)
+        if v is not None and (v >= 20).any():
+            arr = arr.copy()
+            m = v >= 20
+            arr[m, :3] = np.array(PALETA, np.uint8)[np.clip((v[m].astype(int) - 20) // 5, 0, 6)]
+            arr[m, 3] = 255
+            cuadros[i] = (t, arr)
+            usa_ideam = True
     capas = [(t, *_capa_lluvia(arr)) for t, arr in cuadros]
     lat_c = (la0 + la1) / 2
     km2_px = (40075.0 * math.cos(math.radians(lat_c)) / (256 * 2 ** z)) ** 2
@@ -298,7 +371,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         rx = ryy = rt = np.zeros(0)
     en_dep = m_dep[ryy.astype(int), rx.astype(int)] if len(rx) else np.zeros(0, bool)
     rayos_dep = int((en_dep & (rt >= ahora.timestamp() - 3600)).sum())
-    if max(lluvia_km2) < 20 and rayos_dep < 15:
+    if not forzar and max(lluvia_km2) < 20 and rayos_dep < 15:
         log.info("Clip %s: sin lluvia en el radar ni rayos que mostrar", codigo)
         return None
 
@@ -400,7 +473,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
                 break
 
     # ---- cabecera
-    cab = Image.new("RGB", (ANCHO, ALTO_CAB), color)
+    cab = Image.new("RGB", (ANCHO, ALTO_CAB), AZUL)
     dc = ImageDraw.Draw(cab)
     logo = None
     try:
@@ -409,33 +482,44 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
     except Exception:
         pass
     lw_ = logo.width if logo else 0
-    texto = f"{titulo} · {departamento.upper()}"
-    tam = 25
-    while tam > 14 and dc.textlength(texto, font=_fuente(tam)) > ANCHO - lw_ - 44:
+    xt = 14
+    if nivel in NIVELES:
+        f_b = _fuente(15)
+        bw = dc.textlength(titulo, font=f_b) + 18
+        dc.rounded_rectangle((xt, 9, xt + bw, 33), radius=7, fill=color)
+        dc.text((xt + 9, 12), titulo, font=f_b, fill=(255, 255, 255))
+        xt += bw + 10
+    texto = departamento.upper() if nivel in NIVELES else f"LLUVIA · {departamento.upper()}"
+    tam = 23
+    while tam > 13 and dc.textlength(texto, font=_fuente(tam)) > ANCHO - lw_ - 30 - xt:
         tam -= 1
-    dc.text((16, 8), texto, font=_fuente(tam), fill=(255, 255, 255))
+    dc.text((xt, 8 + (23 - tam) // 2), texto, font=_fuente(tam), fill=(255, 255, 255))
     loc = t_ult.astimezone(ZONA)
-    dc.text((16, 41), f"{DIAS[loc.weekday()].capitalize()} {loc.day} de {MESES[loc.month - 1]} · radar de lluvia y rayos",
-            font=_fuente(14, False), fill=(240, 242, 245))
+    dc.text((14, 40), f"{DIAS[loc.weekday()].capitalize()} {loc.day} de {MESES[loc.month - 1]} · radar de lluvia y rayos",
+            font=_fuente(14, False), fill=(200, 214, 228))
+    wf = ANCHO / len(MARCA)
+    for i, cm in enumerate(MARCA):
+        dc.rectangle((round(i * wf), ALTO_CAB - 5, round((i + 1) * wf), ALTO_CAB), fill=cm)
     if logo:
         cab.paste(logo, (ANCHO - lw_ - 14, (ALTO_CAB - logo.height) // 2), logo)
 
     tiempos_ok = [t for t, _, _ in capas]
 
     def pie(idx):
-        im = Image.new("RGB", (ANCHO, ALTO_PIE), (246, 248, 250))
+        im = Image.new("RGB", (ANCHO, ALTO_PIE), CREMA)
         d = ImageDraw.Draw(im)
         n, xa0, xa1, sep = len(tiempos_ok), 16, ANCHO - 16, 3
         w = (xa1 - xa0 - sep * (n - 1)) / n
         for k in range(n):
             xa = xa0 + k * (w + sep)
-            col = color if k == idx else ((150, 165, 180) if k < idx else (215, 222, 230))
+            col = AZUL if k == idx else (TEAL if k < idx else (226, 220, 204))
             d.rectangle((xa, 8, xa + w, 15), fill=col)
-        d.text((xa0, 19), _h12(tiempos_ok[0]), font=f_ley, fill=(80, 90, 100))
+        d.text((xa0, 19), _h12(tiempos_ok[0]), font=f_ley, fill=AZUL)
         fin = _h12(tiempos_ok[-1])
-        d.text((xa1 - d.textlength(fin, font=f_ley), 19), fin, font=f_ley, fill=(80, 90, 100))
-        fuentes = "FENALCE · Agroclimatología   |   Radar: Rain-Alarm · Rayos: GOES-19 (NOAA) · Mapa: Esri"
-        d.text(((ANCHO - d.textlength(fuentes, font=f_pie)) / 2, 39), fuentes, font=f_pie, fill=(110, 120, 130))
+        d.text((xa1 - d.textlength(fin, font=f_ley), 19), fin, font=f_ley, fill=AZUL)
+        fuentes = ("FENALCE · Agroclimatología   |   Radar: Rain-Alarm" + (" e IDEAM" if usa_ideam else "")
+                   + " · Rayos: GOES-19 (NOAA) · Mapa: Esri")
+        d.text(((ANCHO - d.textlength(fuentes, font=f_pie)) / 2, 39), fuentes, font=f_pie, fill=(95, 105, 115))
         return im
 
     # ---- cuadros: portada (imagen más reciente) + animación de la última hora

@@ -181,6 +181,9 @@ def puntaje(s, codigo=""):
     # Validación 25 sep–1 oct contra estaciones IDEAM: con ≥50 rayos la roja acierta 42 % (vs 30 %)
     if nivel == "ALTA" and s["rayos"] < 50:
         nivel = "MEDIA"
+    # Validación 2–3 oct: la amarilla sin rayos casi no acierta (7 %, igual que sin aviso)
+    if nivel == "MEDIA" and s["rayos"] < 5:
+        nivel = "BAJA"
     return p, nivel, razones
 
 
