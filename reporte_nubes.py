@@ -26,7 +26,8 @@ from pathlib import Path
 log = logging.getLogger("reporte")
 BASE = Path(__file__).resolve().parent
 ZONA = timezone(timedelta(hours=-5))
-HORAS_REPORTE = (5, 13, 19)   # 5 a. m., 1 p. m. y 7 p. m.
+HORAS_REPORTE = ()   # sin reportes a hora fija: todo se envía por evento (antes 5 a. m., 1 p. m. y 7 p. m.)
+BOGOTA_KM2_EVENTO = 10   # km² con lluvia en la zona urbana de Bogotá para considerar que "empezó a llover"
 ESTADO = BASE / "estado" / "reporte_nubes.json"
 OSPA = "https://www.ideam.gov.co/nuestra-entidad/servicio-de-pronosticos-y-alertas"   # pronosticosyalertas.gov.co tiene el certificado vencido
 PORTAL = "https://agroclima-fenalce-portal.vercel.app/"
@@ -249,6 +250,42 @@ def _resumen(hora_sat, res, prueba):
 
 
 # --------------------------------------------------------------------------- lógica
+def _eventos(res, est, avisado, hoy, prueba):
+    """Mensajes por evento (no a hora fija). Cada uno sale cuando el evento EMPIEZA y como máximo una vez
+    por media jornada (mañana / tarde-noche):
+      • Nacional: tormentas fuertes (probabilidad alta) en 2 o más regiones a la vez.
+      • Bogotá: empieza a llover en la zona urbana (radar)."""
+    n = 0
+    try:
+        import reporte_regional
+        regiones = {reporte_regional.POR_DEPTO.get(r["codigo"], "andina") for r in res if r["probabilidad"] == "ALTA"}
+        extensa = len(regiones) >= 2
+        if extensa and not est.get("nacional_extensa") and avisado.get("_nacional") != hoy:
+            txt = reporte_regional.generar(res, prueba)
+            _ntfy(("🧪 " if prueba else "") + "📋 Reporte nacional: tormentas en varias regiones", txt, 4, ["clipboard"])
+            _enviar_clip({"codigo": "CO", "departamento": "Colombia", "llueve_en": [], "probabilidad": None,
+                          "flechas": reporte_regional.flechas()}, prueba)
+            if not prueba:
+                avisado["_nacional"] = hoy
+            n += 1
+        est["nacional_extensa"] = extensa
+    except Exception as e:
+        log.warning("Evento nacional: %s", e)
+    try:
+        import lluvia_bogota
+        eb = lluvia_bogota.calcular()
+        llueve = bool(eb.get("bogota")) and eb["bogota"]["km2"] >= BOGOTA_KM2_EVENTO
+        if llueve and not est.get("bogota_llueve") and avisado.get("_bogota") != hoy:
+            lluvia_bogota.enviar(prueba, e=eb)
+            if not prueba:
+                avisado["_bogota"] = hoy
+            n += 1
+        est["bogota_llueve"] = llueve
+    except Exception as e:
+        log.warning("Evento Bogotá: %s", e)
+    return n
+
+
 def ejecutar(forzar=False, prueba=False, ahora=None):
     ahora = (ahora or datetime.now(timezone.utc)).astimezone(ZONA)
     est = json.loads(ESTADO.read_text(encoding="utf-8")) if ESTADO.exists() else {}
@@ -302,7 +339,11 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
             _enviar_clip(r, prueba, temas)
             enviados += 1
 
-    # 2) reporte programado: un mensaje nacional (para el Canal) y los departamentos en roja (para sus grupos)
+    # 2) eventos sin hora fija: reporte nacional y Bogotá (máximo 2 al día cada uno: mañana y tarde/noche)
+    if not toca_reporte:
+        enviados += _eventos(res, est, avisado, hoy, prueba)
+
+    # 3) reporte forzado a mano (--forzar): mensaje nacional y los departamentos en roja
     if toca_reporte:
         rojas = [r for r in res if r["probabilidad"] == "ALTA"]
         amar = [r for r in res if r["probabilidad"] == "MEDIA"]

@@ -127,9 +127,9 @@ def rn_lista(xs):
     return xs[0] if len(xs) == 1 else ", ".join(xs[:-1]) + " y " + xs[-1]
 
 
-def enviar(prueba=False):
+def enviar(prueba=False, e=None):
     import reporte_nubes as rn
-    e = calcular()
+    e = e or calcular()
     rn._ntfy(("🧪 " if prueba else "") + "🏙️ Bogotá: condiciones ahora", texto(e, prueba), 3, tema=TEMA_BOGOTA)
     ind = e.get("indice") or {}
     r = {"codigo": "BOG", "departamento": "Bogotá", "llueve_en": [], "movimiento": ind.get("movimiento"),
