@@ -103,15 +103,8 @@ def texto_departamento(r: dict, hora_sat: str, tipo: str = "reporte", prueba: bo
     else:
         L.append("⚡ Sin actividad eléctrica por ahora.")
 
-    L.append("")
-    L.append("*Recomendaciones:*")
-    if r["probabilidad"] == "ALTA":
-        L += ["• Se sugiere suspender aplicaciones de agroquímicos y fertilizantes en la zona.",
-              "• Revisar drenajes y evitar labores en lotes que se encharcan o cerca de quebradas.",
-              "• Si hay rayos, no permanecer en campo abierto ni bajo árboles aislados."]
-    else:
-        L += ["• Se sugiere programar las labores de campo fuera de la franja de lluvia.",
-              "• Estar atentos a la evolución del tiempo en las próximas horas."]
+    if r["rayos"] >= 5:   # seguridad de las personas (no es recomendación agronómica)
+        L.append("🛑 Con rayos, evite permanecer en campo abierto o bajo árboles aislados.")
     L.append("")
     L.append(f"🌐 Siga el radar, las estaciones y el clima en nuestro *Portal Agroclimático FENALCE* (versión en desarrollo): {PORTAL}")
     L.append(f"📢 Consulte también los avisos oficiales de la *Oficina del Servicio de Pronósticos y Alertas (OSPA) del IDEAM*: {OSPA}")
@@ -152,11 +145,9 @@ def texto_nacional(res, hora_sat, prueba=False):
         L += ["🌤️ No se prevén lluvias fuertes en el país en las próximas 2 horas.", ""]
     else:
         L += ["🌤️ En el resto del país no se prevén lluvias fuertes.", ""]
-    L += ["*Recomendaciones:*",
-          "• En zonas con probabilidad alta, se sugiere suspender aplicaciones de agroquímicos y fertilizantes.",
-          "• Revisar drenajes y evitar labores en lotes que se encharcan o cerca de quebradas.",
-          "• Si hay rayos, no permanecer en campo abierto ni bajo árboles aislados.", "",
-          f"🌐 Radar y estaciones en nuestro *Portal Agroclimático FENALCE* (versión en desarrollo): {PORTAL}",
+    if any(r["rayos"] >= 5 for r in rojas + amar):
+        L += ["🛑 Donde hay rayos, evite permanecer en campo abierto o bajo árboles aislados.", ""]
+    L += [f"🌐 Radar y estaciones en nuestro *Portal Agroclimático FENALCE* (versión en desarrollo): {PORTAL}",
           f"📢 Avisos oficiales de la *OSPA – IDEAM*: {OSPA}",
           "_FENALCE · Equipo de Agroclimatología. Estimación con imágenes de satélite; puede haber diferencias con lo que ocurra en cada finca._"]
     return "\n".join(L)
