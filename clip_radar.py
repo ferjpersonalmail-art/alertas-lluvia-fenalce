@@ -661,7 +661,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
 
     if codigo == "CO":
         try:
-            cult = json.loads((BASE / "datos" / "cultivos.json").read_text(encoding="utf-8"))
+            cult = {}   # íconos de cultivos desactivados por ahora (datos/cultivos.json)
         except Exception:
             cult = {}
         tipos_usados, iconos_cajas = [], []
@@ -679,7 +679,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
                 iconos_cajas.append((xi_, yi_, xi_ + 24, yi_ + 24))
                 if tp not in tipos_usados:
                     tipos_usados.append(tp)
-        f_reg = _fuente(15)
+        f_reg = _fuente(11)
         for nom_r, xr_, yr_, col_r in (regiones_lbl if "regiones_lbl" in dir() else []):
             bb_ = medir.textbbox((0, 0), nom_r, font=f_reg, stroke_width=3)
             tw_, th_ = bb_[2] - bb_[0], bb_[3] - bb_[1]

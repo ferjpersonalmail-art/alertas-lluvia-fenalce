@@ -157,6 +157,7 @@ def texto_nacional(res, hora_sat, prueba=False):
 
 # --------------------------------------------------------------------------- envío
 TEMA = os.environ.get("NTFY_TOPIC") or "fenalce-lluvia-2ifz77fnqg"
+TEMA_MATINAL = "fenalce-matinal-2ifz77"   # reporte de la mañana por departamentos (el puente lo publica en los grupos)
 
 
 def tema_depto(r) -> str:
@@ -287,6 +288,12 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
               txt_nac, 4 if rojas else 3, ["clipboard"], qr=True)
         _enviar_clip({"codigo": "CO", "departamento": "Colombia", "llueve_en": [], "probabilidad": None}, prueba)
         enviados += 1
+        if ahora.hour == 5:   # en la madrugada: dónde llueve y condiciones de cada departamento de nuestras zonas
+            try:
+                import lluvia_municipios
+                lluvia_municipios.enviar(prueba, tema=TEMA_MATINAL, clip_nacional=False)
+            except Exception as e:
+                log.warning("Reporte de la mañana por departamentos: %s", e)
         for i, r in enumerate(sorted(rojas, key=lambda r: -r["puntaje"])):
             temas = [tema_depto(r)] + ([None] if i < 5 else [])
             txt = texto_departamento(r, hora_sat, "reporte", prueba)

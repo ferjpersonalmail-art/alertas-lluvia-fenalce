@@ -116,7 +116,7 @@ def texto_condiciones(c, por_dep, r, prueba=False):
     return "\n".join(L)
 
 
-def enviar(prueba=False, tema=None):
+def enviar(prueba=False, tema=None, clip_nacional=True):
     """Mensaje de municipios con lluvia + clip del departamento con más lluvia en nuestras zonas."""
     import reporte_nubes as rn
     por_dep = calcular()
@@ -125,7 +125,8 @@ def enviar(prueba=False, tema=None):
     import json
     rn._ntfy(("🧪 " if prueba else "") + "☔ Dónde está lloviendo ahora", texto(por_dep, prueba), 3, tema=tema)
     # 1) clip de todo el país
-    rn._enviar_clip({"codigo": "CO", "departamento": "Colombia", "llueve_en": [], "probabilidad": None}, prueba, [tema])
+    if clip_nacional:
+        rn._enviar_clip({"codigo": "CO", "departamento": "Colombia", "llueve_en": [], "probabilidad": None}, prueba, [tema])
     # 2) un mensaje y un clip por cada departamento de nuestras zonas donde está lloviendo
     try:
         indice = {x["codigo"]: x for x in json.loads((BASE / "salida" / "indice_nubes.json").read_text(encoding="utf-8"))["departamentos"]}
