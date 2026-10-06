@@ -265,8 +265,9 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
 
     # 1) subidas a ROJA, a cualquier hora (fuera de los reportes programados)
     rojo_desde = est.get("rojo_desde", {})
-    # máximo 1 aviso por departamento al día (hora Colombia), sea el inmediato o el del reporte programado
-    hoy = f"{ahora:%Y-%m-%d}"
+    # máximo 2 avisos por departamento al día (hora Colombia): uno en la mañana (antes de las 12 m.) y otro en la
+    # tarde/noche, sea el inmediato o el del reporte programado. "hoy" es la media jornada actual.
+    hoy = f"{ahora:%Y-%m-%d}-" + ("manana" if ahora.hour < 12 else "tarde")
     avisado = {c: d for c, d in est.get("avisado", {}).items() if d == hoy}
     est["avisado"] = avisado
     suben = []
