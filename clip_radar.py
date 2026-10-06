@@ -689,7 +689,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
                 if tp not in tipos_usados:
                     tipos_usados.append(tp)
         f_reg = _fuente(11)
-        for nom_r, xr_, yr_, col_r in (regiones_lbl if "regiones_lbl" in dir() else []):
+        for nom_r, xr_, yr_, col_r in []:   # nombres de región desactivados (solo se ven los colores)
             bb_ = medir.textbbox((0, 0), nom_r, font=f_reg, stroke_width=3)
             tw_, th_ = bb_[2] - bb_[0], bb_[3] - bb_[1]
             for dy_ in (0,):   # centrado dentro de la región
