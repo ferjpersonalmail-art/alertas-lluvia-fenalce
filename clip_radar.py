@@ -801,9 +801,18 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         d.text((xa0, 19), _h12(tiempos_ok[0]), font=f_ley, fill=AZUL)
         fin = _h12(tiempos_ok[-1])
         d.text((xa1 - d.textlength(fin, font=f_ley), 19), fin, font=f_ley, fill=AZUL)
-        fuentes = ("FENALCE   |   Radar: Rain-Alarm" + (" e IDEAM" if usa_ideam else "")
-                   + (" · Satélite y rayos: GOES-19 (NOAA)" if usa_sat else " · Rayos: GOES-19 (NOAA)") + " · Mapa: Esri")
-        d.text(((ANCHO - d.textlength(fuentes, font=f_pie)) / 2, 39), fuentes, font=f_pie, fill=(95, 105, 115))
+        autores = "FENALCE · Juan Gómez · Jhon Valencia"
+        fuentes = ("Radar: Rain-Alarm" + (" e IDEAM" if usa_ideam else "")
+                   + (" · Satélite y rayos: GOES-19" if usa_sat else " · Rayos: GOES-19") + " · Mapa: Esri")
+        fa = _fuente(11)
+        tam_f = 10
+        while tam_f > 7 and d.textlength(autores, font=fa) + 16 + d.textlength(fuentes, font=_fuente(tam_f, False)) > ANCHO - 24:
+            tam_f -= 1
+        ff = _fuente(tam_f, False)
+        ancho_t = d.textlength(autores, font=fa) + 16 + d.textlength(fuentes, font=ff)
+        x0_ = (ANCHO - ancho_t) / 2
+        d.text((x0_, 39), autores, font=fa, fill=AZUL)
+        d.text((x0_ + d.textlength(autores, font=fa) + 16, 40), fuentes, font=ff, fill=(95, 105, 115))
         return im
 
     # ---- cuadros: portada (imagen más reciente) + animación de la última hora
