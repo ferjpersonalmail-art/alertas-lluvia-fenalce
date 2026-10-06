@@ -294,6 +294,11 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
                 lluvia_municipios.enviar(prueba, tema=TEMA_MATINAL, clip_nacional=False)
             except Exception as e:
                 log.warning("Reporte de la mañana por departamentos: %s", e)
+        try:                  # Bogotá y la Sabana, en cada reporte programado
+            import lluvia_bogota
+            lluvia_bogota.enviar(prueba)
+        except Exception as e:
+            log.warning("Reporte de Bogotá: %s", e)
         for i, r in enumerate(sorted(rojas, key=lambda r: -r["puntaje"])):
             temas = [tema_depto(r)] + ([None] if i < 5 else [])
             txt = texto_departamento(r, hora_sat, "reporte", prueba)

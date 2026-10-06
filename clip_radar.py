@@ -124,18 +124,23 @@ def _mosaico(teselas, tx, ty, corte):
     return img.crop(corte)
 
 
+BOGOTA_SABANA = {"11001", "25754", "25175", "25214", "25286", "25473", "25430", "25269", "25377", "25126", "25899",
+                 "25740", "25817", "25758", "25799", "25785", "25295", "25099", "25769", "25260"}
+CAJA_BOG = (-74.32, 4.45, -73.95, 5.05)   # sin Sumapaz
+
+
 def _municipios(codigo):
     global _GEO
     if _GEO is None:
         _GEO = json.loads((BASE / "datos" / "municipios_mgn2018.geojson").read_text(encoding="utf-8"))["features"]
     cod = str(codigo).zfill(2)
-    cod_cap = CAPITAL.get(cod, cod + "001")
+    cod_cap = "11001" if cod == "BOG" else CAPITAL.get(cod, cod + "001")
     muns, capital = [], None
     for f in _GEO:
         p, g = f["properties"], f["geometry"]
         polys = g["coordinates"] if g["type"] == "MultiPolygon" else [g["coordinates"]]
         m = (str(p.get("MPIO_CCNCT")), p.get("MPIO_CNMBR", ""), [[(c[0], c[1]) for c in poly[0]] for poly in polys])
-        if cod == "CO" or str(p.get("DPTO_CCDGO")).zfill(2) == cod:
+        if cod == "CO" or str(p.get("DPTO_CCDGO")).zfill(2) == cod or (cod == "BOG" and m[0] in BOGOTA_SABANA):
             muns.append(m)
         if m[0] == cod_cap:
             capital = m
@@ -438,6 +443,8 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
     pts = [c for _, _, an in muns for r in an for c in r]
     lo0, lo1 = min(p[0] for p in pts), max(p[0] for p in pts)
     la0, la1 = min(p[1] for p in pts), max(p[1] for p in pts)
+    if codigo == "BOG":
+        lo0, la0, lo1, la1 = CAJA_BOG
     for z in range(9, 4, -1):
         x0, y0 = _px(lo0, la1, z)
         x1, y1 = _px(lo1, la0, z)
@@ -727,7 +734,8 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         if c:
             marcas.append((_titulo(nom) if str(nom).isupper() else str(nom), c[1], "llueve"))
     if codigo != "CO" and capital and capital[1].casefold() not in {m[0].casefold() for m in marcas}:
-        c = _centro(capital[2])
+        # Bogotá: el centroide cae en Sumapaz; se marca la zona urbana
+        c = (-74.08, 4.63) if capital[0] == "11001" else _centro(capital[2])
         if c:
             marcas.append((_titulo(capital[1]), a_px(*c), "capital"))
 
