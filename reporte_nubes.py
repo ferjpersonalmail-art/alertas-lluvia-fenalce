@@ -35,6 +35,9 @@ FIRMA = ("_Estimación con radar e imágenes de satélite; puede haber diferenci
          "*FENALCE · Equipo de Agroclimatología*\nJuan Gómez · Jhon Valencia")
 COLOR = {"ALTA": ("⛈️", "ALTA"), "MEDIA": ("🌦️", "MEDIA"), "BAJA": ("🌤️", "BAJA")}
 ORDEN = {"BAJA": 0, "MEDIA": 1, "ALTA": 2}
+# Avisos por departamento solo donde FENALCE tiene mesa técnica (el reporte nacional sí cubre todo el país).
+# Tolima, Santander, Córdoba, Bolívar y Cundinamarca. Para agregar uno, poner su código DANE aquí.
+PRESENCIA = {"73", "68", "23", "13", "25"}
 DIR_VIENTO = ["norte", "nororiente", "oriente", "suroriente", "sur", "suroccidente", "occidente", "noroccidente"]
 
 
@@ -267,7 +270,8 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
         antes = previos.get(r["codigo"], "BAJA")
         ult = rojo_desde.get(r["codigo"])
         reciente = ult and (ahora - datetime.fromisoformat(ult)).total_seconds() < 6 * 3600
-        if r["probabilidad"] == "ALTA" and ORDEN[antes] < ORDEN["ALTA"] and not reciente and r["rayos"] >= 20:
+        if (r["probabilidad"] == "ALTA" and ORDEN[antes] < ORDEN["ALTA"] and not reciente and r["rayos"] >= 20
+                and r["codigo"] in PRESENCIA):
             suben.append(r)
     for r in res:
         if r["probabilidad"] == "ALTA":
@@ -322,7 +326,7 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
             lluvia_bogota.enviar(prueba)
         except Exception as e:
             log.warning("Reporte de Bogotá: %s", e)
-        for i, r in enumerate(sorted(rojas, key=lambda r: -r["puntaje"])):
+        for i, r in enumerate(sorted([r for r in rojas if r["codigo"] in PRESENCIA], key=lambda r: -r["puntaje"])):
             temas = [tema_depto(r)] + ([None] if i < 5 else [])
             txt = texto_departamento(r, hora_sat, "reporte", prueba)
             for tm in temas:

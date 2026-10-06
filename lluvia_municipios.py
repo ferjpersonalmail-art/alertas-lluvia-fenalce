@@ -19,7 +19,7 @@ import motor_alertas as ma
 BASE = Path(__file__).resolve().parent
 ZONA = timezone(timedelta(hours=-5))
 # departamentos con mesa técnica y sus vecinos (códigos DANE)
-ZONAS = {"73": "Tolima", "68": "Santander", "23": "Córdoba", "13": "Bolívar", "86": "Putumayo", "25": "Cundinamarca"}
+ZONAS = {"73": "Tolima", "68": "Santander", "23": "Córdoba", "13": "Bolívar", "25": "Cundinamarca"}
 VECINOS = ["41", "17", "15", "54", "05", "70", "19", "52", "18", "50", "20", "47", "11", "63", "66", "76"]
 EMO = {1: "🔵", 2: "🟢", 3: "🟠"}
 NOMBRE_INT = {1: "débil", 2: "moderada", 3: "fuerte"}
@@ -71,7 +71,7 @@ def texto(por_dep, prueba=False):
         return f"*{nombre}*: {txt}" + (f" y {len(muns) - n} más" if len(muns) > n else "")
     nuestras = [c for c in ZONAS if c in por_dep]
     L.append("📍 *En nuestras zonas*")
-    L += [linea(c) for c in nuestras] or ["Sin lluvia en este momento en Tolima, Santander, Córdoba, Bolívar, Putumayo y Cundinamarca."]
+    L += [linea(c) for c in nuestras] or ["Sin lluvia en este momento en Tolima, Santander, Córdoba, Bolívar y Cundinamarca."]
     secas = [ZONAS[c] for c in ZONAS if c not in por_dep]
     if nuestras and secas:
         L.append(f"Sin lluvia: {', '.join(secas)}.")
