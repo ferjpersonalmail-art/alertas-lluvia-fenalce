@@ -277,8 +277,15 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
     if toca_reporte:
         rojas = [r for r in res if r["probabilidad"] == "ALTA"]
         amar = [r for r in res if r["probabilidad"] == "MEDIA"]
+        try:   # reporte por regiones (Andina, Caribe, Pacífica, Orinoquía, Amazonía)
+            import reporte_regional
+            txt_nac = reporte_regional.generar(res, prueba)
+        except Exception as e:
+            log.warning("Reporte regional: %s", e)
+            txt_nac = texto_nacional(res, hora_sat, prueba)
         _ntfy(("🧪 " if prueba else "") + f"📋 Reporte nacional: {len(rojas)} con probabilidad alta, {len(amar)} media",
-              texto_nacional(res, hora_sat, prueba), 4 if rojas else 3, ["clipboard"], qr=True)
+              txt_nac, 4 if rojas else 3, ["clipboard"], qr=True)
+        _enviar_clip({"codigo": "CO", "departamento": "Colombia", "llueve_en": [], "probabilidad": None}, prueba)
         enviados += 1
         for i, r in enumerate(sorted(rojas, key=lambda r: -r["puntaje"])):
             temas = [tema_depto(r)] + ([None] if i < 5 else [])

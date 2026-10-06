@@ -1,0 +1,205 @@
+"""
+reporte_regional.py — Reporte nacional explicado por regiones naturales (Andina, Caribe, Pacífica,
+Orinoquía y Amazonía): dónde llueve (radar y satélite), cómo están las nubes, rayos, hacia dónde se
+mueven y qué departamentos tienen probabilidad de lluvia fuerte.
+
+   python reporte_regional.py      → imprime el mensaje
+"""
+from __future__ import annotations
+
+import json
+import logging
+from collections import Counter
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+import numpy as np
+import yaml
+
+import analisis as an
+import motor_alertas as ma
+
+log = logging.getLogger("regional")
+BASE = Path(__file__).resolve().parent
+ZONA = timezone(timedelta(hours=-5))
+REGIONES = [("andina", "Andina", "🏔️"), ("caribe", "Caribe", "🏖️"), ("pacifica", "Pacífica", "🌊"),
+            ("orinoquia", "Orinoquía", "🌾"), ("amazonia", "Amazonía", "🌳")]
+POR_DEPTO = {**{c: "caribe" for c in "08 13 20 23 44 47 70 88".split()},
+             "27": "pacifica",
+             **{c: "orinoquia" for c in "50 81 85 99".split()},
+             **{c: "amazonia" for c in "18 86 91 94 95 97".split()}}
+# municipios del litoral Pacífico (Valle, Cauca, Nariño) y de Urabá antioqueño (Caribe)
+POR_MUNICIPIO = {**{m: "pacifica" for m in "76109 19318 19418 19809 52079 52250 52390 52427 52473 52490 52520 52621 52696 52835".split()},
+                 **{m: "caribe" for m in "05045 05051 05147 05172 05490 05659 05665 05837".split()}}
+RUMBOS = ["norte", "nororiente", "oriente", "suroriente", "sur", "suroccidente", "occidente", "noroccidente"]
+_CACHE = {}
+
+
+def region_de(cod_mun: str) -> str:
+    cod_mun = str(cod_mun).zfill(5)
+    return POR_MUNICIPIO.get(cod_mun) or POR_DEPTO.get(cod_mun[:2], "andina")
+
+
+def _territorio():
+    if "t" not in _CACHE:
+        cfg = yaml.safe_load(open(BASE / "config.yaml", encoding="utf-8"))
+        act = ma.departamentos_activos(cfg)
+        malla = ma.construir_malla(cfg, sorted(act))
+        t = an.Territorio(BASE / cfg["territorio"]["geojson"], malla, cfg["territorio"]["campos"])
+        ids = {k: i + 1 for i, (k, _, _) in enumerate(REGIONES)}
+        reg_mun = np.array([0] + [ids[region_de(c)] for c in t.mun_codigo[1:]], np.int8)
+        _CACHE.update(t=t, malla=malla, reg=reg_mun[t.etiquetas], reg_mun=reg_mun, ids=ids)
+    return _CACHE
+
+
+def _campos(malla):
+    """Radar (clases 0-3), lluvia satélite (mm/h), temperatura de nubes (°C) y rayos (lon, lat)."""
+    import fuente_rainalarm
+    import indice_nubes as inu
+    out = {"radar": None, "sat": None, "bt": None, "rayos": np.zeros((0, 4))}
+    try:
+        out["radar"] = fuente_rainalarm.lluvia_actual(malla)
+    except Exception as e:
+        log.warning("radar: %s", e)
+    try:
+        out["sat"] = np.nan_to_num(inu.leer_campo(inu.claves("ABI-L2-RRQPEF", "", 1)[-1], "RRQPE", malla), nan=0)
+    except Exception as e:
+        log.warning("satélite lluvia: %s", e)
+    try:
+        out["bt"] = inu.leer_campo(inu.claves("ABI-L2-CMIPF", "M6C13", 1)[-1], "CMI", malla) - 273.15
+    except Exception as e:
+        log.warning("satélite nubes: %s", e)
+    try:
+        import rayos_glm
+        out["rayos"] = rayos_glm.descargar_rayos(15)
+    except Exception as e:
+        log.warning("rayos: %s", e)
+    return out
+
+
+def calcular(res: list[dict]):
+    """Estadísticas por región. `res` = departamentos del índice de nubes (indice_nubes.calcular)."""
+    c = _territorio()
+    t, malla, reg, ids = c["t"], c["malla"], c["reg"], c["ids"]
+    f = _campos(malla)
+    km2 = t.area_px
+    est = {}
+    for k, nombre, emo in REGIONES:
+        m = reg == ids[k]
+        e = {"nombre": nombre, "emo": emo, "radar_km2": 0, "radar_fuerte_km2": 0, "muns": [], "sat_km2": 0,
+             "sat_fuerte_km2": 0, "frio40": 0, "frio60": 0, "rayos": 0}
+        if f["radar"] is not None:
+            ll = m & (f["radar"] >= 1)
+            e["radar_km2"] = float(km2[ll].sum())
+            e["radar_fuerte_km2"] = float(km2[m & (f["radar"] >= 3)].sum())
+            a = np.bincount(t.etiquetas[ll], weights=km2[ll] * f["radar"][ll], minlength=t.n_mun + 1)
+            e["muns"] = [t.mun_nombre[i] for i in np.argsort(-a) if a[i] >= 8 and i > 0]
+        if f["sat"] is not None:
+            e["sat_km2"] = float(km2[m & (f["sat"] >= 1)].sum())
+            e["sat_fuerte_km2"] = float(km2[m & (f["sat"] >= 10)].sum())
+        if f["bt"] is not None:
+            e["frio40"] = float(km2[m & (f["bt"] < -40)].sum())
+            e["frio60"] = float(km2[m & (f["bt"] < -60)].sum())
+        est[k] = e
+    if len(f["rayos"]):
+        px, py = malla.a_pixel(f["rayos"][:, 0], f["rayos"][:, 1])
+        ok = (px >= 0) & (px < malla.ancho) & (py >= 0) & (py < malla.alto)
+        r = reg[py[ok].astype(int), px[ok].astype(int)]
+        for k, _, _ in REGIONES:
+            est[k]["rayos"] = int((r == ids[k]).sum())
+    # departamentos del índice: probabilidad y movimiento
+    for d in res:
+        k = POR_DEPTO.get(d["codigo"], "andina")
+        if d["codigo"] in ("76", "19", "52") and (d.get("municipios") or []):
+            pass
+        e = est[k]
+        e.setdefault("alta", []); e.setdefault("media", []); e.setdefault("mov", []); e.setdefault("viento", [])
+        if d["probabilidad"] == "ALTA":
+            e["alta"].append(d["departamento"])
+        elif d["probabilidad"] == "MEDIA":
+            e["media"].append(d["departamento"])
+        if d.get("movimiento"):
+            e["mov"].append(d["movimiento"]["hacia"])
+        v = d.get("viento") or {}
+        if v.get("alto_dir") is not None and (v.get("alto_kmh") or 0) >= 3:
+            e["viento"].append((v["alto_dir"] + 180) % 360)
+    return est
+
+
+def _rumbo_medio(grados):
+    s = sum(np.sin(np.radians(g)) for g in grados); c = sum(np.cos(np.radians(g)) for g in grados)
+    g = np.degrees(np.arctan2(s, c)) % 360
+    return RUMBOS[int((g + 22.5) // 45) % 8]
+
+
+def _lista(xs):
+    xs = list(xs)
+    return xs[0] if len(xs) == 1 else ", ".join(xs[:-1]) + " y " + xs[-1] if xs else ""
+
+
+def parrafo(e) -> str:
+    partes = []
+    n = len(e["muns"])
+    if n:
+        txt = f"llueve en {n} municipio{'s' if n > 1 else ''}"
+        if e["radar_fuerte_km2"] >= 20:
+            txt += ", con núcleos de lluvia fuerte"
+        txt += f" ({_lista(e['muns'][:4])}{' y otros' if n > 4 else ''})"
+        partes.append(txt[0].upper() + txt[1:])
+    elif e["sat_km2"] >= 300:
+        partes.append(f"El satélite estima lluvia en unos {round(e['sat_km2'], -2):,.0f} km²".replace(",", ".")
+                      + (", con sectores de lluvia fuerte" if e["sat_fuerte_km2"] >= 100 else ""))
+    else:
+        partes.append("Sin lluvia importante en este momento")
+    if e["frio60"] >= 1500:
+        nubes = "hay nubes de tormenta muy desarrolladas"
+    elif e["frio40"] >= 5000:
+        nubes = "hay nubosidad densa y extensa"
+    elif e["frio40"] >= 1000:
+        nubes = "hay nubosidad densa en algunos sectores"
+    else:
+        nubes = "la nubosidad es dispersa"
+    if e["rayos"] >= 50:
+        nubes += f", con mucha actividad eléctrica ({e['rayos']} rayos en 15 min)"
+    elif e["rayos"] >= 5:
+        nubes += ", con algo de actividad eléctrica"
+    partes.append(nubes)
+    if e.get("mov"):
+        partes.append(f"las nubes se mueven hacia el {Counter(e['mov']).most_common(1)[0][0]}")
+    elif e.get("viento") and (e["frio40"] >= 1000 or n):
+        partes.append(f"los vientos de altura llevan las nubes hacia el {_rumbo_medio(e['viento'])}")
+    txt = partes[0] + "; " + "; ".join(partes[1:]) + "."
+    prob = []
+    if e.get("alta"):
+        prob.append(f"⛈️ Probabilidad *alta* de lluvia fuerte: {_lista(e['alta'])}.")
+    if e.get("media"):
+        prob.append(f"🌦️ Probabilidad *media*: {_lista(e['media'])}.")
+    return f"{e['emo']} *Región {e['nombre']}*: {txt}" + ("\n" + " ".join(prob) if prob else "")
+
+
+def texto(est, hora_txt: str, prueba=False) -> str:
+    import reporte_nubes as rn
+    L = (["🧪 *MENSAJE DE PRUEBA*"] if prueba else [])
+    L += ["🌎 *REPORTE NACIONAL DE LLUVIAS POR REGIONES · FENALCE*",
+          f"🕘 Radar y satélite de las {hora_txt} · probabilidad para las próximas 2 horas", ""]
+    for k, _, _ in REGIONES:
+        L += [parrafo(est[k]), ""]
+    L += [f"🌐 Radar y estaciones en nuestro *Portal Agroclimático FENALCE* (versión en desarrollo): {rn.PORTAL}",
+          f"📢 Avisos oficiales de la *OSPA – IDEAM*: {rn.OSPA}", "", rn.FIRMA]
+    return "\n".join(L)
+
+
+def _hora_txt():
+    a = datetime.now(ZONA)
+    return f"{a.hour % 12 or 12}:{a.minute:02d} {'a. m.' if a.hour < 12 else 'p. m.'}"
+
+
+def generar(res=None, prueba=False):
+    if res is None:
+        res = json.loads((BASE / "salida" / "indice_nubes.json").read_text(encoding="utf-8"))["departamentos"]
+    return texto(calcular(res), _hora_txt(), prueba)
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.WARNING)
+    print(generar())
