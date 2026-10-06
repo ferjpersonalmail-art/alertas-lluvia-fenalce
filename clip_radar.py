@@ -132,7 +132,7 @@ CAJA_BOG = (-74.32, 4.45, -73.95, 5.05)   # sin Sumapaz
 def _municipios(codigo):
     global _GEO
     if _GEO is None:
-        _GEO = json.loads((BASE / "datos" / "municipios_mgn2018.geojson").read_text(encoding="utf-8"))["features"]
+        _GEO = json.loads((BASE / "datos" / "municipios_mgn2024.geojson").read_text(encoding="utf-8"))["features"]
     cod = str(codigo).zfill(2)
     cod_cap = "11001" if cod == "BOG" else CAPITAL.get(cod, cod + "001")
     muns, capital = [], None
@@ -425,6 +425,20 @@ def icono_cultivo(tipo, d=28):
     return im.resize((d, d), Image.LANCZOS)
 
 
+def _rellenar_ids(ids, dentro, pasos=6):
+    """Rellena las grietas (id 0) entre polígonos vecinos con el id de al lado, solo dentro de `dentro`."""
+    ids = ids.copy()
+    for _ in range(pasos):
+        hueco = (ids == 0) & dentro
+        if not hueco.any():
+            break
+        v = np.zeros_like(ids)
+        v[1:, :] = np.maximum(v[1:, :], ids[:-1, :]); v[:-1, :] = np.maximum(v[:-1, :], ids[1:, :])
+        v[:, 1:] = np.maximum(v[:, 1:], ids[:, :-1]); v[:, :-1] = np.maximum(v[:, :-1], ids[:, 1:])
+        ids[hueco] = v[hueco]
+    return ids
+
+
 def _ids_a_bordes(ids):
     """Píxeles donde cambia el identificador (límite entre regiones o departamentos)."""
     b = np.zeros(ids.shape, bool)
@@ -464,52 +478,85 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
     fondo = Image.alpha_composite(fondo, _mosaico(_teselas(MAPA, z, tx, ty, CACHE / "mapa"), tx, ty, corte))
     lineas = Image.new("RGBA", (ANCHO, ALTO_MAPA), (0, 0, 0, 0))
     dl = ImageDraw.Draw(lineas)
-    mascara = Image.new("L", (ANCHO, ALTO_MAPA), 0)
-    dm = ImageDraw.Draw(mascara)
+    # todo el trazo se hace a 3x y se reduce (bordes suaves, sin escalones)
+    S = 3
+    a_px3 = lambda lon, lat: tuple(v * S for v in a_px(lon, lat))
+    mascara3 = Image.new("L", (ANCHO * S, ALTO_MAPA * S), 0)
+    dm = ImageDraw.Draw(mascara3)
+    lin3 = Image.new("L", (ANCHO * S, ALTO_MAPA * S), 0)
+    dl3 = ImageDraw.Draw(lin3)
     centros = {}
     for _, nom, anillos in muns:
         for r in anillos:
-            p = [a_px(*c) for c in r[:: max(1, len(r) // 400)]]
+            p = [a_px3(*c) for c in r]
             if len(p) > 2:
                 dm.polygon(p, fill=255)
-                (codigo != 'CO') and dl.line(p + [p[0]], fill=(70, 80, 100, 110), width=1)
+                (codigo != 'CO') and dl3.line(p + [p[0]], fill=255, width=S)
         c = _centro(anillos)
         if c:
             centros[nom.casefold()] = (nom, a_px(*c))
-    m_dep = np.array(mascara) > 0
+    if codigo != "CO":
+        a_l = np.array(lin3.resize((ANCHO, ALTO_MAPA), Image.BOX)).astype(np.float32) / 255
+        cl = np.zeros((ALTO_MAPA, ANCHO, 4), np.uint8)
+        cl[..., :3] = (70, 80, 100)
+        cl[..., 3] = (a_l * 120).astype(np.uint8)
+        lineas = Image.alpha_composite(lineas, Image.fromarray(cl, "RGBA"))
+    # cierra las grietas entre municipios vecinos (la geometría simplificada no comparte bordes exactos)
+    mascara3 = mascara3.filter(ImageFilter.MaxFilter(9)).filter(ImageFilter.MinFilter(9))
+    mascara = mascara3.resize((ANCHO, ALTO_MAPA), Image.BOX)
+    m_dep = np.array(mascara) > 127
     fuera = np.zeros((ALTO_MAPA, ANCHO, 4), np.uint8)
     fuera[..., :3] = 255
-    fuera[..., 3] = np.where(m_dep, 0, 125)
-    bordes = mascara.filter(ImageFilter.FIND_EDGES)
-    halo = np.array(bordes.filter(ImageFilter.MaxFilter(7))) > 0
-    linea = np.array(bordes.filter(ImageFilter.MaxFilter(3))) > 0
-    borde = np.zeros((ALTO_MAPA, ANCHO, 4), np.uint8)
-    borde[halo] = (255, 255, 255, 170)
-    borde[linea] = (*AZUL, 255)
+    fuera[..., 3] = (125 * (1 - np.array(mascara).astype(np.float32) / 255)).astype(np.uint8)
+    bordes3 = mascara3.filter(ImageFilter.FIND_EDGES)
+    a_halo = np.array(bordes3.filter(ImageFilter.MaxFilter(7 * S - 1 if (7 * S) % 2 == 0 else 7 * S)).resize((ANCHO, ALTO_MAPA), Image.BOX)) / 255
+    a_lin = np.array(bordes3.filter(ImageFilter.MaxFilter(2 * S + 1)).resize((ANCHO, ALTO_MAPA), Image.BOX)) / 255
+    borde = np.zeros((ALTO_MAPA, ANCHO, 4), np.float32)
+    borde[..., :3] = 255
+    borde[..., 3] = a_halo * 170
+    borde[..., :3] = borde[..., :3] * (1 - a_lin[..., None]) + np.array(AZUL, np.float32) * a_lin[..., None]
+    borde[..., 3] = np.maximum(borde[..., 3], a_lin * 255)
+    borde = borde.astype(np.uint8)
     if codigo == "CO":
         try:
             from reporte_regional import region_de
             claves_r = list(COLOR_REGION)
-            img_reg = Image.new("L", (ANCHO, ALTO_MAPA), 0)
-            img_dep = Image.new("I", (ANCHO, ALTO_MAPA), 0)
+            img_reg = Image.new("L", (ANCHO * S, ALTO_MAPA * S), 0)
+            img_dep = Image.new("I", (ANCHO * S, ALTO_MAPA * S), 0)
             dr, dd = ImageDraw.Draw(img_reg), ImageDraw.Draw(img_dep)
             for cod_m, _, anillos in muns:
                 rid = claves_r.index(region_de(cod_m)) + 1
                 for r_ in anillos:
-                    pp = [a_px(*c_) for c_ in r_[:: max(1, len(r_) // 200)]]
+                    pp = [a_px3(*c_) for c_ in r_]
                     if len(pp) > 2:
                         dr.polygon(pp, fill=rid)
                         dd.polygon(pp, fill=int(str(cod_m).zfill(5)[:2]))
-            reg = np.array(img_reg)
-            tinte = np.zeros((ALTO_MAPA, ANCHO, 4), np.uint8)
+            dentro3 = np.array(mascara3) > 0
+            reg3 = _rellenar_ids(np.array(img_reg).astype(np.int32), dentro3)
+            dep3 = _rellenar_ids(np.array(img_dep).astype(np.int32), dentro3)
+            img_reg = Image.fromarray(reg3.astype(np.uint8))
+            # tinte de cada región, con borde suave (fracción de cada región en el píxel)
+            tinte = np.zeros((ALTO_MAPA, ANCHO, 4), np.float32)
             for i, k_ in enumerate(claves_r):
-                tinte[reg == i + 1] = (*COLOR_REGION[k_], 60)
-            fondo = Image.alpha_composite(fondo, Image.fromarray(tinte, "RGBA"))
-            capa = np.zeros((ALTO_MAPA, ANCHO, 4), np.uint8)
-            capa[_ids_a_bordes(np.array(img_dep)) & (np.array(img_dep) > 0)] = (110, 120, 135, 120)
-            bor_r = Image.fromarray((_ids_a_bordes(reg) & (reg > 0)).astype(np.uint8) * 255).filter(ImageFilter.MaxFilter(3))
-            capa[np.array(bor_r) > 0] = (*AZUL, 200)
-            lineas = Image.alpha_composite(lineas, Image.fromarray(capa, "RGBA"))
+                fr = np.array(Image.fromarray(((reg3 == i + 1) * 255).astype(np.uint8)).resize((ANCHO, ALTO_MAPA), Image.BOX),
+                              np.float32) / 255
+                tinte[..., :3] += fr[..., None] * np.array(COLOR_REGION[k_], np.float32)
+                tinte[..., 3] += fr * 60
+            cub = np.clip(tinte[..., 3:] / 60, 1e-6, None)
+            tinte[..., :3] /= cub
+            fondo = Image.alpha_composite(fondo, Image.fromarray(np.clip(tinte, 0, 255).astype(np.uint8), "RGBA"))
+            reg = np.array(img_reg.resize((ANCHO, ALTO_MAPA), Image.NEAREST))
+            # límites de departamento (finos, grises) y de región (azules), suavizados
+            b_dep = Image.fromarray((_ids_a_bordes(dep3) & (dep3 > 0)).astype(np.uint8) * 255).filter(ImageFilter.MaxFilter(3))
+            b_reg = Image.fromarray((_ids_a_bordes(reg3) & (reg3 > 0)).astype(np.uint8) * 255).filter(ImageFilter.MaxFilter(7))
+            a_dep = np.array(b_dep.resize((ANCHO, ALTO_MAPA), Image.BOX), np.float32) / 255
+            a_reg = np.array(b_reg.resize((ANCHO, ALTO_MAPA), Image.BOX), np.float32) / 255
+            capa = np.zeros((ALTO_MAPA, ANCHO, 4), np.float32)
+            capa[..., :3] = (110, 120, 135)
+            capa[..., 3] = a_dep * 130
+            capa[..., :3] = capa[..., :3] * (1 - a_reg[..., None]) + np.array(AZUL, np.float32) * a_reg[..., None]
+            capa[..., 3] = np.maximum(capa[..., 3], a_reg * 210)
+            lineas = Image.alpha_composite(lineas, Image.fromarray(capa.astype(np.uint8), "RGBA"))
             regiones_lbl = []
             for i, k_ in enumerate(claves_r):
                 # punto más "adentro" de la región: se encoge la máscara hasta que queda el núcleo
@@ -783,8 +830,18 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         tam -= 1
     dc.text((xt, 8 + (23 - tam) // 2), texto, font=_fuente(tam), fill=(255, 255, 255))
     loc = t_ult.astimezone(ZONA)
-    dc.text((14, 40), f"Lluvia fuerte · {DIAS[loc.weekday()]} {loc.day} de {MESES[loc.month - 1]} · radar, satélite y rayos",
-            font=_fuente(14, False), fill=(200, 214, 228))
+    sub = f"{DIAS[loc.weekday()]} {loc.day} de {MESES[loc.month - 1]} · radar, satélite y rayos"
+    sub = sub[0].upper() + sub[1:]
+    dc.text((14, 40), sub, font=_fuente(14, False), fill=(200, 214, 228))
+    # aviso de versión beta en la cabecera
+    f_beta = _fuente(11)
+    xb = 14 + dc.textlength(sub, font=_fuente(14, False)) + 10
+    for txt_b in ("VERSIÓN BETA · NO AUTORIZADA SU DIFUSIÓN", "VERSIÓN BETA", "BETA"):
+        wb = dc.textlength(txt_b, font=f_beta) + 14
+        if xb + wb <= ANCHO - lw_ - 24:
+            dc.rounded_rectangle((xb, 39, xb + wb, 57), radius=5, fill=(196, 40, 40))
+            dc.text((xb + 7, 42), txt_b, font=f_beta, fill=(255, 255, 255))
+            break
     wf = ANCHO / len(MARCA)
     for i, cm in enumerate(MARCA):
         dc.rectangle((round(i * wf), ALTO_CAB - 5, round((i + 1) * wf), ALTO_CAB), fill=cm)
@@ -792,6 +849,17 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         cab.paste(logo, (ANCHO - lw_ - 14, (ALTO_CAB - logo.height) // 2), logo)
 
     tiempos_ok = [t for t, _, _ in capas]
+
+    # marca de agua diagonal: versión beta, no autorizada su difusión
+    f_ma = _fuente(22)
+    txt_ma = "VERSIÓN BETA · NO AUTORIZADA SU DIFUSIÓN"
+    tw_ma = int(ImageDraw.Draw(Image.new("L", (1, 1))).textlength(txt_ma, font=f_ma)) + 20
+    ma = Image.new("RGBA", (tw_ma, 40), (0, 0, 0, 0))
+    ImageDraw.Draw(ma).text((10, 6), txt_ma, font=f_ma, fill=(150, 30, 30, 70), stroke_width=2,
+                            stroke_fill=(255, 255, 255, 70))
+    ma = ma.rotate(28, expand=True, resample=Image.BICUBIC)
+    marca_agua = Image.new("RGBA", (ANCHO, ALTO_MAPA), (0, 0, 0, 0))
+    marca_agua.alpha_composite(ma, ((ANCHO - ma.width) // 2, (ALTO_MAPA - ma.height) // 2))
 
     def pie(idx):
         im = Image.new("RGB", (ANCHO, ALTO_PIE), CREMA)
@@ -834,6 +902,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
             t0, t1 = (t - timedelta(minutes=5)).timestamp(), t.timestamp()
         for x, y in puntos(t0, t1):
             _rayo(d, x, y)
+        m = Image.alpha_composite(m, marca_agua)
         m = Image.alpha_composite(m, etiquetas)
         d = ImageDraw.Draw(m)
         x, y, x2, y2 = caja_hora

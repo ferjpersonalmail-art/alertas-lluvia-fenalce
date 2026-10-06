@@ -35,9 +35,21 @@ RUMBOS = ["norte", "nororiente", "oriente", "suroriente", "sur", "suroccidente",
 _CACHE = {}
 
 
-def region_de(cod_mun: str) -> str:
+def _region_base(cod_mun: str) -> str:
     cod_mun = str(cod_mun).zfill(5)
     return POR_MUNICIPIO.get(cod_mun) or POR_DEPTO.get(cod_mun[:2], "andina")
+
+
+def region_de(cod_mun: str) -> str:
+    """Región natural del municipio. Usa datos/regiones_municipios.json (ajustado por relieve, ver
+    calibracion/regiones_relieve.md); si no está, la asignación por departamento."""
+    if "por_relieve" not in _CACHE:
+        try:
+            _CACHE["por_relieve"] = json.loads((BASE / "datos" / "regiones_municipios.json").read_text(encoding="utf-8"))
+        except Exception:
+            _CACHE["por_relieve"] = {}
+    cod_mun = str(cod_mun).zfill(5)
+    return _CACHE["por_relieve"].get(cod_mun) or _region_base(cod_mun)
 
 
 def _territorio():

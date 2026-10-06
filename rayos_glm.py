@@ -160,6 +160,6 @@ def conteo_por_departamento(rayos: np.ndarray, territorio, minutos: int = 15) ->
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    r = solo_colombia(descargar_rayos(30), Path(__file__).parent / "datos" / "municipios_mgn2018.geojson")
+    r = solo_colombia(descargar_rayos(30), Path(__file__).parent / "datos" / "municipios_mgn2024.geojson")
     guardar_geojson(r, Path("salida/rayos.geojson"))
     print(len(r), "rayos")
