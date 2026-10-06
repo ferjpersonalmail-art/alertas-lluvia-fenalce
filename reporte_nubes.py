@@ -163,8 +163,17 @@ def texto_nacional(res, hora_sat, prueba=False):
 
 
 # --------------------------------------------------------------------------- envío
-def _ntfy(titulo, texto, prioridad=3, tags=None, qr=False):
-    tema = os.environ.get("NTFY_TOPIC") or "fenalce-lluvia-2ifz77fnqg"
+TEMA = os.environ.get("NTFY_TOPIC") or "fenalce-lluvia-2ifz77fnqg"
+
+
+def tema_depto(r) -> str:
+    """Tema de ntfy de cada departamento (lo usan los técnicos regionales): fenalce-tolima-2ifz77."""
+    nombre = unicodedata.normalize("NFKD", r["departamento"]).encode("ascii", "ignore").decode().lower()
+    return "fenalce-" + "-".join(w for w in nombre.replace(",", " ").replace(".", " ").split()) + "-2ifz77"
+
+
+def _ntfy(titulo, texto, prioridad=3, tags=None, qr=False, tema=None):
+    tema = tema or TEMA
     wa = "whatsapp://send?text=" + urllib.parse.quote(texto)
     cuerpo = {"topic": tema, "title": titulo, "message": texto, "priority": prioridad, "tags": tags or [],
               "actions": [{"action": "view", "label": "Enviar por WhatsApp", "url": wa},
@@ -187,7 +196,7 @@ def _h(t):   # encabezado HTTP con tildes/emojis (RFC 2047)
     return "=?UTF-8?B?" + base64.b64encode(t.encode()).decode() + "?="
 
 
-def _enviar_clip(r, prueba=False):
+def _enviar_clip(r, prueba=False, temas=(None,)):
     """Clip animado de la lluvia de la última hora en el departamento (para reenviar al grupo)."""
     try:
         import clip_radar
@@ -196,7 +205,6 @@ def _enviar_clip(r, prueba=False):
         if not info:
             return
         f = info["archivo"]
-        tema = os.environ.get("NTFY_TOPIC") or "fenalce-lluvia-2ifz77fnqg"
         nombre = unicodedata.normalize("NFKD", r["departamento"]).encode("ascii", "ignore").decode().replace(" ", "_")
         h = {"Filename": f"radar_{nombre}_{info['hora'].split()[0].replace(':', 'h')}.gif",
              "Title": _h(("🧪 " if prueba else "") + f"🎞️ Radar {r['departamento']} · {info['hora']}"),
@@ -205,7 +213,10 @@ def _enviar_clip(r, prueba=False):
              "Tags": "film_frames"}
         if os.environ.get("NTFY_TOKEN"):
             h["Authorization"] = "Bearer " + os.environ["NTFY_TOKEN"]
-        urllib.request.urlopen(urllib.request.Request(f"https://ntfy.sh/{tema}", data=f.read_bytes(), headers=h, method="PUT"), timeout=60)
+        datos = f.read_bytes()
+        for tema in temas:
+            urllib.request.urlopen(urllib.request.Request(f"https://ntfy.sh/{tema or TEMA}", data=datos, headers=h,
+                                                          method="PUT"), timeout=60)
     except Exception as e:
         log.warning("Clip %s: %s", r.get("departamento"), e)
 
@@ -259,9 +270,13 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
         if len(suben) > 1:   # con un solo departamento basta su propio mensaje
             _ntfy(("🧪 " if prueba else "") + f"⬆️⛈️ Suben a probabilidad alta: {nombres}",
                   f"⬆️ Suben a probabilidad alta de lluvia fuerte: {nombres}.\nAbajo va el mensaje de cada departamento para reenviar.", 5, ["warning"])
-        for r in sorted(suben, key=lambda r: -r["puntaje"])[:5]:
-            _ntfy(f"⬆️⛈️ {r['departamento']}: sube a probabilidad alta", texto_departamento(r, hora_sat, "sube", prueba), 5, ["warning"])
-            _enviar_clip(r, prueba)
+        for i, r in enumerate(sorted(suben, key=lambda r: -r["puntaje"])):
+            # el técnico del departamento siempre recibe el suyo; al supervisor le llegan máximo 5
+            temas = [tema_depto(r)] + ([None] if i < 5 else [])
+            txt = texto_departamento(r, hora_sat, "sube", prueba)
+            for tm in temas:
+                _ntfy(("🧪 " if prueba else "") + f"⬆️⛈️ {r['departamento']}: sube a probabilidad alta", txt, 5, ["warning"], tema=tm)
+            _enviar_clip(r, prueba, temas)
             enviados += 1
 
     # 2) reporte programado: un mensaje nacional (para el Canal) y los departamentos en roja (para sus grupos)
@@ -271,10 +286,12 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
         _ntfy(("🧪 " if prueba else "") + f"📋 Reporte nacional: {len(rojas)} con probabilidad alta, {len(amar)} media",
               texto_nacional(res, hora_sat, prueba), 4 if rojas else 3, ["clipboard"], qr=True)
         enviados += 1
-        for r in sorted(rojas, key=lambda r: -r["puntaje"])[:5]:
-            _ntfy(("🧪 " if prueba else "") + f"⛈️ {r['departamento']}: probabilidad alta de lluvia fuerte",
-                  texto_departamento(r, hora_sat, "reporte", prueba), 4)
-            _enviar_clip(r, prueba)
+        for i, r in enumerate(sorted(rojas, key=lambda r: -r["puntaje"])):
+            temas = [tema_depto(r)] + ([None] if i < 5 else [])
+            txt = texto_departamento(r, hora_sat, "reporte", prueba)
+            for tm in temas:
+                _ntfy(("🧪 " if prueba else "") + f"⛈️ {r['departamento']}: probabilidad alta de lluvia fuerte", txt, 4, tema=tm)
+            _enviar_clip(r, prueba, temas)
             enviados += 1
         if franja and not forzar:
             est["ultima_franja"] = franja
