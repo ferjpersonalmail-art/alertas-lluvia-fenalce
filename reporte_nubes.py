@@ -201,7 +201,8 @@ def _enviar_clip(r, prueba=False, temas=(None,)):
     try:
         import clip_radar
         info = clip_radar.generar(r["codigo"], r["departamento"], r.get("llueve_en") or r.get("municipios") or [],
-                                  nivel=r.get("probabilidad"), movimiento=r.get("movimiento"))
+                                  nivel=r.get("probabilidad"), movimiento=r.get("movimiento"),
+                                  viento=r.get("viento"))
         if not info:
             return
         f = info["archivo"]

@@ -387,7 +387,8 @@ def _goes_lluvia(tiempos, z, tx, ty, corte):
 
 
 # --------------------------------------------------------------------------- clip
-def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, salida=None, forzar=False):
+def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, salida=None, forzar=False,
+            viento=None):
     """Genera el GIF. Devuelve {archivo, hora, hace_min, lluvia_km2, rayos} o None si no hay qué mostrar."""
     muns, capital = _municipios(codigo)
     if not muns:
@@ -543,25 +544,45 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         de.text((lx + x_sw + 7 * 17 + 6, ly + 26), "estimada", font=f_ley_r, fill=(70, 80, 90, 255))
     ocupado.append((lx, ly, lx + lw, ly + lh))
 
-    # movimiento de las nubes
+    # dirección: seguimiento de las nubes; si no hay, viento en altura (lleva las tormentas) o en superficie
+    RUMBOS = ["norte", "nororiente", "oriente", "suroriente", "sur", "suroccidente", "occidente", "noroccidente"]
+    rumbo = lambda g: RUMBOS[int(((g % 360) + 22.5) // 45) % 8]
+    flecha = None
+    v = viento or {}
     if movimiento and movimiento.get("vel_kmh", 0) >= 5 and movimiento.get("grados") is not None:
-        mw = int(max(medir.textlength("Las nubes se mueven", font=f_ley_r),
-                     medir.textlength(f"hacia el {movimiento.get('hacia', '')}", font=f_ley))) + 62
+        flecha = (movimiento["grados"], "Las nubes se mueven")
+    elif v.get("alto_dir") is not None and (v.get("alto_kmh") or 0) >= 3:
+        flecha = ((v["alto_dir"] + 180) % 360, "Las nubes se mueven")
+    elif v.get("viento_dir") is not None and (v.get("viento_kmh") or 0) >= 3:
+        flecha = ((v["viento_dir"] + 180) % 360, "El viento sopla")
+
+    def dibujar_flecha(d, cx, cy, grados, largo, ancho, color):
+        ux, uy = math.sin(math.radians(grados)), -math.cos(math.radians(grados))
+        px_, py_ = -uy, ux
+        cola = (cx - ux * largo / 2, cy - uy * largo / 2)
+        base = (cx + ux * (largo / 2 - ancho * 1.6), cy + uy * (largo / 2 - ancho * 1.6))
+        punta = (cx + ux * largo / 2, cy + uy * largo / 2)
+        d.line([cola, base], fill=color, width=int(ancho))
+        d.polygon([punta, (base[0] + px_ * ancho * 1.3, base[1] + py_ * ancho * 1.3),
+                   (base[0] - px_ * ancho * 1.3, base[1] - py_ * ancho * 1.3)], fill=color)
+
+    if flecha:
+        grados, frase = flecha
+        # flecha grande y semitransparente sobre el departamento
+        ys, xs = np.nonzero(m_dep)
+        if len(xs):
+            capa_f = Image.new("RGBA", (ANCHO, ALTO_MAPA), (0, 0, 0, 0))
+            dibujar_flecha(ImageDraw.Draw(capa_f), float(xs.mean()), float(ys.mean()), grados, 110, 14, (*AZUL, 150))
+            etiquetas.alpha_composite(capa_f)
+        mw = int(max(medir.textlength(frase, font=f_ley_r), medir.textlength(f"hacia el {rumbo(grados)}", font=f_ley))) + 62
         mh = 46
         mx, my = ANCHO - 10 - mw, ALTO_MAPA - 10 - mh
         de.rounded_rectangle((mx, my, mx + mw, my + mh), radius=9, fill=(255, 255, 255, 255), outline=(205, 212, 220, 255))
         ccx, ccy, rr = mx + 25, my + 23, 17
         de.ellipse((ccx - rr, ccy - rr, ccx + rr, ccy + rr), fill=(*AZUL, 255))
-        th = math.radians(movimiento["grados"])
-        ux, uy = math.sin(th), -math.cos(th)
-        px_, py_ = -uy, ux
-        p1 = (ccx + ux * 12, ccy + uy * 12)
-        p0 = (ccx - ux * 11, ccy - uy * 11)
-        de.line([p0, (ccx + ux * 3, ccy + uy * 3)], fill=(255, 255, 255, 255), width=4)
-        de.polygon([p1, (ccx + ux * 1 + px_ * 8, ccy + uy * 1 + py_ * 8), (ccx + ux * 1 - px_ * 8, ccy + uy * 1 - py_ * 8)],
-                   fill=(255, 255, 255, 255))
-        de.text((mx + 50, my + 7), "Las nubes se mueven", font=f_ley_r, fill=(70, 80, 90, 255))
-        de.text((mx + 50, my + 23), f"hacia el {movimiento.get('hacia', '')}", font=f_ley, fill=(20, 25, 35, 255))
+        dibujar_flecha(de, ccx, ccy, grados, 24, 4, (255, 255, 255, 255))
+        de.text((mx + 50, my + 7), frase, font=f_ley_r, fill=(70, 80, 90, 255))
+        de.text((mx + 50, my + 23), f"hacia el {rumbo(grados)}", font=f_ley, fill=(20, 25, 35, 255))
         ocupado.append((mx, my, mx + mw, my + mh))
 
     # aviso cuando el radar no muestra lluvia en el departamento (fuera de su alcance o aún sin lluvia)
