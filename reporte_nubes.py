@@ -31,6 +31,8 @@ ESTADO = BASE / "estado" / "reporte_nubes.json"
 OSPA = "https://www.ideam.gov.co/nuestra-entidad/servicio-de-pronosticos-y-alertas"   # pronosticosyalertas.gov.co tiene el certificado vencido
 PORTAL = "https://agroclima-fenalce-portal.vercel.app/"
 QR_URL = "https://raw.githubusercontent.com/ferjpersonalmail-art/alertas-lluvia-fenalce/main/datos/qr_portal.png"
+FIRMA = ("_Estimación con radar e imágenes de satélite; puede haber diferencias con lo que ocurra en cada finca._\n"
+         "*FENALCE · Equipo de Agroclimatología*\nJuan F. Gómez B. · Jhon J. Valencia M.")
 COLOR = {"ALTA": ("⛈️", "ALTA"), "MEDIA": ("🌦️", "MEDIA"), "BAJA": ("🌤️", "BAJA")}
 ORDEN = {"BAJA": 0, "MEDIA": 1, "ALTA": 2}
 DIR_VIENTO = ["norte", "nororiente", "oriente", "suroriente", "sur", "suroccidente", "occidente", "noroccidente"]
@@ -108,7 +110,7 @@ def texto_departamento(r: dict, hora_sat: str, tipo: str = "reporte", prueba: bo
     L.append("")
     L.append(f"🌐 Siga el radar, las estaciones y el clima en nuestro *Portal Agroclimático FENALCE* (versión en desarrollo): {PORTAL}")
     L.append(f"📢 Consulte también los avisos oficiales de la *Oficina del Servicio de Pronósticos y Alertas (OSPA) del IDEAM*: {OSPA}")
-    L.append("_FENALCE · Equipo de Agroclimatología. Estimación con imágenes de satélite; puede haber diferencias con lo que ocurra en cada finca._")
+    L.append(FIRMA)
     return "\n".join(L)
 
 
@@ -149,7 +151,7 @@ def texto_nacional(res, hora_sat, prueba=False):
         L += ["🛑 Donde hay rayos, evite permanecer en campo abierto o bajo árboles aislados.", ""]
     L += [f"🌐 Radar y estaciones en nuestro *Portal Agroclimático FENALCE* (versión en desarrollo): {PORTAL}",
           f"📢 Avisos oficiales de la *OSPA – IDEAM*: {OSPA}",
-          "_FENALCE · Equipo de Agroclimatología. Estimación con imágenes de satélite; puede haber diferencias con lo que ocurra en cada finca._"]
+          FIRMA]
     return "\n".join(L)
 
 

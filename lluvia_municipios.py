@@ -1,0 +1,120 @@
+"""
+lluvia_municipios.py — Municipios donde está lloviendo ahora (radar Rain-Alarm + IDEAM), priorizando
+los departamentos donde FENALCE tiene mesas técnicas y sus vecinos.
+
+   python lluvia_municipios.py            → imprime el mensaje
+"""
+from __future__ import annotations
+
+import logging
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+import numpy as np
+import yaml
+
+import analisis as an
+import motor_alertas as ma
+
+BASE = Path(__file__).resolve().parent
+ZONA = timezone(timedelta(hours=-5))
+# departamentos con mesa técnica y sus vecinos (códigos DANE)
+ZONAS = {"73": "Tolima", "68": "Santander", "23": "Córdoba", "13": "Bolívar", "86": "Putumayo", "25": "Cundinamarca"}
+VECINOS = ["41", "17", "15", "54", "05", "70", "19", "52", "18", "50", "20", "47", "11", "63", "66", "76"]
+EMO = {1: "🔵", 2: "🟢", 3: "🟠"}
+NOMBRE_INT = {1: "débil", 2: "moderada", 3: "fuerte"}
+_CACHE = {}
+
+
+def calcular(min_km2=8.0):
+    cfg = yaml.safe_load(open(BASE / "config.yaml", encoding="utf-8"))
+    act = ma.departamentos_activos(cfg); cod = sorted(act)
+    if "t" not in _CACHE:
+        malla = ma.construir_malla(cfg, cod)
+        t = an.Territorio(BASE / cfg["territorio"]["geojson"], malla, cfg["territorio"]["campos"])
+        dep_de_mun = np.zeros(t.n_mun + 1, int)
+        for m in range(1, t.n_mun + 1):
+            d = t.dep_raster[t.etiquetas == m]
+            dep_de_mun[m] = np.bincount(d).argmax() if len(d) else 0
+        _CACHE.update(t=t, malla=malla, dep_de_mun=dep_de_mun)
+    t, malla, dep_de_mun = _CACHE["t"], _CACHE["malla"], _CACHE["dep_de_mun"]
+    import fuente_rainalarm
+    ra = fuente_rainalarm.lluvia_actual(malla)
+    if ra is None:
+        return None
+    area = np.bincount(t.etiquetas[ra >= 1], weights=t.area_px[ra >= 1], minlength=t.n_mun + 1)
+    inten = np.zeros(t.n_mun + 1, int)
+    np.maximum.at(inten, t.etiquetas[ra >= 1], ra[ra >= 1])
+    cod_de_indice = {v: k for k, v in t.dep_indice.items()}
+    por_dep = {}
+    for m in np.nonzero(area >= min_km2)[0]:
+        if m == 0:
+            continue
+        c = cod_de_indice.get(dep_de_mun[m])
+        if c is None:
+            continue
+        por_dep.setdefault(c, []).append((t.mun_nombre[m], int(inten[m]), float(area[m])))
+    for c in por_dep:
+        por_dep[c].sort(key=lambda x: (-x[1], -x[2]))
+    return {c: (act[c]["nombre"], v) for c, v in por_dep.items() if c in act}
+
+
+def texto(por_dep, prueba=False):
+    ahora = datetime.now(ZONA)
+    h = f"{ahora.hour % 12 or 12}:{ahora.minute:02d} {'a. m.' if ahora.hour < 12 else 'p. m.'}"
+    L = (["🧪 *MENSAJE DE PRUEBA*"] if prueba else []) + ["☔ *DÓNDE ESTÁ LLOVIENDO AHORA · FENALCE*",
+                                                         f"🕘 Radar de las {h} · 🔵 débil · 🟢 moderada · 🟠 fuerte", ""]
+
+    def linea(c, n=12):
+        nombre, muns = por_dep[c]
+        txt = ", ".join(f"{EMO[i]} {m}" for m, i, _ in muns[:n])
+        return f"*{nombre}*: {txt}" + (f" y {len(muns) - n} más" if len(muns) > n else "")
+    nuestras = [c for c in ZONAS if c in por_dep]
+    L.append("📍 *En nuestras zonas*")
+    L += [linea(c) for c in nuestras] or ["Sin lluvia en este momento en Tolima, Santander, Córdoba, Bolívar, Putumayo y Cundinamarca."]
+    secas = [ZONAS[c] for c in ZONAS if c not in por_dep]
+    if nuestras and secas:
+        L.append(f"Sin lluvia: {', '.join(secas)}.")
+    vec = [c for c in VECINOS if c in por_dep]
+    if vec:
+        L += ["", "🧭 *Alrededores*"] + [linea(c, 6) for c in vec]
+    resto = [c for c in por_dep if c not in ZONAS and c not in VECINOS]
+    if resto:
+        L += ["", "🗺️ *Resto del país*: " + "; ".join(f"{por_dep[c][0]} ({len(por_dep[c][1])} mun.)" for c in resto)]
+    L += ["", "_Lluvia vista por el radar en este momento; donde el radar no alcanza (Pacífico, Orinoquía, Amazonía) puede estar lloviendo sin aparecer aquí._",
+          "*FENALCE · Equipo de Agroclimatología*", "Juan F. Gómez B. · Jhon J. Valencia M."]
+    return "\n".join(L)
+
+
+def departamento_foco(por_dep):
+    """Departamento para el clip: el de nuestras zonas con más lluvia; si no hay, el de más lluvia del país."""
+    sumar = lambda c: sum(a * i for _, i, a in por_dep[c][1])
+    nuestras = [c for c in ZONAS if c in por_dep]
+    pool = nuestras or list(por_dep)
+    return max(pool, key=sumar) if pool else None
+
+
+def enviar(prueba=False, tema=None):
+    """Mensaje de municipios con lluvia + clip del departamento con más lluvia en nuestras zonas."""
+    import reporte_nubes as rn
+    por_dep = calcular()
+    if por_dep is None:
+        return
+    rn._ntfy(("🧪 " if prueba else "") + "☔ Dónde está lloviendo ahora", texto(por_dep, prueba), 3, tema=tema)
+    c = departamento_foco(por_dep)
+    if c:
+        nombre, muns = por_dep[c]
+        r = {"codigo": c, "departamento": nombre, "llueve_en": [m for m, _, _ in muns[:4]], "probabilidad": None}
+        try:
+            import json
+            d = json.loads((BASE / "salida" / "indice_nubes.json").read_text(encoding="utf-8"))
+            r.update({k: v for k, v in next(x for x in d["departamentos"] if x["codigo"] == c).items()
+                      if k in ("probabilidad", "movimiento", "viento")})
+        except Exception:
+            pass
+        rn._enviar_clip(r, prueba, [tema])
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.WARNING)
+    print(texto(calcular()))
