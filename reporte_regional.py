@@ -48,7 +48,8 @@ def _territorio():
         t = an.Territorio(BASE / cfg["territorio"]["geojson"], malla, cfg["territorio"]["campos"])
         ids = {k: i + 1 for i, (k, _, _) in enumerate(REGIONES)}
         reg_mun = np.array([0] + [ids[region_de(c)] for c in t.mun_codigo[1:]], np.int8)
-        _CACHE.update(t=t, malla=malla, reg=reg_mun[t.etiquetas], reg_mun=reg_mun, ids=ids)
+        nom_dep = {c: act[c]["nombre"] for c in act}
+        _CACHE.update(t=t, malla=malla, reg=reg_mun[t.etiquetas], reg_mun=reg_mun, ids=ids, nom_dep=nom_dep)
     return _CACHE
 
 
@@ -93,7 +94,8 @@ def calcular(res: list[dict]):
             e["radar_km2"] = float(km2[ll].sum())
             e["radar_fuerte_km2"] = float(km2[m & (f["radar"] >= 3)].sum())
             a = np.bincount(t.etiquetas[ll], weights=km2[ll] * f["radar"][ll], minlength=t.n_mun + 1)
-            e["muns"] = [t.mun_nombre[i] for i in np.argsort(-a) if a[i] >= 8 and i > 0]
+            e["muns"] = [(t.mun_nombre[i], c["nom_dep"].get(str(t.mun_codigo[i]).zfill(5)[:2], ""))
+                         for i in np.argsort(-a) if a[i] >= 8 and i > 0]
         if f["sat"] is not None:
             e["sat_km2"] = float(km2[m & (f["sat"] >= 1)].sum())
             e["sat_fuerte_km2"] = float(km2[m & (f["sat"] >= 10)].sum())
@@ -137,14 +139,49 @@ def _lista(xs):
     return xs[0] if len(xs) == 1 else ", ".join(xs[:-1]) + " y " + xs[-1] if xs else ""
 
 
+def nivel_lluvia(e):
+    n = len(e["muns"])
+    if n >= 10 or e["sat_km2"] >= 3000:
+        return "mucha"
+    if n or e["sat_km2"] >= 300:
+        return "poca"
+    return "nada"
+
+
+def resumen(est) -> str:
+    mucha = [est[k]["nombre"] for k, _, _ in REGIONES if nivel_lluvia(est[k]) == "mucha"]
+    poca = [est[k]["nombre"] for k, _, _ in REGIONES if nivel_lluvia(est[k]) == "poca"]
+    seca = [est[k]["nombre"] for k, _, _ in REGIONES if nivel_lluvia(est[k]) == "nada"]
+    L = []
+    if mucha:
+        L.append(f"llueve sobre todo en la región {_lista(mucha)}" if len(mucha) == 1 else f"llueve sobre todo en las regiones {_lista(mucha)}")
+    if poca:
+        L.append(f"hay lluvias aisladas en {_lista(poca)}")
+    if seca:
+        L.append(f"en {_lista(seca)} no está lloviendo")
+    if not L:
+        return ""
+    t = "; ".join(L) + "."
+    return "📌 *En resumen:* " + t[0].upper() + t[1:]
+
+
 def parrafo(e) -> str:
     """Párrafo en lenguaje sencillo, para productores."""
     partes = []
-    n = len(e["muns"])
+    muns = e["muns"]
+    n = len(muns)
     if n:
-        txt = f"Está lloviendo en {n} municipio{'s' if n > 1 else ''} ({_lista(e['muns'][:4])}{' y otros' if n > 4 else ''})"
+        deps = list(dict.fromkeys(d for _, d in muns if d))
+        nombres = []
+        for m, d in muns[:4]:
+            # el municipio "Colombia" (Huila) o un nombre igual al de su departamento se aclara
+            nombres.append(f"{m} ({d})" if m.lower() in ("colombia",) or m == d else m)
+        varios = lambda xs, mas: (", ".join(xs) + " y otros") if mas else _lista(xs)
+        txt = (f"Está lloviendo en {n} municipio{'s' if n > 1 else ''}"
+               + (f" de {varios(deps[:4], len(deps) > 4)}" if deps else "")
+               + f": {varios(nombres, n > 4)}")
         if e["radar_fuerte_km2"] >= 20:
-            txt += " y en algunos puntos llueve fuerte"
+            txt += ". En algunos puntos llueve fuerte"
         partes.append(txt)
     elif e["sat_km2"] >= 3000:
         partes.append("Hay lluvias en buena parte de la región" + (" y en algunos puntos llueve fuerte" if e["sat_fuerte_km2"] >= 100 else ""))
@@ -153,29 +190,29 @@ def parrafo(e) -> str:
     else:
         partes.append("Por ahora no está lloviendo")
     if e["frio60"] >= 1500:
-        cielo = "hay nubes de tormenta"
+        cielo = "Hay nubes de tormenta"
     elif e["frio40"] >= 5000:
-        cielo = "el cielo está muy nublado"
+        cielo = "El cielo está muy nublado"
     elif e["frio40"] >= 1000:
-        cielo = "está nublado en algunas partes"
+        cielo = "Está nublado en algunas partes"
     else:
-        cielo = "el cielo está casi despejado"
+        cielo = "El cielo está casi despejado"
     if e["rayos"] >= 50:
         cielo += " y caen muchos rayos"
     elif e["rayos"] >= 5:
         cielo += " y caen algunos rayos"
-    partes.append(cielo)
     if e.get("mov"):
-        partes.append(f"las nubes van hacia el {Counter(e['mov']).most_common(1)[0][0]}")
+        cielo += f"; las nubes van hacia el {Counter(e['mov']).most_common(1)[0][0]}"
     elif e.get("viento") and (e["frio40"] >= 1000 or n):
-        partes.append(f"las nubes van hacia el {_rumbo_medio(e['viento'])}")
-    txt = partes[0] + "; " + ", ".join(partes[1:]) + "."
+        cielo += f"; las nubes van hacia el {_rumbo_medio(e['viento'])}"
+    partes.append(cielo)
+    txt = ". ".join(partes) + "."
     prob = []
     if e.get("alta"):
         prob.append(f"⛈️ *Puede llover fuerte* en las próximas 2 horas en: {_lista(e['alta'])}.")
     if e.get("media"):
         prob.append(f"🌦️ *Podría llover fuerte* en: {_lista(e['media'])}.")
-    return f"{e['emo']} *Región {e['nombre']}*: {txt}" + ("\n" + "\n".join(prob) if prob else "")
+    return f"{e['emo']} *{e['nombre']}*\n{txt}" + ("\n" + "\n".join(prob) if prob else "")
 
 
 def texto(est, hora_txt: str, prueba=False) -> str:
@@ -183,10 +220,14 @@ def texto(est, hora_txt: str, prueba=False) -> str:
     L = (["🧪 *MENSAJE DE PRUEBA*"] if prueba else [])
     L += ["🌎 *¿CÓMO ESTÁ LLOVIENDO EN EL PAÍS? · FENALCE*",
           f"🕘 Así está el tiempo a las {hora_txt}", ""]
+    r_ = resumen(est)
+    if r_:
+        L += [r_, ""]
     for k, _, _ in REGIONES:
         L += [parrafo(est[k]), ""]
-    L += [f"🌐 Radar y estaciones en nuestro *Portal Agroclimático FENALCE* (versión en desarrollo): {rn.PORTAL}",
-          f"📢 Avisos oficiales de la *OSPA – IDEAM*: {rn.OSPA}", "", rn.FIRMA]
+    L += ["🗺️ En el mapa: los colores muestran dónde llueve y los ⚡ dónde caen rayos.", "",
+          f"🌐 Más información en el *Portal Agroclimático FENALCE*: {rn.PORTAL}",
+          f"📢 Avisos oficiales del IDEAM: {rn.OSPA}", "", rn.FIRMA]
     return "\n".join(L)
 
 
