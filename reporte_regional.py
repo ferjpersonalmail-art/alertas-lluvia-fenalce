@@ -94,8 +94,10 @@ def calcular(res: list[dict]):
             e["radar_km2"] = float(km2[ll].sum())
             e["radar_fuerte_km2"] = float(km2[m & (f["radar"] >= 3)].sum())
             a = np.bincount(t.etiquetas[ll], weights=km2[ll] * f["radar"][ll], minlength=t.n_mun + 1)
+            # sin San Andrés y Providencia (zona insular)
             e["muns"] = [(t.mun_nombre[i], c["nom_dep"].get(str(t.mun_codigo[i]).zfill(5)[:2], ""))
-                         for i in np.argsort(-a) if a[i] >= 8 and i > 0]
+                         for i in np.argsort(-a) if a[i] >= 8 and i > 0
+                         and str(t.mun_codigo[i]).zfill(5)[:2] != "88"]
         if f["sat"] is not None:
             e["sat_km2"] = float(km2[m & (f["sat"] >= 1)].sum())
             e["sat_fuerte_km2"] = float(km2[m & (f["sat"] >= 10)].sum())
@@ -107,8 +109,15 @@ def calcular(res: list[dict]):
         px, py = malla.a_pixel(f["rayos"][:, 0], f["rayos"][:, 1])
         ok = (px >= 0) & (px < malla.ancho) & (py >= 0) & (py < malla.alto)
         r = reg[py[ok].astype(int), px[ok].astype(int)]
+        lab = t.etiquetas[py[ok].astype(int), px[ok].astype(int)]
         for k, _, _ in REGIONES:
             est[k]["rayos"] = int((r == ids[k]).sum())
+            cnt = Counter()
+            for i in lab[r == ids[k]]:
+                cod = str(t.mun_codigo[i]).zfill(5)[:2] if i > 0 else ""
+                if cod and cod != "88":
+                    cnt[c["nom_dep"].get(cod, "")] += 1
+            est[k]["rayos_dep"] = [d for d, nn in cnt.most_common() if d and nn >= 3]
     # departamentos del índice: probabilidad y movimiento
     for d in res:
         k = POR_DEPTO.get(d["codigo"], "andina")
@@ -172,14 +181,14 @@ def parrafo(e) -> str:
     n = len(muns)
     if n:
         deps = list(dict.fromkeys(d for _, d in muns if d))
-        nombres = []
-        for m, d in muns[:4]:
-            # el municipio "Colombia" (Huila) o un nombre igual al de su departamento se aclara
-            nombres.append(f"{m} ({d})" if m.lower() in ("colombia",) or m == d else m)
-        varios = lambda xs, mas: (", ".join(xs) + " y otros") if mas else _lista(xs)
-        txt = (f"Está lloviendo en {n} municipio{'s' if n > 1 else ''}"
-               + (f" de {varios(deps[:4], len(deps) > 4)}" if deps else "")
-               + f": {varios(nombres, n > 4)}")
+        if n <= 4:
+            # pocos: solo los nombres
+            nombres = [f"{m} ({d})" if m.lower() in ("colombia",) or m == d else m for m, d in muns]
+            txt = f"Está lloviendo en {_lista(nombres)}"
+        else:
+            # muchos: solo la cantidad, por departamento
+            txt = (f"Está lloviendo en {n} municipios"
+                   + (f" de {_lista(deps[:4])}" + (" y otros departamentos" if len(deps) > 4 else "") if deps else ""))
         if e["radar_fuerte_km2"] >= 20:
             txt += ". En algunos puntos llueve fuerte"
         partes.append(txt)
@@ -197,16 +206,14 @@ def parrafo(e) -> str:
         cielo = "Está nublado en algunas partes"
     else:
         cielo = "El cielo está casi despejado"
-    if e["rayos"] >= 50:
-        cielo += " y caen muchos rayos"
-    elif e["rayos"] >= 5:
-        cielo += " y caen algunos rayos"
     if e.get("mov"):
         cielo += f"; las nubes van hacia el {Counter(e['mov']).most_common(1)[0][0]}"
     elif e.get("viento") and (e["frio40"] >= 1000 or n):
         cielo += f"; las nubes van hacia el {_rumbo_medio(e['viento'])}"
     partes.append(cielo)
     txt = ". ".join(partes) + "."
+    if e["rayos"] >= 5 and e.get("rayos_dep"):
+        txt += f"\n⚡ Presencia de rayos en {_lista(e['rayos_dep'][:4])}."
     prob = []
     if e.get("alta"):
         prob.append(f"⛈️ *Puede llover fuerte* en las próximas 2 horas en: {_lista(e['alta'])}.")

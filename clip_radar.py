@@ -604,27 +604,23 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
     de = ImageDraw.Draw(etiquetas)
 
     # leyenda
-    x_sw = 10 + int(medir.textlength("Satélite", font=f_ley)) + 10
-    lh = 62 if usa_sat else 46
-    lx, ly = 10, ALTO_MAPA - 10 - lh
-    lw = x_sw + 7 * 17 + 22 + int(medir.textlength("rayo", font=f_ley)) + 12
-    de.rounded_rectangle((lx, ly, lx + lw, ly + lh), radius=9, fill=(255, 255, 255, 255), outline=(205, 212, 220, 255))
-    de.text((lx + 10, ly + 8), "Radar" if usa_sat else "Lluvia", font=f_ley, fill=(30, 35, 45, 255))
+    # leyenda compacta: una sola barra "Lluvia" (débil -> fuerte) y el rayo
+    f_ley, f_ley_r = _fuente(10), _fuente(9, False)
+    sw = 11
+    x_sw = 7 + int(medir.textlength("Lluvia", font=f_ley)) + 6
+    lh = 30
+    lx, ly = 8, ALTO_MAPA - 8 - lh
+    lw = x_sw + len(PALETA) * sw + 16 + int(medir.textlength("rayo", font=f_ley)) + 8
+    de.rounded_rectangle((lx, ly, lx + lw, ly + lh), radius=6, fill=(255, 255, 255, 235), outline=(205, 212, 220, 255))
+    de.text((lx + 7, ly + 5), "Lluvia", font=f_ley, fill=(30, 35, 45, 255))
     for i, c in enumerate(PALETA):
-        de.rectangle((lx + x_sw + i * 17, ly + 9, lx + x_sw + i * 17 + 16, ly + 21), fill=(*c, 255))
-    de.text((lx + x_sw, ly + (44 if usa_sat else 25)), "débil", font=f_ley_r, fill=(70, 80, 90, 255))
-    de.text((lx + x_sw + 7 * 17 - medir.textlength("fuerte", font=f_ley_r), ly + (44 if usa_sat else 25)), "fuerte", font=f_ley_r,
+        de.rectangle((lx + x_sw + i * sw, ly + 6, lx + x_sw + i * sw + sw - 1, ly + 14), fill=(*c, 255))
+    de.text((lx + x_sw, ly + 17), "débil", font=f_ley_r, fill=(70, 80, 90, 255))
+    de.text((lx + x_sw + len(PALETA) * sw - medir.textlength("fuerte", font=f_ley_r), ly + 17), "fuerte", font=f_ley_r,
             fill=(70, 80, 90, 255))
-    xr = lx + x_sw + 7 * 17 + 14
-    _rayo(de, xr, ly + 16, 1.3)
-    de.text((xr + 10, ly + 9), "rayo", font=f_ley, fill=(30, 35, 45, 255))
-    if usa_sat:
-        de.text((lx + 10, ly + 26), "Satélite", font=f_ley, fill=(30, 35, 45, 255))
-        a = ALFA_SAT / 255
-        for i, c in enumerate(PALETA):
-            de.rectangle((lx + x_sw + i * 17, ly + 27, lx + x_sw + i * 17 + 16, ly + 39),
-                         fill=tuple(int(c[j] * a + 255 * (1 - a)) for j in range(3)) + (255,))
-        de.text((lx + x_sw + 7 * 17 + 6, ly + 26), "estimada", font=f_ley_r, fill=(70, 80, 90, 255))
+    xr = lx + x_sw + len(PALETA) * sw + 9
+    _rayo(de, xr, ly + 11, 1.0)
+    de.text((xr + 7, ly + 5), "rayo", font=f_ley, fill=(30, 35, 45, 255))
     ocupado.append((lx, ly, lx + lw, ly + lh))
 
     # dirección: seguimiento de las nubes; si no hay, viento en altura (lleva las tormentas) o en superficie
