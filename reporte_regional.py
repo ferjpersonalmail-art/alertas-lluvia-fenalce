@@ -24,7 +24,7 @@ BASE = Path(__file__).resolve().parent
 ZONA = timezone(timedelta(hours=-5))
 REGIONES = [("andina", "Andina", "🏔️"), ("caribe", "Caribe", "🏖️"), ("pacifica", "Pacífica", "🌊"),
             ("orinoquia", "Orinoquía", "🌾"), ("amazonia", "Amazonía", "🌳")]
-POR_DEPTO = {**{c: "caribe" for c in "08 13 20 23 44 47 70 88".split()},
+POR_DEPTO = {**{c: "caribe" for c in "08 13 20 23 44 47 70".split()},
              "27": "pacifica",
              **{c: "orinoquia" for c in "50 81 85 99".split()},
              **{c: "amazonia" for c in "18 86 91 94 95 97".split()}}

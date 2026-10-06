@@ -150,7 +150,7 @@ def movimiento(bt, bt0, t, d, minutos=30):
 # --------------------------------------------------------------------------- índice
 # En la Orinoquía, Amazonía y el Pacífico las nubes frías extensas son lo normal: se exige más área.
 REGION = {**{c: ("andina", 1.0) for c in "05 11 15 17 25 41 54 63 66 68 73 19 76".split()},
-          **{c: ("caribe", 1.5) for c in "08 13 20 23 44 47 70 88".split()},
+          **{c: ("caribe", 1.5) for c in "08 13 20 23 44 47 70".split()},
           **{c: ("pacífico", 1.5) for c in "27 52".split()},
           **{c: ("oriente", 2.0) for c in "50 81 85 99 18 86 91 94 95 97".split()}}
 
