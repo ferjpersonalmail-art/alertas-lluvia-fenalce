@@ -505,9 +505,18 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
             lineas = Image.alpha_composite(lineas, Image.fromarray(capa, "RGBA"))
             regiones_lbl = []
             for i, k_ in enumerate(claves_r):
-                ys_, xs_ = np.nonzero(reg == i + 1)
+                # punto más "adentro" de la región: se encoge la máscara hasta que queda el núcleo
+                m_ = Image.fromarray(((reg == i + 1) * 255).astype(np.uint8))
+                ult = np.array(m_) > 0
+                for _ in range(40):
+                    m_ = m_.filter(ImageFilter.MinFilter(5))
+                    a_ = np.array(m_) > 0
+                    if not a_.any():
+                        break
+                    ult = a_
+                ys_, xs_ = np.nonzero(ult)
                 if len(xs_):
-                    regiones_lbl.append((NOMBRE_REGION[k_], float(np.median(xs_)), float(np.median(ys_)), COLOR_REGION[k_]))
+                    regiones_lbl.append((NOMBRE_REGION[k_], float(xs_.mean()), float(ys_.mean()), COLOR_REGION[k_]))
         except Exception as e:
             log.warning("Regiones en el mapa: %s", e)
             regiones_lbl = []
@@ -683,9 +692,9 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         for nom_r, xr_, yr_, col_r in (regiones_lbl if "regiones_lbl" in dir() else []):
             bb_ = medir.textbbox((0, 0), nom_r, font=f_reg, stroke_width=3)
             tw_, th_ = bb_[2] - bb_[0], bb_[3] - bb_[1]
-            for dy_ in (0, -24, 24, -48, 48, -72, 72):
-                caja_ = (xr_ - tw_ / 2, yr_ - 8 + dy_, xr_ + tw_ / 2, yr_ - 8 + dy_ + th_)
-                if all(caja_[2] < o[0] or caja_[0] > o[2] or caja_[3] < o[1] or caja_[1] > o[3] for o in ocupado + iconos_cajas):
+            for dy_ in (0,):   # centrado dentro de la región
+                caja_ = (xr_ - tw_ / 2, yr_ - th_ / 2, xr_ + tw_ / 2, yr_ + th_ / 2)
+                if True:
                     de.text((caja_[0], caja_[1]), nom_r, font=f_reg, fill=(*[int(v * 0.55) for v in col_r], 255),
                             stroke_width=3, stroke_fill=(255, 255, 255, 230))
                     ocupado.append(caja_)
