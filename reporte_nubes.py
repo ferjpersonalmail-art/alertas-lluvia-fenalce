@@ -265,13 +265,17 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
 
     # 1) subidas a ROJA, a cualquier hora (fuera de los reportes programados)
     rojo_desde = est.get("rojo_desde", {})
+    # máximo 1 aviso por departamento al día (hora Colombia), sea el inmediato o el del reporte programado
+    hoy = f"{ahora:%Y-%m-%d}"
+    avisado = {c: d for c, d in est.get("avisado", {}).items() if d == hoy}
+    est["avisado"] = avisado
     suben = []
     for r in res:
         antes = previos.get(r["codigo"], "BAJA")
         ult = rojo_desde.get(r["codigo"])
         reciente = ult and (ahora - datetime.fromisoformat(ult)).total_seconds() < 6 * 3600
         if (r["probabilidad"] == "ALTA" and ORDEN[antes] < ORDEN["ALTA"] and not reciente and r["rayos"] >= 20
-                and r["codigo"] in PRESENCIA):
+                and r["codigo"] in PRESENCIA and avisado.get(r["codigo"]) != hoy):
             suben.append(r)
     for r in res:
         if r["probabilidad"] == "ALTA":
@@ -280,6 +284,8 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
             rojo_desde.pop(r["codigo"])
     for r in suben:
         rojo_desde[r["codigo"]] = ahora.isoformat()
+        if not prueba:
+            avisado[r["codigo"]] = hoy
     est["rojo_desde"] = rojo_desde
     if suben and not toca_reporte:
         nombres = _lista([r["departamento"] for r in suben])
@@ -326,7 +332,10 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
             lluvia_bogota.enviar(prueba)
         except Exception as e:
             log.warning("Reporte de Bogotá: %s", e)
-        for i, r in enumerate(sorted([r for r in rojas if r["codigo"] in PRESENCIA], key=lambda r: -r["puntaje"])):
+        para_avisar = [r for r in rojas if r["codigo"] in PRESENCIA and avisado.get(r["codigo"]) != hoy]
+        for i, r in enumerate(sorted(para_avisar, key=lambda r: -r["puntaje"])):
+            if not prueba:
+                avisado[r["codigo"]] = hoy
             temas = [tema_depto(r)] + ([None] if i < 5 else [])
             txt = texto_departamento(r, hora_sat, "reporte", prueba)
             for tm in temas:
