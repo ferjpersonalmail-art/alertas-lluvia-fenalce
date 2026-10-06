@@ -127,6 +127,7 @@ def _mosaico(teselas, tx, ty, corte):
 BOGOTA_SABANA = {"11001", "25754", "25175", "25214", "25286", "25473", "25430", "25269", "25377", "25126", "25899",
                  "25740", "25817", "25758", "25799", "25785", "25295", "25099", "25769", "25260"}
 CAJA_BOG = (-74.32, 4.45, -73.95, 5.05)   # sin Sumapaz
+MARGEN_ZOOM = 1.04                         # el departamento ocupa ~96 % del lado más ajustado del mapa
 
 
 def _municipios(codigo):
@@ -465,18 +466,33 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         x1, y1 = _px(lo1, la0, z)
         if (x1 - x0) * 1.06 <= ANCHO and (y1 - y0) * 1.06 <= ALTO_MAPA:
             break
-    ox, oy = int((x0 + x1) / 2 - ANCHO / 2), int((y0 + y1) / 2 - ALTO_MAPA / 2)
-    tx = range(ox // 256, (ox + ANCHO - 1) // 256 + 1)
-    ty = range(oy // 256, (oy + ALTO_MAPA - 1) // 256 + 1)
-    corte = (ox - tx[0] * 256, oy - ty[0] * 256, ox - tx[0] * 256 + ANCHO, oy - ty[0] * 256 + ALTO_MAPA)
+    # acercamiento fraccionario: el departamento llena el cuadro (los niveles enteros de zoom lo dejaban pequeño).
+    # g = píxeles de salida por píxel de tesela; si hay un nivel más (z <= 8) se usan sus teselas y se reducen.
+    f = 1.0 if codigo == "CO" else max(1.0, min(ANCHO / ((x1 - x0) * MARGEN_ZOOM), ALTO_MAPA / ((y1 - y0) * MARGEN_ZOOM), 2.0))
+    g = f
+    if f > 1.02 and z < 9:
+        z += 1
+        x0, y0 = _px(lo0, la1, z)
+        x1, y1 = _px(lo1, la0, z)
+        g = f / 2
+    Ws, Hs = int(round(ANCHO / g)), int(round(ALTO_MAPA / g))
+    ox, oy = int((x0 + x1) / 2 - Ws / 2), int((y0 + y1) / 2 - Hs / 2)
+    tx = range(ox // 256, (ox + Ws - 1) // 256 + 1)
+    ty = range(oy // 256, (oy + Hs - 1) // 256 + 1)
+    corte = (ox - tx[0] * 256, oy - ty[0] * 256, ox - tx[0] * 256 + Ws, oy - ty[0] * 256 + Hs)
+
+    def a_ventana(im, metodo):
+        """Lleva una imagen de la ventana de teselas (Ws x Hs) al tamaño del mapa."""
+        return im if im.size == (ANCHO, ALTO_MAPA) else im.resize((ANCHO, ALTO_MAPA), metodo)
 
     def a_px(lon, lat):
         x, y = _px(lon, lat, z)
-        return x - ox, y - oy
+        return (x - ox) * g, (y - oy) * g
 
     # ---- capas fijas: mapa base, municipios, departamento resaltado
     fondo = Image.new("RGBA", (ANCHO, ALTO_MAPA), (236, 238, 240, 255))
-    fondo = Image.alpha_composite(fondo, _mosaico(_teselas(MAPA, z, tx, ty, CACHE / "mapa"), tx, ty, corte))
+    fondo = Image.alpha_composite(fondo, a_ventana(_mosaico(_teselas(MAPA, z, tx, ty, CACHE / "mapa"), tx, ty, corte),
+                                                   Image.LANCZOS))
     lineas = Image.new("RGBA", (ANCHO, ALTO_MAPA), (0, 0, 0, 0))
     dl = ImageDraw.Draw(lineas)
     # todo el trazo se hace a 3x y se reduce (bordes suaves, sin escalones)
@@ -581,7 +597,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
     encima = Image.alpha_composite(lineas, Image.fromarray(borde, "RGBA"))
 
     # ---- radar: última imagen publicada y la hora anterior, cada 5 min
-    cx_t, cy_t = (ox + ANCHO // 2) // 256, (oy + ALTO_MAPA // 2) // 256
+    cx_t, cy_t = (ox + Ws // 2) // 256, (oy + Hs // 2) // 256
     t_ult, ahora = _ultimo_cuadro(z, cx_t, cy_t)
     if t_ult is None:
         log.warning("Clip %s: Rain-Alarm sin imágenes recientes", codigo)
@@ -595,7 +611,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         if not any(v is not None for v in tes.values()):
             continue
         previo = tes
-        arr = np.array(_mosaico(tes, tx, ty, corte))
+        arr = np.array(a_ventana(_mosaico(tes, tx, ty, corte), Image.NEAREST))
         if cuadros and np.array_equal(arr, cuadros[-1][1]):
             if t == tiempos[-1]:
                 cuadros[-1] = (t, arr)     # misma imagen: se deja con la hora más reciente
@@ -605,8 +621,8 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         return None
     # radar IDEAM (Munchique, Barrancabermeja): donde tiene dato, manda sobre Rain-Alarm
     n_px = 256 * 2 ** z
-    lon_v = (ox + np.arange(ANCHO) + 0.5) / n_px * 360 - 180
-    lat_v = np.degrees(np.arctan(np.sinh(np.pi * (1 - 2 * (oy + np.arange(ALTO_MAPA) + 0.5) / n_px))))
+    lon_v = (ox + (np.arange(ANCHO) + 0.5) / g) / n_px * 360 - 180
+    lat_v = np.degrees(np.arctan(np.sinh(np.pi * (1 - 2 * (oy + (np.arange(ALTO_MAPA) + 0.5) / g) / n_px))))
     LON, LAT = np.meshgrid(lon_v, lat_v)
     ideam = _ideam([t for t, _ in cuadros], LON, LAT)
     usa_ideam = False
@@ -621,17 +637,17 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
             usa_ideam = True
     sat = _goes_lluvia([t for t, _ in cuadros], z, tx, ty, corte)
     usa_sat = bool(sat)
-    ir = {t: v[0] for t, v in sat.items()}
+    ir = {t: a_ventana(v[0], Image.NEAREST) for t, v in sat.items()}
     capas = [(t, *_capa_lluvia(arr)) for t, arr in cuadros]
     lat_c = (la0 + la1) / 2
-    km2_px = (40075.0 * math.cos(math.radians(lat_c)) / (256 * 2 ** z)) ** 2
+    km2_px = (40075.0 * math.cos(math.radians(lat_c)) / (256 * 2 ** z) / g) ** 2
     lluvia_km2 = [float((ll & m_dep).sum() * km2_px) for _, _, ll in capas]
 
     # ---- rayos
     ry = _rayos()
     if len(ry):
         rx, ryy = _px_np(ry[:, 0], ry[:, 1], z)
-        rx, ryy = rx - ox, ryy - oy
+        rx, ryy = (rx - ox) * g, (ryy - oy) * g
         ok = (rx >= 0) & (rx < ANCHO) & (ryy >= 0) & (ryy < ALTO_MAPA)
         rx, ryy, rt = rx[ok], ryy[ok], ry[ok, 2]
     else:
@@ -784,18 +800,6 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
                 de.text((xx_ + 23, cy0 + 19), nombres_c[tp], font=f_ley, fill=(20, 25, 35, 255))
                 xx_ += 26 + medir.textlength(nombres_c[tp], font=f_ley) + 12
             ocupado.append((cx0, cy0, cx0 + ancho_c, cy0 + 40))
-
-    # aviso cuando el radar no muestra lluvia en el departamento (fuera de su alcance o aún sin lluvia)
-    if lluvia_km2[-1] < 20 and rayos_dep >= 15:
-        txt = ["El radar no muestra lluvia en esta zona;",
-               ("la lluvia y los rayos que se ven son del satélite." if usa_sat else
-                "los rayos (satélite) indican la tormenta.")]
-        nw = int(max(medir.textlength(t, font=f_chip_r) for t in txt)) + 20
-        nx, ny = ANCHO - 10 - nw, 10
-        de.rounded_rectangle((nx, ny, nx + nw, ny + 42), radius=9, fill=(255, 248, 225, 255), outline=(220, 190, 120, 255))
-        for i, t in enumerate(txt):
-            de.text((nx + 10, ny + 6 + i * 16), t, font=f_chip_r, fill=(90, 60, 0, 255))
-        ocupado.append((nx, ny, nx + nw, ny + 42))
 
     # municipios donde llueve (punto rojo) y la capital (cuadro azul)
     marcas = []
