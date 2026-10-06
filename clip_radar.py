@@ -449,8 +449,9 @@ def _ids_a_bordes(ids):
 
 # --------------------------------------------------------------------------- clip
 def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, salida=None, forzar=False,
-            viento=None):
-    """Genera el GIF. Devuelve {archivo, hora, hace_min, lluvia_km2, rayos} o None si no hay qué mostrar."""
+            viento=None, flechas=None):
+    """Genera el GIF. Devuelve {archivo, hora, hace_min, lluvia_km2, rayos} o None si no hay qué mostrar.
+    flechas (solo mapa nacional): {región: grados hacia donde van las nubes}."""
     muns, capital = _municipios(codigo)
     if not muns:
         return None
@@ -517,6 +518,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
     borde[..., :3] = borde[..., :3] * (1 - a_lin[..., None]) + np.array(AZUL, np.float32) * a_lin[..., None]
     borde[..., 3] = np.maximum(borde[..., 3], a_lin * 255)
     borde = borde.astype(np.uint8)
+    centros_reg = {}
     if codigo == "CO":
         try:
             from reporte_regional import region_de
@@ -571,6 +573,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
                 ys_, xs_ = np.nonzero(ult)
                 if len(xs_):
                     regiones_lbl.append((NOMBRE_REGION[k_], float(xs_.mean()), float(ys_.mean()), COLOR_REGION[k_]))
+                    centros_reg[k_] = (float(xs_.mean()), float(ys_.mean()))
         except Exception as e:
             log.warning("Regiones en el mapa: %s", e)
             regiones_lbl = []
@@ -716,6 +719,26 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         dibujar_flecha(de, ccx, ccy, grados, 24, 4, (255, 255, 255, 255))
         de.text((mx + 50, my + 7), frase, font=f_ley_r, fill=(70, 80, 90, 255))
         de.text((mx + 50, my + 23), f"hacia el {rumbo(grados)}", font=f_ley, fill=(20, 25, 35, 255))
+        ocupado.append((mx, my, mx + mw, my + mh))
+
+    # mapa nacional: una flecha por región (hacia dónde van las nubes) y su leyenda
+    if codigo == "CO" and flechas and centros_reg:
+        capa_f = Image.new("RGBA", (ANCHO, ALTO_MAPA), (0, 0, 0, 0))
+        dfl = ImageDraw.Draw(capa_f)
+        for k_, g_ in flechas.items():
+            if k_ in centros_reg:
+                cx_, cy_ = centros_reg[k_]
+                dfl.ellipse((cx_ - 15, cy_ - 15, cx_ + 15, cy_ + 15), fill=(255, 255, 255, 215), outline=(*AZUL, 255), width=2)
+                dibujar_flecha(dfl, cx_, cy_, g_, 22, 4, (*AZUL, 255))
+        etiquetas.alpha_composite(capa_f)
+        frase = "Hacia dónde van las nubes"
+        mw = int(medir.textlength(frase, font=f_ley)) + 46
+        mh = 30
+        mx, my = ANCHO - 8 - mw, ALTO_MAPA - 8 - mh
+        de.rounded_rectangle((mx, my, mx + mw, my + mh), radius=6, fill=(255, 255, 255, 235), outline=(205, 212, 220, 255))
+        de.ellipse((mx + 6, my + 4, mx + 28, my + 26), fill=(255, 255, 255, 255), outline=(*AZUL, 255), width=2)
+        dibujar_flecha(de, mx + 17, my + 15, 45, 14, 3, (*AZUL, 255))
+        de.text((mx + 36, my + 8), frase, font=f_ley, fill=(30, 35, 45, 255))
         ocupado.append((mx, my, mx + mw, my + mh))
 
     if codigo == "CO":

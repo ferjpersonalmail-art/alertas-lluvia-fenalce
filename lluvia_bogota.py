@@ -102,6 +102,17 @@ def texto(e, prueba=False):
         L.append(f"☁️ Las nubes van hacia el {mov['hacia']}.")
     elif v.get("alto_dir") is not None and (v.get("alto_kmh") or 0) >= 3:
         L.append(f"☁️ Las nubes van hacia el {rumbos[int((((v['alto_dir'] + 180) % 360) + 22.5) // 45) % 8]}.")
+    crec = ind.get("crec")
+    if crec is not None and (ind.get("frio40") or 0) >= 100:
+        if crec >= 1.3:
+            L.append("📈 *La lluvia se está formando:* las nubes de tormenta están creciendo.")
+        elif crec <= 0.7:
+            L.append("📉 *La lluvia se está disipando:* las nubes de tormenta se están reduciendo.")
+        else:
+            L.append("➡️ Las nubes de lluvia se mantienen: ni crecen ni se disipan.")
+    if v.get("viento_dir") is not None and v.get("viento_kmh") is not None:
+        L.append("💨 Viento cerca del suelo: calmado." if v["viento_kmh"] < 3 else
+                 f"💨 Viento cerca del suelo: viene del {rumbos[int(((v['viento_dir'] % 360) + 22.5) // 45) % 8]}, unos {v['viento_kmh']:.0f} km/h.")
     p = ind.get("probabilidad")
     if p == "ALTA":
         L.append("⛈️ *Puede llover fuerte* en las próximas 2 horas.")

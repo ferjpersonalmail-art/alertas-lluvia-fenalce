@@ -79,7 +79,12 @@ def _campos(malla):
     except Exception as e:
         log.warning("satélite lluvia: %s", e)
     try:
-        out["bt"] = inu.leer_campo(inu.claves("ABI-L2-CMIPF", "M6C13", 1)[-1], "CMI", malla) - 273.15
+        k13 = inu.claves("ABI-L2-CMIPF", "M6C13", 1)
+        out["bt"] = inu.leer_campo(k13[-1], "CMI", malla) - 273.15
+        # imagen de hace ~30 min: para saber si las nubes de lluvia crecen o se disipan
+        antes = min(k13, key=lambda k: abs((inu._inicio(k13[-1]) - inu._inicio(k)).total_seconds() - 1800))
+        if antes != k13[-1]:
+            out["bt0"] = inu.leer_campo(antes, "CMI", malla) - 273.15
     except Exception as e:
         log.warning("satélite nubes: %s", e)
     try:
@@ -116,6 +121,8 @@ def calcular(res: list[dict]):
         if f["bt"] is not None:
             e["frio40"] = float(km2[m & (f["bt"] < -40)].sum())
             e["frio60"] = float(km2[m & (f["bt"] < -60)].sum())
+        if f.get("bt0") is not None:
+            e["frio40_0"] = float(km2[m & (f["bt0"] < -40)].sum())
         est[k] = e
     if len(f["rayos"]):
         px, py = malla.a_pixel(f["rayos"][:, 0], f["rayos"][:, 1])
@@ -143,10 +150,56 @@ def calcular(res: list[dict]):
             e["media"].append(d["departamento"])
         if d.get("movimiento"):
             e["mov"].append(d["movimiento"]["hacia"])
+            if d["movimiento"].get("grados") is not None and d["movimiento"].get("vel_kmh", 0) >= 5:
+                e.setdefault("mov_grados", []).append(d["movimiento"]["grados"])
         v = d.get("viento") or {}
         if v.get("alto_dir") is not None and (v.get("alto_kmh") or 0) >= 3:
             e["viento"].append((v["alto_dir"] + 180) % 360)
+        if v.get("viento_dir") is not None and v.get("viento_kmh") is not None:
+            e.setdefault("sup", []).append((v["viento_dir"], v["viento_kmh"]))
+    _CACHE["ultimo_est"] = est
     return est
+
+
+def tendencia(e):
+    """'crece', 'disipa', 'igual' o None según el área de nubes frías (< -40 °C) ahora y hace 30 min."""
+    a, a0 = e.get("frio40", 0), e.get("frio40_0")
+    if a0 is None or max(a, a0) < 1500:
+        return None
+    if a0 < 500:
+        return "crece"
+    r = a / a0
+    return "crece" if r >= 1.2 else "disipa" if r <= 0.8 else "igual"
+
+
+def viento_superficie(e):
+    """(rumbo de donde viene, km/h) promediando vectores de los departamentos de la región."""
+    s = e.get("sup") or []
+    if not s:
+        return None
+    u = sum(k * np.sin(np.radians(d)) for d, k in s) / len(s)
+    v = sum(k * np.cos(np.radians(d)) for d, k in s) / len(s)
+    vel = float(np.mean([k for _, k in s]))
+    g = np.degrees(np.arctan2(u, v)) % 360
+    return RUMBOS[int((g + 22.5) // 45) % 8], vel
+
+
+def flechas():
+    """Hacia dónde van las nubes en cada región (grados), del último cálculo; para el mapa nacional."""
+    out = {}
+    for k, e in (_CACHE.get("ultimo_est") or {}).items():
+        if e.get("frio40", 0) < 1000 and not e.get("muns"):
+            continue      # sin nubes ni lluvia: no se dibuja flecha
+        if e.get("mov_grados"):
+            out[k] = _grados_medios(e["mov_grados"])
+        elif e.get("viento"):
+            out[k] = _grados_medios(e["viento"])
+    return out
+
+
+def _grados_medios(gs):
+    s = sum(np.sin(np.radians(g)) for g in gs); c = sum(np.cos(np.radians(g)) for g in gs)
+    return float(np.degrees(np.arctan2(s, c)) % 360)
 
 
 def _rumbo_medio(grados):
@@ -218,12 +271,24 @@ def parrafo(e) -> str:
         cielo = "Está nublado en algunas partes"
     else:
         cielo = "El cielo está casi despejado"
-    if e.get("mov"):
+    if e.get("mov_grados"):
+        cielo += f"; las nubes van hacia el {_rumbo_medio(e['mov_grados'])}"
+    elif e.get("mov"):
         cielo += f"; las nubes van hacia el {Counter(e['mov']).most_common(1)[0][0]}"
     elif e.get("viento") and (e["frio40"] >= 1000 or n):
         cielo += f"; las nubes van hacia el {_rumbo_medio(e['viento'])}"
     partes.append(cielo)
     txt = ". ".join(partes) + "."
+    tnd = tendencia(e)
+    if tnd == "crece":
+        txt += "\n📈 *La lluvia se está formando:* las nubes de tormenta están creciendo."
+    elif tnd == "disipa":
+        txt += "\n📉 *La lluvia se está disipando:* las nubes de tormenta se están reduciendo."
+    elif tnd == "igual":
+        txt += "\n➡️ Las nubes de lluvia se mantienen: ni crecen ni se disipan."
+    vs = viento_superficie(e)
+    if vs:
+        txt += "\n💨 Viento cerca del suelo: calmado." if vs[1] < 3 else f"\n💨 Viento cerca del suelo: viene del {vs[0]}, unos {vs[1]:.0f} km/h."
     if e["rayos"] >= 5 and e.get("rayos_dep"):
         txt += f"\n⚡ Presencia de rayos en {_lista(e['rayos_dep'][:4])}."
     prob = []

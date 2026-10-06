@@ -79,24 +79,28 @@ def texto_departamento(r: dict, hora_sat: str, tipo: str = "reporte", prueba: bo
         nubes = "nubes cargadas de agua"
     else:
         nubes = "nubosidad dispersa"
-    tend = ""
-    if r.get("crec") is not None and r["frio40"] >= 100:
-        tend = " que *están creciendo*" if r["crec"] >= 1.3 else " que *se están debilitando*" if r["crec"] <= 0.7 else " que se mantienen"
-    L.append(f"☁️ Hay {nubes}{tend}.")
+    L.append(f"☁️ Hay {nubes}.")
+    if r.get("crec") is not None and r["frio40"] >= 100:   # ¿la lluvia se está formando o disipando? (30 min)
+        if r["crec"] >= 1.3:
+            L.append("📈 *La lluvia se está formando:* las nubes de tormenta están creciendo.")
+        elif r["crec"] <= 0.7:
+            L.append("📉 *La lluvia se está disipando:* las nubes de tormenta se están reduciendo.")
+        else:
+            L.append("➡️ Las nubes de lluvia se mantienen: ni crecen ni se disipan.")
 
     mov = r.get("movimiento")
     v = r.get("viento") or {}
     if mov and mov["vel_kmh"] >= 5:
-        L.append(f"🧭 Las nubes van *hacia el {mov['hacia']}* (unos {mov['vel_kmh']:.0f} km/h).")
+        L.append(f"🧭 Las nubes van *hacia el {mov['hacia']}*" + (f" (unos {mov['vel_kmh']:.0f} km/h)." if mov['vel_kmh'] <= 60 else "."))
     elif mov:
         L.append("🧭 Las nubes están casi quietas sobre la zona.")
     elif v.get("alto_dir") is not None and (v.get("alto_kmh") or 0) >= 5:
         L.append(f"🧭 Las nubes van *hacia el {_rumbo(v['alto_dir'] + 180)}*.")
     if v.get("viento_dir") is not None and v.get("viento_kmh") is not None:
         if v["viento_kmh"] < 3:
-            L.append("💨 Viento: calmado.")
+            L.append("💨 Viento cerca del suelo: calmado.")
         else:
-            L.append(f"💨 Viento: viene del {_rumbo(v['viento_dir'])}, unos {v['viento_kmh']:.0f} km/h.")
+            L.append(f"💨 Viento cerca del suelo: viene del {_rumbo(v['viento_dir'])}, unos {v['viento_kmh']:.0f} km/h.")
 
     if r["rayos"] >= 5:
         L.append(f"⚡ *Sí hay actividad eléctrica:* se detectaron rayos en los últimos 15 minutos.")
@@ -196,7 +200,7 @@ def _enviar_clip(r, prueba=False, temas=(None,)):
         import clip_radar
         info = clip_radar.generar(r["codigo"], r["departamento"], r.get("llueve_en") or r.get("municipios") or [],
                                   nivel=r.get("probabilidad"), movimiento=r.get("movimiento"),
-                                  viento=r.get("viento"))
+                                  viento=r.get("viento"), flechas=r.get("flechas"))
         if not info:
             return
         f = info["archivo"]
@@ -286,7 +290,13 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
             txt_nac = texto_nacional(res, hora_sat, prueba)
         _ntfy(("🧪 " if prueba else "") + f"📋 Reporte nacional: {len(rojas)} con probabilidad alta, {len(amar)} media",
               txt_nac, 4 if rojas else 3, ["clipboard"], qr=True)
-        _enviar_clip({"codigo": "CO", "departamento": "Colombia", "llueve_en": [], "probabilidad": None}, prueba)
+        try:
+            import reporte_regional
+            flechas_reg = reporte_regional.flechas()
+        except Exception:
+            flechas_reg = None
+        _enviar_clip({"codigo": "CO", "departamento": "Colombia", "llueve_en": [], "probabilidad": None,
+                      "flechas": flechas_reg}, prueba)
         enviados += 1
         if ahora.hour == 5:   # en la madrugada: dónde llueve y condiciones de cada departamento de nuestras zonas
             try:

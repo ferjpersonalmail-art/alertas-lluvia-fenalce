@@ -111,7 +111,7 @@ def texto_condiciones(c, por_dep, r, prueba=False):
     L.append(prob)
     if r.get("frio40") is not None:
         cuerpo = rn.texto_departamento(r, datetime.now(ZONA).strftime("%Y-%m-%d %H:%M")).split("\n")
-        L += [x for x in cuerpo if x[:2] in ("☁️", "🧭", "💨", "⚡", "🛑") or x.startswith(("☁", "🧭", "💨", "⚡", "🛑"))]
+        L += [x for x in cuerpo if x[:2] in ("☁️", "🧭", "💨", "⚡", "🛑", "➡️") or x.startswith(("☁", "🧭", "💨", "⚡", "🛑", "📈", "📉", "➡"))]
     L += ["", rn.FIRMA]
     return "\n".join(L)
 
