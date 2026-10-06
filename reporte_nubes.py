@@ -90,12 +90,25 @@ def texto_departamento(r: dict, hora_sat: str, tipo: str = "reporte", prueba: bo
 
     mov = r.get("movimiento")
     v = r.get("viento") or {}
+    # municipios a donde podría llegar la lluvia (trayectoria de la tormenta, 30 a 120 min)
+    llegar = ""
+    try:
+        import trayectoria
+        g_, vel_ = trayectoria.rumbo_y_velocidad(r)
+        dest = trayectoria.camino(r.get("codigo", ""), r.get("llueve_en") or r.get("municipios") or [], g_, vel_)
+        cod_ = str(r.get("codigo", "")).zfill(2)
+        nombres_ = [m["nom"] if m["dep"] == cod_ else f"{m['nom']} ({m['dep_nom']})" for m in dest]
+        if nombres_:
+            llegar = f" y podrían llegar a *{_lista(nombres_)}* en 1 a 2 horas"
+    except Exception as e:
+        log.warning("Trayectoria %s: %s", r.get("departamento"), e)
     if mov and mov["vel_kmh"] >= 5:
-        L.append(f"🧭 Las nubes van *hacia el {mov['hacia']}*" + (f" (unos {mov['vel_kmh']:.0f} km/h)." if mov['vel_kmh'] <= 60 else "."))
+        vel_txt = f" (unos {mov['vel_kmh']:.0f} km/h)" if mov["vel_kmh"] <= 60 else ""
+        L.append(f"🧭 Las nubes van *hacia el {mov['hacia']}*{vel_txt}{llegar}.")
     elif mov:
         L.append("🧭 Las nubes están casi quietas sobre la zona.")
     elif v.get("alto_dir") is not None and (v.get("alto_kmh") or 0) >= 5:
-        L.append(f"🧭 Las nubes van *hacia el {_rumbo(v['alto_dir'] + 180)}*.")
+        L.append(f"🧭 Las nubes van *hacia el {_rumbo(v['alto_dir'] + 180)}*{llegar}.")
     if v.get("viento_dir") is not None and v.get("viento_kmh") is not None:
         if v["viento_kmh"] < 3:
             L.append("💨 Viento cerca del suelo: calmado.")
