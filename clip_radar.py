@@ -329,6 +329,63 @@ def _goes_ir(tiempos, z, tx, ty, corte):
     return {t: imgs[k] for t, k in eleg.items() if imgs.get(k) is not None}
 
 
+SAT_MMH = [1, 2.5, 5, 10, 20, 40]     # mm/h -> clases 0..6 de la leyenda
+ALFA_SAT = 165                         # más clara que la del radar para distinguirla
+
+
+def _capa_sat(rr):
+    out = np.zeros(rr.shape + (4,), np.uint8)
+    v = np.nan_to_num(rr, nan=0.0)
+    m = v >= SAT_MMH[0]
+    clase = np.digitize(v, SAT_MMH[1:])
+    out[m, :3] = np.array(PALETA, np.uint8)[clase[m]]
+    out[m, 3] = ALFA_SAT
+    return Image.fromarray(out, "RGBA"), m
+
+
+def _goes_lluvia(tiempos, z, tx, ty, corte):
+    """Lluvia estimada por el satélite GOES-19 (NOAA, ABI-L2-RRQPEF, cada 10 min) sobre la ventana del clip."""
+    try:
+        import h5py
+        import indice_nubes as inu
+        from fuente_radar import Malla
+        ks = inu.claves("ABI-L2-RRQPEF", "", 2)
+    except Exception as e:
+        log.warning("Lluvia satélite para el clip: %s", e)
+        return {}
+    malla = Malla(z, 256, tx[0], tx[-1], ty[0], ty[-1])
+    eleg = {}
+    for t in tiempos:
+        c = [k for k in ks if inu._inicio(k) <= t]
+        if c:
+            eleg[t] = c[-1]
+    dir_c = CACHE / "goes"
+    dir_c.mkdir(parents=True, exist_ok=True)
+    for f in dir_c.glob("*.nc"):
+        if time.time() - f.stat().st_mtime > 3 * 3600:
+            f.unlink(missing_ok=True)
+
+    def leer(k):
+        f = dir_c / k.rsplit("/", 1)[-1]
+        try:
+            if not f.exists():
+                f.write_bytes(urllib.request.urlopen(f"{inu.BUCKET}/{k}", timeout=180).read())
+            with h5py.File(f, "r") as h:
+                iy, ix = inu._indice(malla, h)
+                y0, y1, x0, x1 = int(iy.min()), int(iy.max()) + 1, int(ix.min()), int(ix.max()) + 1
+                rr = inu._escalar(h["RRQPE"], (slice(y0, y1), slice(x0, x1)))
+                rr[h["DQF"][y0:y1, x0:x1] != 0] = np.nan
+                rr = rr[iy - y0, ix - x0]
+            return k, _capa_sat(rr[corte[1]:corte[3], corte[0]:corte[2]])
+        except Exception as e:
+            log.warning("Lluvia satélite %s: %s", k, e)
+            f.unlink(missing_ok=True)
+            return k, None
+    with ThreadPoolExecutor(3) as ex:
+        res = dict(ex.map(leer, sorted(set(eleg.values()))))
+    return {t: res[k] for t, k in eleg.items() if res.get(k) is not None}
+
+
 # --------------------------------------------------------------------------- clip
 def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, salida=None, forzar=False):
     """Genera el GIF. Devuelve {archivo, hora, hace_min, lluvia_km2, rayos} o None si no hay qué mostrar."""
@@ -421,9 +478,10 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
             arr[m, 3] = 255
             cuadros[i] = (t, arr)
             usa_ideam = True
-    ir = _goes_ir([t for t, _ in cuadros], z, tx, ty, corte)
-    usa_sat = bool(ir)
-    capas = [(t, *_capa_lluvia(arr, 0 if usa_sat else 50)) for t, arr in cuadros]
+    sat = _goes_lluvia([t for t, _ in cuadros], z, tx, ty, corte)
+    usa_sat = bool(sat)
+    ir = {t: v[0] for t, v in sat.items()}
+    capas = [(t, *_capa_lluvia(arr)) for t, arr in cuadros]
     lat_c = (la0 + la1) / 2
     km2_px = (40075.0 * math.cos(math.radians(lat_c)) / (256 * 2 ** z)) ** 2
     lluvia_km2 = [float((ll & m_dep).sum() * km2_px) for _, _, ll in capas]
@@ -462,30 +520,27 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
     de = ImageDraw.Draw(etiquetas)
 
     # leyenda
-    x_sw = 10 + int(medir.textlength("Lluvia", font=f_ley)) + 10
-    lh = 66 if usa_sat else 46
+    x_sw = 10 + int(medir.textlength("Satélite", font=f_ley)) + 10
+    lh = 62 if usa_sat else 46
     lx, ly = 10, ALTO_MAPA - 10 - lh
     lw = x_sw + 7 * 17 + 22 + int(medir.textlength("rayo", font=f_ley)) + 12
     de.rounded_rectangle((lx, ly, lx + lw, ly + lh), radius=9, fill=(255, 255, 255, 255), outline=(205, 212, 220, 255))
-    de.text((lx + 10, ly + 8), "Lluvia", font=f_ley, fill=(30, 35, 45, 255))
+    de.text((lx + 10, ly + 8), "Radar" if usa_sat else "Lluvia", font=f_ley, fill=(30, 35, 45, 255))
     for i, c in enumerate(PALETA):
         de.rectangle((lx + x_sw + i * 17, ly + 9, lx + x_sw + i * 17 + 16, ly + 21), fill=(*c, 255))
-    de.text((lx + x_sw, ly + 25), "débil", font=f_ley_r, fill=(70, 80, 90, 255))
-    de.text((lx + x_sw + 7 * 17 - medir.textlength("fuerte", font=f_ley_r), ly + 25), "fuerte", font=f_ley_r,
+    de.text((lx + x_sw, ly + (44 if usa_sat else 25)), "débil", font=f_ley_r, fill=(70, 80, 90, 255))
+    de.text((lx + x_sw + 7 * 17 - medir.textlength("fuerte", font=f_ley_r), ly + (44 if usa_sat else 25)), "fuerte", font=f_ley_r,
             fill=(70, 80, 90, 255))
     xr = lx + x_sw + 7 * 17 + 14
     _rayo(de, xr, ly + 16, 1.3)
     de.text((xr + 10, ly + 9), "rayo", font=f_ley, fill=(30, 35, 45, 255))
     if usa_sat:
-        de.text((lx + 10, ly + 44), "Nubes", font=f_ley, fill=(30, 35, 45, 255))
-        ancho_b = 7 * 17
-        for k in range(ancho_b):
-            tk = RAMPA_T[-2] + (RAMPA_T[0] - RAMPA_T[-2]) * k / (ancho_b - 1)
-            c = [float(np.interp(tk, RAMPA_T, [cc[i] for cc in RAMPA_C])) for i in range(4)]
-            a = c[3] / 255
-            de.line([(lx + x_sw + k, ly + 45), (lx + x_sw + k, ly + 56)],
-                    fill=tuple(int(c[i] * a + 255 * (1 - a)) for i in range(3)) + (255,))
-        de.text((lx + x_sw + ancho_b + 6, ly + 44), "altas", font=f_ley_r, fill=(70, 80, 90, 255))
+        de.text((lx + 10, ly + 26), "Satélite", font=f_ley, fill=(30, 35, 45, 255))
+        a = ALFA_SAT / 255
+        for i, c in enumerate(PALETA):
+            de.rectangle((lx + x_sw + i * 17, ly + 27, lx + x_sw + i * 17 + 16, ly + 39),
+                         fill=tuple(int(c[j] * a + 255 * (1 - a)) for j in range(3)) + (255,))
+        de.text((lx + x_sw + 7 * 17 + 6, ly + 26), "estimada", font=f_ley_r, fill=(70, 80, 90, 255))
     ocupado.append((lx, ly, lx + lw, ly + lh))
 
     # movimiento de las nubes
@@ -512,7 +567,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
     # aviso cuando el radar no muestra lluvia en el departamento (fuera de su alcance o aún sin lluvia)
     if lluvia_km2[-1] < 20 and rayos_dep >= 15:
         txt = ["El radar no muestra lluvia en esta zona;",
-               ("las nubes y los rayos (satélite) indican la tormenta." if usa_sat else
+               ("la lluvia y los rayos que se ven son del satélite." if usa_sat else
                 "los rayos (satélite) indican la tormenta.")]
         nw = int(max(medir.textlength(t, font=f_chip_r) for t in txt)) + 20
         nx, ny = ANCHO - 10 - nw, 10
@@ -639,7 +694,8 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
     for i, f in enumerate((finales[0], finales[len(finales) // 2], finales[1])):
         muestra.paste(f, (0, i * ALTO))
     dmu = ImageDraw.Draw(muestra)          # los colores de la leyenda siempre entran en la paleta
-    for i, c in enumerate(PALETA + MARCA + [(*cc[:3],) for cc in RAMPA_C]):
+    claros = [tuple(int(c[j] * ALFA_SAT / 255 + 240 * (1 - ALFA_SAT / 255)) for j in range(3)) for c in PALETA]
+    for i, c in enumerate(PALETA + MARCA + claros):
         dmu.rectangle((i * 28, ALTO * 3, i * 28 + 27, ALTO * 3 + 59), fill=c)
     pal = muestra.quantize(colors=200, method=Image.Quantize.MEDIANCUT)
     gif = [f.quantize(palette=pal, dither=Image.Dither.NONE) for f in finales]
