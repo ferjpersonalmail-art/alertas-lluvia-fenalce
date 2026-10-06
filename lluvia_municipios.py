@@ -94,25 +94,48 @@ def departamento_foco(por_dep):
     return max(pool, key=sumar) if pool else None
 
 
+def texto_condiciones(c, por_dep, r, prueba=False):
+    """Condiciones actuales de un departamento: dónde llueve, probabilidad, nubes, viento y rayos."""
+    import reporte_nubes as rn
+    ahora = datetime.now(ZONA)
+    h = f"{ahora.hour % 12 or 12}:{ahora.minute:02d} {'a. m.' if ahora.hour < 12 else 'p. m.'}"
+    nombre, muns = por_dep.get(c, (r.get("departamento", ""), []))
+    prob = {"ALTA": "⛈️ Probabilidad de lluvia fuerte en las próximas 2 horas: *alta*",
+            "MEDIA": "🌦️ Probabilidad de lluvia fuerte en las próximas 2 horas: *media*"}.get(
+        r.get("probabilidad"), "🌤️ Probabilidad de lluvia fuerte en las próximas 2 horas: *baja*")
+    L = (["🧪 *MENSAJE DE PRUEBA*"] if prueba else []) + [f"📍 *{nombre.upper()} · CONDICIONES AHORA*",
+                                                         f"🕘 Radar de las {h}", ""]
+    L.append("☔ *Lloviendo en:* " + (", ".join(f"{EMO[i]} {m}" for m, i, _ in muns[:15])
+                                      + (f" y {len(muns) - 15} municipios más" if len(muns) > 15 else "")
+                                      if muns else "el radar no muestra lluvia en este momento."))
+    L.append(prob)
+    if r.get("frio40") is not None:
+        cuerpo = rn.texto_departamento(r, datetime.now(ZONA).strftime("%Y-%m-%d %H:%M")).split("\n")
+        L += [x for x in cuerpo if x[:2] in ("☁️", "🧭", "💨", "⚡", "🛑") or x.startswith(("☁", "🧭", "💨", "⚡", "🛑"))]
+    L += ["", rn.FIRMA]
+    return "\n".join(L)
+
+
 def enviar(prueba=False, tema=None):
     """Mensaje de municipios con lluvia + clip del departamento con más lluvia en nuestras zonas."""
     import reporte_nubes as rn
     por_dep = calcular()
     if por_dep is None:
         return
+    import json
     rn._ntfy(("🧪 " if prueba else "") + "☔ Dónde está lloviendo ahora", texto(por_dep, prueba), 3, tema=tema)
-    c = departamento_foco(por_dep)
-    if c:
+    # 1) clip de todo el país
+    rn._enviar_clip({"codigo": "CO", "departamento": "Colombia", "llueve_en": [], "probabilidad": None}, prueba, [tema])
+    # 2) un mensaje y un clip por cada departamento de nuestras zonas donde está lloviendo
+    try:
+        indice = {x["codigo"]: x for x in json.loads((BASE / "salida" / "indice_nubes.json").read_text(encoding="utf-8"))["departamentos"]}
+    except Exception:
+        indice = {}
+    for c in [c for c in ZONAS if c in por_dep]:
         nombre, muns = por_dep[c]
-        r = {"codigo": c, "departamento": nombre, "llueve_en": [m for m, _, _ in muns[:4]], "probabilidad": None}
-        try:
-            import json
-            d = json.loads((BASE / "salida" / "indice_nubes.json").read_text(encoding="utf-8"))
-            r.update({k: v for k, v in next(x for x in d["departamentos"] if x["codigo"] == c).items()
-                      if k in ("probabilidad", "movimiento", "viento")})
-        except Exception:
-            pass
-        rn._enviar_clip(r, prueba, [tema])
+        r = dict(indice.get(c, {}), codigo=c, departamento=nombre, llueve_en=[m for m, _, _ in muns[:4]])
+        rn._ntfy(("🧪 " if prueba else "") + f"📍 {nombre}: condiciones ahora", texto_condiciones(c, por_dep, r, prueba), 3, tema=tema)
+        rn._enviar_clip(dict(r, probabilidad=r.get("probabilidad") if r.get("probabilidad") != "BAJA" else None), prueba, [tema])
 
 
 if __name__ == "__main__":

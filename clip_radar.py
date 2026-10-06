@@ -47,7 +47,7 @@ MARCA = [(191, 114, 117), (244, 196, 108), (246, 165, 113), (110, 140, 161), (10
 TEAL, CREMA = (103, 178, 183), (247, 244, 236)
 IDEAM_URL = "https://bart.ideam.gov.co/ospa/radarcol/transparent/{r}/z/{d}/"
 _LISTAS = {}
-CAPITAL = {"25": "11001"}            # Cundinamarca: se marca Bogotá
+CAPITAL = {"25": "11001", "CO": "11001"}            # Cundinamarca: se marca Bogotá
 DIAS = "lunes martes miércoles jueves viernes sábado domingo".split()
 MESES = "enero febrero marzo abril mayo junio julio agosto septiembre octubre noviembre diciembre".split()
 _GEO = None
@@ -135,7 +135,7 @@ def _municipios(codigo):
         p, g = f["properties"], f["geometry"]
         polys = g["coordinates"] if g["type"] == "MultiPolygon" else [g["coordinates"]]
         m = (str(p.get("MPIO_CCNCT")), p.get("MPIO_CNMBR", ""), [[(c[0], c[1]) for c in poly[0]] for poly in polys])
-        if str(p.get("DPTO_CCDGO")).zfill(2) == cod:
+        if cod == "CO" or str(p.get("DPTO_CCDGO")).zfill(2) == cod:
             muns.append(m)
         if m[0] == cod_cap:
             capital = m
@@ -396,7 +396,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
     pts = [c for _, _, an in muns for r in an for c in r]
     lo0, lo1 = min(p[0] for p in pts), max(p[0] for p in pts)
     la0, la1 = min(p[1] for p in pts), max(p[1] for p in pts)
-    for z in range(9, 5, -1):
+    for z in range(9, 4, -1):
         x0, y0 = _px(lo0, la1, z)
         x1, y1 = _px(lo1, la0, z)
         if (x1 - x0) * 1.06 <= ANCHO and (y1 - y0) * 1.06 <= ALTO_MAPA:
@@ -423,7 +423,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
             p = [a_px(*c) for c in r[:: max(1, len(r) // 400)]]
             if len(p) > 2:
                 dm.polygon(p, fill=255)
-                dl.line(p + [p[0]], fill=(70, 80, 100, 110), width=1)
+                (codigo != 'CO') and dl.line(p + [p[0]], fill=(70, 80, 100, 110), width=1)
         c = _centro(anillos)
         if c:
             centros[nom.casefold()] = (nom, a_px(*c))
