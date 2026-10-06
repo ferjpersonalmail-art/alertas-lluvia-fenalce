@@ -386,6 +386,48 @@ def _goes_lluvia(tiempos, z, tx, ty, corte):
     return {t: res[k] for t, k in eleg.items() if res.get(k) is not None}
 
 
+COLOR_REGION = {"andina": (106, 160, 130), "caribe": (232, 180, 80), "pacifica": (103, 178, 183),
+                "orinoquia": (240, 150, 95), "amazonia": (150, 185, 110)}
+NOMBRE_REGION = {"andina": "ANDINA", "caribe": "CARIBE", "pacifica": "PACÍFICA", "orinoquia": "ORINOQUÍA",
+                 "amazonia": "AMAZONÍA"}
+
+
+def icono_cultivo(tipo, d=28):
+    """Circulito con el dibujo del cultivo (maíz, soya o fríjol), dibujado a 4x y reducido para que quede suave."""
+    k = 4
+    D = d * k
+    im = Image.new("RGBA", (D, D), (0, 0, 0, 0))
+    g = ImageDraw.Draw(im)
+    g.ellipse((2 * k, 2 * k, D - 2 * k, D - 2 * k), fill=(255, 255, 255, 255), outline=(*AZUL, 255), width=2 * k)
+    c = D / 2
+    if tipo == "maiz":
+        g.polygon([(c - 9 * k, c + 9 * k), (c - 3 * k, c - 2 * k), (c - 1 * k, c + 9 * k)], fill=(90, 150, 70, 255))
+        g.polygon([(c + 9 * k, c + 9 * k), (c + 3 * k, c - 2 * k), (c + 1 * k, c + 9 * k)], fill=(90, 150, 70, 255))
+        g.ellipse((c - 4 * k, c - 10 * k, c + 4 * k, c + 8 * k), fill=(240, 190, 40, 255), outline=(190, 135, 20, 255), width=k)
+        for yy in range(-7, 7, 3):
+            for xx in (-2, 1):
+                g.ellipse((c + xx * k, c + yy * k, c + (xx + 1.6) * k, c + (yy + 1.6) * k), fill=(210, 150, 20, 255))
+    elif tipo == "soya":
+        g.rounded_rectangle((c - 10 * k, c - 4 * k, c + 10 * k, c + 4 * k), radius=4 * k, fill=(110, 160, 60, 255),
+                            outline=(70, 115, 40, 255), width=k)
+        for xx in (-6, 0, 6):
+            g.ellipse((c + (xx - 2.6) * k, c - 2.6 * k, c + (xx + 2.6) * k, c + 2.6 * k), fill=(200, 215, 120, 255))
+    else:   # fríjol
+        for dx, dy in ((-4, -3), (4, 3)):
+            g.ellipse((c + (dx - 5) * k, c + (dy - 3.5) * k, c + (dx + 5) * k, c + (dy + 3.5) * k),
+                      fill=(150, 45, 45, 255), outline=(95, 25, 25, 255), width=k)
+            g.ellipse((c + (dx - 2) * k, c + (dy - 2) * k, c + dx * k, c + (dy - 0.6) * k), fill=(215, 120, 110, 255))
+    return im.resize((d, d), Image.LANCZOS)
+
+
+def _ids_a_bordes(ids):
+    """Píxeles donde cambia el identificador (límite entre regiones o departamentos)."""
+    b = np.zeros(ids.shape, bool)
+    b[1:, :] |= ids[1:, :] != ids[:-1, :]
+    b[:, 1:] |= ids[:, 1:] != ids[:, :-1]
+    return b
+
+
 # --------------------------------------------------------------------------- clip
 def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, salida=None, forzar=False,
             viento=None):
@@ -437,6 +479,38 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
     borde = np.zeros((ALTO_MAPA, ANCHO, 4), np.uint8)
     borde[halo] = (255, 255, 255, 170)
     borde[linea] = (*AZUL, 255)
+    if codigo == "CO":
+        try:
+            from reporte_regional import region_de
+            claves_r = list(COLOR_REGION)
+            img_reg = Image.new("L", (ANCHO, ALTO_MAPA), 0)
+            img_dep = Image.new("I", (ANCHO, ALTO_MAPA), 0)
+            dr, dd = ImageDraw.Draw(img_reg), ImageDraw.Draw(img_dep)
+            for cod_m, _, anillos in muns:
+                rid = claves_r.index(region_de(cod_m)) + 1
+                for r_ in anillos:
+                    pp = [a_px(*c_) for c_ in r_[:: max(1, len(r_) // 200)]]
+                    if len(pp) > 2:
+                        dr.polygon(pp, fill=rid)
+                        dd.polygon(pp, fill=int(str(cod_m).zfill(5)[:2]))
+            reg = np.array(img_reg)
+            tinte = np.zeros((ALTO_MAPA, ANCHO, 4), np.uint8)
+            for i, k_ in enumerate(claves_r):
+                tinte[reg == i + 1] = (*COLOR_REGION[k_], 60)
+            fondo = Image.alpha_composite(fondo, Image.fromarray(tinte, "RGBA"))
+            capa = np.zeros((ALTO_MAPA, ANCHO, 4), np.uint8)
+            capa[_ids_a_bordes(np.array(img_dep)) & (np.array(img_dep) > 0)] = (110, 120, 135, 120)
+            bor_r = Image.fromarray((_ids_a_bordes(reg) & (reg > 0)).astype(np.uint8) * 255).filter(ImageFilter.MaxFilter(3))
+            capa[np.array(bor_r) > 0] = (*AZUL, 200)
+            lineas = Image.alpha_composite(lineas, Image.fromarray(capa, "RGBA"))
+            regiones_lbl = []
+            for i, k_ in enumerate(claves_r):
+                ys_, xs_ = np.nonzero(reg == i + 1)
+                if len(xs_):
+                    regiones_lbl.append((NOMBRE_REGION[k_], float(np.median(xs_)), float(np.median(ys_)), COLOR_REGION[k_]))
+        except Exception as e:
+            log.warning("Regiones en el mapa: %s", e)
+            regiones_lbl = []
     capa_fuera = Image.fromarray(fuera, "RGBA")      # aclara el mapa y las nubes fuera del departamento (no la lluvia)
     encima = Image.alpha_composite(lineas, Image.fromarray(borde, "RGBA"))
 
@@ -585,6 +659,50 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         de.text((mx + 50, my + 23), f"hacia el {rumbo(grados)}", font=f_ley, fill=(20, 25, 35, 255))
         ocupado.append((mx, my, mx + mw, my + mh))
 
+    if codigo == "CO":
+        try:
+            cult = json.loads((BASE / "datos" / "cultivos.json").read_text(encoding="utf-8"))
+        except Exception:
+            cult = {}
+        tipos_usados, iconos_cajas = [], []
+        for cod_d, tipos in cult.items():
+            if cod_d.startswith("_"):
+                continue
+            pts_d = [a_px(*c_) for cm, _, an in muns if str(cm).zfill(5)[:2] == cod_d for r_ in an for c_ in r_[::20]]
+            if not pts_d:
+                continue
+            cx_ = float(np.median([p_[0] for p_ in pts_d])); cy_ = float(np.median([p_[1] for p_ in pts_d]))
+            for j, tp in enumerate(tipos):
+                ic = icono_cultivo(tp, 24)
+                xi_, yi_ = int(cx_ - 12 + (j - (len(tipos) - 1) / 2) * 22), int(cy_ - 12)
+                etiquetas.alpha_composite(ic, (xi_, yi_))
+                iconos_cajas.append((xi_, yi_, xi_ + 24, yi_ + 24))
+                if tp not in tipos_usados:
+                    tipos_usados.append(tp)
+        f_reg = _fuente(15)
+        for nom_r, xr_, yr_, col_r in (regiones_lbl if "regiones_lbl" in dir() else []):
+            bb_ = medir.textbbox((0, 0), nom_r, font=f_reg, stroke_width=3)
+            tw_, th_ = bb_[2] - bb_[0], bb_[3] - bb_[1]
+            for dy_ in (0, -24, 24, -48, 48, -72, 72):
+                caja_ = (xr_ - tw_ / 2, yr_ - 8 + dy_, xr_ + tw_ / 2, yr_ - 8 + dy_ + th_)
+                if all(caja_[2] < o[0] or caja_[0] > o[2] or caja_[3] < o[1] or caja_[1] > o[3] for o in ocupado + iconos_cajas):
+                    de.text((caja_[0], caja_[1]), nom_r, font=f_reg, fill=(*[int(v * 0.55) for v in col_r], 255),
+                            stroke_width=3, stroke_fill=(255, 255, 255, 230))
+                    ocupado.append(caja_)
+                    break
+        if tipos_usados:
+            nombres_c = {"maiz": "Maíz", "soya": "Soya", "frijol": "Fríjol"}
+            ancho_c = 14 + sum(26 + int(medir.textlength(nombres_c[tp], font=f_ley)) + 12 for tp in tipos_usados)
+            cx0, cy0 = ANCHO - 10 - ancho_c, ALTO_MAPA - 10 - 40
+            de.rounded_rectangle((cx0, cy0, cx0 + ancho_c, cy0 + 40), radius=9, fill=(255, 255, 255, 255), outline=(205, 212, 220, 255))
+            de.text((cx0 + 10, cy0 + 3), "Cultivos FENALCE", font=f_ley_r, fill=(70, 80, 90, 255))
+            xx_ = cx0 + 10
+            for tp in tipos_usados:
+                etiquetas.alpha_composite(icono_cultivo(tp, 20), (int(xx_), int(cy0 + 17)))
+                de.text((xx_ + 23, cy0 + 19), nombres_c[tp], font=f_ley, fill=(20, 25, 35, 255))
+                xx_ += 26 + medir.textlength(nombres_c[tp], font=f_ley) + 12
+            ocupado.append((cx0, cy0, cx0 + ancho_c, cy0 + 40))
+
     # aviso cuando el radar no muestra lluvia en el departamento (fuera de su alcance o aún sin lluvia)
     if lluvia_km2[-1] < 20 and rayos_dep >= 15:
         txt = ["El radar no muestra lluvia en esta zona;",
@@ -603,7 +721,7 @@ def generar(codigo, departamento="", resaltar=(), nivel=None, movimiento=None, s
         c = centros.get(str(nom).casefold())
         if c:
             marcas.append((_titulo(nom) if str(nom).isupper() else str(nom), c[1], "llueve"))
-    if capital and capital[1].casefold() not in {m[0].casefold() for m in marcas}:
+    if codigo != "CO" and capital and capital[1].casefold() not in {m[0].casefold() for m in marcas}:
         c = _centro(capital[2])
         if c:
             marcas.append((_titulo(capital[1]), a_px(*c), "capital"))

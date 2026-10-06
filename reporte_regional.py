@@ -138,50 +138,51 @@ def _lista(xs):
 
 
 def parrafo(e) -> str:
+    """Párrafo en lenguaje sencillo, para productores."""
     partes = []
     n = len(e["muns"])
     if n:
-        txt = f"llueve en {n} municipio{'s' if n > 1 else ''}"
+        txt = f"Está lloviendo en {n} municipio{'s' if n > 1 else ''} ({_lista(e['muns'][:4])}{' y otros' if n > 4 else ''})"
         if e["radar_fuerte_km2"] >= 20:
-            txt += ", con núcleos de lluvia fuerte"
-        txt += f" ({_lista(e['muns'][:4])}{' y otros' if n > 4 else ''})"
-        partes.append(txt[0].upper() + txt[1:])
+            txt += " y en algunos puntos llueve fuerte"
+        partes.append(txt)
+    elif e["sat_km2"] >= 3000:
+        partes.append("Hay lluvias en buena parte de la región" + (" y en algunos puntos llueve fuerte" if e["sat_fuerte_km2"] >= 100 else ""))
     elif e["sat_km2"] >= 300:
-        partes.append(f"El satélite estima lluvia en unos {round(e['sat_km2'], -2):,.0f} km²".replace(",", ".")
-                      + (", con sectores de lluvia fuerte" if e["sat_fuerte_km2"] >= 100 else ""))
+        partes.append("Hay lluvias en algunos sectores" + (" y en algunos puntos llueve fuerte" if e["sat_fuerte_km2"] >= 100 else ""))
     else:
-        partes.append("Sin lluvia importante en este momento")
+        partes.append("Por ahora no está lloviendo")
     if e["frio60"] >= 1500:
-        nubes = "hay nubes de tormenta muy desarrolladas"
+        cielo = "hay nubes de tormenta"
     elif e["frio40"] >= 5000:
-        nubes = "hay nubosidad densa y extensa"
+        cielo = "el cielo está muy nublado"
     elif e["frio40"] >= 1000:
-        nubes = "hay nubosidad densa en algunos sectores"
+        cielo = "está nublado en algunas partes"
     else:
-        nubes = "la nubosidad es dispersa"
+        cielo = "el cielo está casi despejado"
     if e["rayos"] >= 50:
-        nubes += f", con mucha actividad eléctrica ({e['rayos']} rayos en 15 min)"
+        cielo += " y caen muchos rayos"
     elif e["rayos"] >= 5:
-        nubes += ", con algo de actividad eléctrica"
-    partes.append(nubes)
+        cielo += " y caen algunos rayos"
+    partes.append(cielo)
     if e.get("mov"):
-        partes.append(f"las nubes se mueven hacia el {Counter(e['mov']).most_common(1)[0][0]}")
+        partes.append(f"las nubes van hacia el {Counter(e['mov']).most_common(1)[0][0]}")
     elif e.get("viento") and (e["frio40"] >= 1000 or n):
-        partes.append(f"los vientos de altura llevan las nubes hacia el {_rumbo_medio(e['viento'])}")
-    txt = partes[0] + "; " + "; ".join(partes[1:]) + "."
+        partes.append(f"las nubes van hacia el {_rumbo_medio(e['viento'])}")
+    txt = partes[0] + "; " + ", ".join(partes[1:]) + "."
     prob = []
     if e.get("alta"):
-        prob.append(f"⛈️ Probabilidad *alta* de lluvia fuerte: {_lista(e['alta'])}.")
+        prob.append(f"⛈️ *Puede llover fuerte* en las próximas 2 horas en: {_lista(e['alta'])}.")
     if e.get("media"):
-        prob.append(f"🌦️ Probabilidad *media*: {_lista(e['media'])}.")
-    return f"{e['emo']} *Región {e['nombre']}*: {txt}" + ("\n" + " ".join(prob) if prob else "")
+        prob.append(f"🌦️ *Podría llover fuerte* en: {_lista(e['media'])}.")
+    return f"{e['emo']} *Región {e['nombre']}*: {txt}" + ("\n" + "\n".join(prob) if prob else "")
 
 
 def texto(est, hora_txt: str, prueba=False) -> str:
     import reporte_nubes as rn
     L = (["🧪 *MENSAJE DE PRUEBA*"] if prueba else [])
-    L += ["🌎 *REPORTE NACIONAL DE LLUVIAS POR REGIONES · FENALCE*",
-          f"🕘 Radar y satélite de las {hora_txt} · probabilidad para las próximas 2 horas", ""]
+    L += ["🌎 *¿CÓMO ESTÁ LLOVIENDO EN EL PAÍS? · FENALCE*",
+          f"🕘 Así está el tiempo a las {hora_txt}", ""]
     for k, _, _ in REGIONES:
         L += [parrafo(est[k]), ""]
     L += [f"🌐 Radar y estaciones en nuestro *Portal Agroclimático FENALCE* (versión en desarrollo): {rn.PORTAL}",
