@@ -37,8 +37,9 @@ FIRMA = ("_Estimación con radar e imágenes de satélite; puede haber diferenci
 COLOR = {"ALTA": ("⛈️", "ALTA"), "MEDIA": ("🌦️", "MEDIA"), "BAJA": ("🌤️", "BAJA")}
 ORDEN = {"BAJA": 0, "MEDIA": 1, "ALTA": 2}
 # Avisos por departamento solo donde FENALCE tiene mesa técnica (el reporte nacional sí cubre todo el país).
-# Tolima, Santander, Córdoba, Bolívar y Cundinamarca. Para agregar uno, poner su código DANE aquí.
-PRESENCIA = {"73", "68", "23", "13", "25"}
+# Antioquia, Bolívar, Córdoba, Cundinamarca, Norte de Santander, Santander, Tolima y Valle del Cauca.
+# Para agregar uno, poner su código DANE aquí.
+PRESENCIA = {"05", "13", "23", "25", "54", "68", "73", "76"}
 DIR_VIENTO = ["norte", "nororiente", "oriente", "suroriente", "sur", "suroccidente", "occidente", "noroccidente"]
 
 
