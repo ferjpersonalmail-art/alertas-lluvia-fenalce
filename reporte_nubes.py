@@ -36,10 +36,10 @@ FIRMA = ("_Estimación con radar e imágenes de satélite; puede haber diferenci
          "*FENALCE · Equipo de Agroclimatología*\nJuan Gómez · Jhon Valencia")
 COLOR = {"ALTA": ("⛈️", "ALTA"), "MEDIA": ("🌦️", "MEDIA"), "BAJA": ("🌤️", "BAJA")}
 ORDEN = {"BAJA": 0, "MEDIA": 1, "ALTA": 2}
-# Avisos por departamento solo donde FENALCE tiene mesa técnica (el reporte nacional sí cubre todo el país).
-# Antioquia, Bolívar, Córdoba, Cundinamarca, Norte de Santander, Santander, Tolima y Valle del Cauca.
-# Para agregar uno, poner su código DANE aquí.
-PRESENCIA = {"05", "13", "23", "25", "54", "68", "73", "76"}
+# Departamentos que reciben avisos (máx. 2 al día c/u). Para agregar o quitar uno, editar su código DANE.
+# Todo el país menos la región Amazonía (18 Caquetá, 86 Putumayo, 95 Guaviare; 91/94/97 inactivos)
+PRESENCIA = {"05", "08", "13", "15", "17", "19", "20", "23", "25", "27", "41", "44", "47",
+             "50", "52", "54", "63", "66", "68", "70", "73", "76", "81", "85", "99"}
 DIR_VIENTO = ["norte", "nororiente", "oriente", "suroriente", "sur", "suroccidente", "occidente", "noroccidente"]
 
 
@@ -254,20 +254,22 @@ def _resumen(hora_sat, res, prueba):
 def _eventos(res, est, avisado, hoy, prueba):
     """Mensajes por evento (no a hora fija). Cada uno sale cuando el evento EMPIEZA y como máximo una vez
     por media jornada (mañana / tarde-noche):
-      • Nacional: tormentas fuertes (probabilidad alta) en 2 o más regiones a la vez.
+      • Nacional: tormentas fuertes (probabilidad alta) en 2 o más regiones a la vez; máximo 1 por día.
       • Bogotá: empieza a llover en la zona urbana (radar)."""
     n = 0
     try:
         import reporte_regional
         regiones = {reporte_regional.POR_DEPTO.get(r["codigo"], "andina") for r in res if r["probabilidad"] == "ALTA"}
         extensa = len(regiones) >= 2
-        if extensa and not est.get("nacional_extensa") and avisado.get("_nacional") != hoy:
+        dia = hoy.split("-manana")[0].split("-tarde")[0]   # nacional: máximo 1 por día
+        if extensa and not est.get("nacional_extensa") and est.get("nacional_dia") != dia \
+                and avisado.get("_nacional") != hoy:
             txt = reporte_regional.generar(res, prueba)
             _ntfy(("🧪 " if prueba else "") + "📋 Reporte nacional: tormentas en varias regiones", txt, 4, ["clipboard"])
             _enviar_clip({"codigo": "CO", "departamento": "Colombia", "llueve_en": [], "probabilidad": None,
                           "flechas": reporte_regional.flechas()}, prueba)
             if not prueba:
-                avisado["_nacional"] = hoy
+                est["nacional_dia"] = dia
             n += 1
         est["nacional_extensa"] = extensa
     except Exception as e:
