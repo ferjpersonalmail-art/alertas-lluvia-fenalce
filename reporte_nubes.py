@@ -317,8 +317,12 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
         antes = previos.get(r["codigo"], "BAJA")
         ult = rojo_desde.get(r["codigo"])
         reciente = ult and (ahora - datetime.fromisoformat(ult)).total_seconds() < 6 * 3600
-        if (r["probabilidad"] == "ALTA" and ORDEN[antes] < ORDEN["ALTA"] and not reciente and r["rayos"] >= 20
-                and r["codigo"] in PRESENCIA and avisado.get(r["codigo"]) != hoy):
+        # Aviso si (a) hay probabilidad ALTA con rayos, aunque ya viniera en alto (tormenta que sigue activa en la
+        # nueva media jornada), o (b) probabilidad MEDIA pero el radar ya muestra lluvia en 3 o más municipios.
+        alta = r["probabilidad"] == "ALTA" and r["rayos"] >= 20
+        media_llueve = r["probabilidad"] == "MEDIA" and len(r.get("llueve_en") or []) >= 3 and r["rayos"] >= 5
+        if (alta or media_llueve) and r["codigo"] in PRESENCIA and avisado.get(r["codigo"]) != hoy:
+            r["_tipo"] = "sube" if (alta and ORDEN[antes] < ORDEN["ALTA"]) else "sigue"
             suben.append(r)
     for r in res:
         if r["probabilidad"] == "ALTA":
@@ -333,14 +337,21 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
     if suben and not toca_reporte:
         nombres = _lista([r["departamento"] for r in suben])
         if len(suben) > 1:   # con un solo departamento basta su propio mensaje
-            _ntfy(("🧪 " if prueba else "") + f"⬆️⛈️ Suben a probabilidad alta: {nombres}",
-                  f"⬆️ Suben a probabilidad alta de lluvia fuerte: {nombres}.\nAbajo va el mensaje de cada departamento para reenviar.", 5, ["warning"])
+            _ntfy(("🧪 " if prueba else "") + f"⛈️ Avisos de lluvia: {nombres}",
+                  f"⛈️ Avisos de lluvia fuerte para: {nombres}.\nAbajo va el mensaje de cada departamento para reenviar.", 5, ["warning"])
         for i, r in enumerate(sorted(suben, key=lambda r: -r["puntaje"])):
             # el técnico del departamento siempre recibe el suyo; al supervisor le llegan máximo 5
             temas = [tema_depto(r)] + ([None] if i < 5 else [])
-            txt = texto_departamento(r, hora_sat, "sube", prueba)
+            tipo = r.get("_tipo", "sube")
+            txt = texto_departamento(r, hora_sat, tipo, prueba)
+            if tipo == "sube":
+                tit = f"⬆️⛈️ {r['departamento']}: sube a probabilidad alta"
+            elif r["probabilidad"] == "ALTA":
+                tit = f"⛈️ {r['departamento']}: probabilidad alta de lluvia fuerte"
+            else:
+                tit = f"🌦️ {r['departamento']}: está lloviendo"
             for tm in temas:
-                _ntfy(("🧪 " if prueba else "") + f"⬆️⛈️ {r['departamento']}: sube a probabilidad alta", txt, 5, ["warning"], tema=tm)
+                _ntfy(("🧪 " if prueba else "") + tit, txt, 5, ["warning"], tema=tm)
             _enviar_clip(r, prueba, temas)
             enviados += 1
 
