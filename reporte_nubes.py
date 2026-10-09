@@ -28,6 +28,7 @@ BASE = Path(__file__).resolve().parent
 ZONA = timezone(timedelta(hours=-5))
 HORAS_REPORTE = ()   # sin reportes a hora fija: todo se envía por evento (antes 5 a. m., 1 p. m. y 7 p. m.)
 BOGOTA_KM2_EVENTO = 10   # km² con lluvia en la zona urbana de Bogotá para considerar que "empezó a llover"
+SABANA_KM2_EVENTO = 50   # o km² con lluvia sumando los municipios de la Sabana (Cota, Chía, Funza, Madrid…)
 ESTADO = BASE / "estado" / "reporte_nubes.json"
 OSPA = "https://www.ideam.gov.co/nuestra-entidad/servicio-de-pronosticos-y-alertas"   # pronosticosyalertas.gov.co tiene el certificado vencido
 PORTAL = "https://agroclima-fenalce-portal.vercel.app/"
@@ -277,7 +278,8 @@ def _eventos(res, est, avisado, hoy, prueba):
     try:
         import lluvia_bogota
         eb = lluvia_bogota.calcular()
-        llueve = bool(eb.get("bogota")) and eb["bogota"]["km2"] >= BOGOTA_KM2_EVENTO
+        km_sabana = sum(a for _, _, a in eb.get("sabana", []))
+        llueve = (bool(eb.get("bogota")) and eb["bogota"]["km2"] >= BOGOTA_KM2_EVENTO) or km_sabana >= SABANA_KM2_EVENTO
         if llueve and not est.get("bogota_llueve") and avisado.get("_bogota") != hoy:
             lluvia_bogota.enviar(prueba, e=eb)
             if not prueba:
