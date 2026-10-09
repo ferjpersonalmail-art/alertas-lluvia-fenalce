@@ -37,7 +37,7 @@ FIRMA = ("_Estimación con radar e imágenes de satélite; puede haber diferenci
          "*FENALCE · Equipo de Agroclimatología*\nJuan Gómez · Jhon Valencia")
 COLOR = {"ALTA": ("⛈️", "ALTA"), "MEDIA": ("🌦️", "MEDIA"), "BAJA": ("🌤️", "BAJA")}
 ORDEN = {"BAJA": 0, "MEDIA": 1, "ALTA": 2}
-# Departamentos que reciben avisos (máx. 2 al día c/u). Para agregar o quitar uno, editar su código DANE.
+# Departamentos que reciben avisos (sin límite diario; 1 h entre eventos, actualización cada 3 h). Para agregar o quitar uno, editar su código DANE.
 # Todo el país menos la región Amazonía (18 Caquetá, 86 Putumayo, 95 Guaviare; 91/94/97 inactivos)
 PRESENCIA = {"05", "08", "13", "15", "17", "19", "20", "23", "25", "27", "41", "44", "47",
              "50", "52", "54", "63", "66", "68", "70", "73", "76", "81", "85", "99"}
@@ -280,10 +280,13 @@ def _eventos(res, est, avisado, hoy, prueba):
         eb = lluvia_bogota.calcular()
         km_sabana = sum(a for _, _, a in eb.get("sabana", []))
         llueve = (bool(eb.get("bogota")) and eb["bogota"]["km2"] >= BOGOTA_KM2_EVENTO) or km_sabana >= SABANA_KM2_EVENTO
-        if llueve and not est.get("bogota_llueve") and avisado.get("_bogota") != hoy:
+        ult_b = est.get("ult_aviso", {}).get("_bogota")
+        h_b = (datetime.now(ZONA) - datetime.fromisoformat(ult_b)).total_seconds() / 3600 if ult_b else 99
+        if llueve and not est.get("bogota_llueve") and h_b >= 1:   # cada vez que empieza a llover (mín. 1 h)
             lluvia_bogota.enviar(prueba, e=eb)
             if not prueba:
                 avisado["_bogota"] = hoy
+                est.setdefault("ult_aviso", {})["_bogota"] = datetime.now(ZONA).isoformat()
             n += 1
         est["bogota_llueve"] = llueve
     except Exception as e:
@@ -307,11 +310,16 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
 
     # 1) subidas a ROJA, a cualquier hora (fuera de los reportes programados)
     rojo_desde = est.get("rojo_desde", {})
-    # máximo 2 avisos por departamento al día (hora Colombia): uno en la mañana (antes de las 12 m.) y otro en la
-    # tarde/noche, sea el inmediato o el del reporte programado. "hoy" es la media jornada actual.
+    # Sin límite diario por departamento (ver ult_aviso / activo más abajo). "hoy" (media jornada) se conserva
+    # solo como registro.
     hoy = f"{ahora:%Y-%m-%d}-" + ("manana" if ahora.hour < 12 else "tarde")
     avisado = {c: d for c, d in est.get("avisado", {}).items() if d == hoy}
     est["avisado"] = avisado
+    if "ult_aviso" not in est:   # paso del límite por media jornada al de eventos: no repetir los de hoy
+        est["ult_aviso"] = {c: rojo_desde.get(c, ahora.isoformat()) for c in avisado}
+        est["activo"] = {c: True for c in avisado}
+    ult_aviso = est.setdefault("ult_aviso", {})    # último aviso por departamento (hora)
+    activo = est.setdefault("activo", {})          # ¿el departamento estaba en evento en el ciclo anterior?
     suben = []
     for r in res:
         antes = previos.get(r["codigo"], "BAJA")
@@ -321,9 +329,16 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
         # nueva media jornada), o (b) probabilidad MEDIA pero el radar ya muestra lluvia en 3 o más municipios.
         alta = r["probabilidad"] == "ALTA" and r["rayos"] >= 20
         media_llueve = r["probabilidad"] == "MEDIA" and len(r.get("llueve_en") or []) >= 3 and r["rayos"] >= 5
-        if (alta or media_llueve) and r["codigo"] in PRESENCIA and avisado.get(r["codigo"]) != hoy:
+        cod = r["codigo"]
+        evento = (alta or media_llueve) and cod in PRESENCIA
+        ult_av = ult_aviso.get(cod)
+        horas = (ahora - datetime.fromisoformat(ult_av)).total_seconds() / 3600 if ult_av else 99
+        # Sin límite diario: aviso cuando EMPIEZA un evento (mín. 1 h desde el anterior, para que no se repita si
+        # el índice sube y baja), y actualización cada 3 h si la tormenta sigue activa.
+        if evento and ((not activo.get(cod) and horas >= 1) or horas >= 3):
             r["_tipo"] = "sube" if (alta and ORDEN[antes] < ORDEN["ALTA"]) else "sigue"
             suben.append(r)
+        activo[cod] = bool(evento)
     for r in res:
         if r["probabilidad"] == "ALTA":
             rojo_desde.setdefault(r["codigo"], ahora.isoformat())
@@ -333,6 +348,7 @@ def ejecutar(forzar=False, prueba=False, ahora=None):
         rojo_desde[r["codigo"]] = ahora.isoformat()
         if not prueba:
             avisado[r["codigo"]] = hoy
+            ult_aviso[r["codigo"]] = ahora.isoformat()
     est["rojo_desde"] = rojo_desde
     if suben and not toca_reporte:
         nombres = _lista([r["departamento"] for r in suben])
