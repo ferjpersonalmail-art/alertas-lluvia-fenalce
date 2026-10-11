@@ -1,17 +1,17 @@
 {
- "hora_satelite": "2026-10-11 16:40",
+ "hora_satelite": "2026-10-11 16:50",
  "departamentos": [
   {
    "movimiento": {
-    "hacia": "suroriente",
-    "vel_kmh": 66.94336194176547,
-    "grados": 115.64100582430528
+    "hacia": "oriente",
+    "vel_kmh": 64.99999938329505,
+    "grados": 111.80140948635182
    },
    "viento": {
-    "viento_kmh": 7.6,
-    "viento_dir": 25,
-    "alto_kmh": 15.6,
-    "alto_dir": 32
+    "viento_kmh": 3.8,
+    "viento_dir": 11,
+    "alto_kmh": 14.5,
+    "alto_dir": 24
    },
    "codigo": "20",
    "region": "caribe",
@@ -19,40 +19,83 @@
    "puntaje": 10,
    "probabilidad": "ALTA",
    "municipios": [
-    "El Copey",
-    "Bosconia",
-    "Valledupar",
-    "El Paso"
+    "Aguachica",
+    "La Gloria"
    ],
-   "llueve_en": [],
+   "llueve_en": [
+    "Aguachica",
+    "La Gloria"
+   ],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~4,686 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~1,294 km²",
-    "75 rayos en 15 min",
-    "nubes gruesas (COD ≥ 30) en ~1,528 km²",
-    "modelo: prob. lluvia 74 %, agua precipitable 55 mm, CAPE 3510 J/kg"
+    "nubes densas (cima < −40 °C) en ~4,972 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~1,720 km²",
+    "105 rayos en 15 min",
+    "nubes gruesas (COD ≥ 30) en ~1,388 km²",
+    "modelo: prob. lluvia 78 %, agua precipitable 55 mm, CAPE 3770 J/kg"
    ],
-   "lluvia_km2": 0,
+   "lluvia_km2": 184,
+   "lluvia_moderada_km2": 113,
+   "frio40": 7457.305396556854,
+   "frio60": 2579.6887246370316,
+   "btmin": -74.08163452148438,
+   "crec": 1.2699701078969015,
+   "rayos": 105,
+   "cod_gruesa": 2082.462532043457
+  },
+  {
+   "movimiento": {
+    "hacia": "oriente",
+    "vel_kmh": 36.297032833099365,
+    "grados": 90.0
+   },
+   "viento": {
+    "viento_kmh": 7.7,
+    "viento_dir": 249,
+    "alto_kmh": 6.8,
+    "alto_dir": 45
+   },
+   "codigo": "23",
+   "region": "caribe",
+   "departamento": "Córdoba",
+   "puntaje": 9,
+   "probabilidad": "MEDIA",
+   "municipios": [
+    "Puerto Libertador",
+    "Montería",
+    "Tierralta",
+    "Valencia"
+   ],
+   "llueve_en": [
+    "Puerto Libertador"
+   ],
+   "razones": [
+    "nubes densas (cima < −40 °C) en ~2,429 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~618 km²",
+    "nubes creciendo (+72 % en 30 min)",
+    "16 rayos en 15 min",
+    "modelo: prob. lluvia 95 %, agua precipitable 57 mm, CAPE 2590 J/kg"
+   ],
+   "lluvia_km2": 25,
    "lluvia_moderada_km2": 0,
-   "frio40": 7028.943598270416,
-   "frio60": 1941.7056329250336,
-   "btmin": -72.79110717773438,
-   "crec": 1.2177694860138493,
-   "rayos": 75,
-   "cod_gruesa": 2291.2921003103256
+   "frio40": 3643.4633836746216,
+   "frio60": 927.122770190239,
+   "btmin": -80.22695922851562,
+   "crec": 1.7237354581072388,
+   "rayos": 16,
+   "cod_gruesa": 685.4885537624359
   },
   {
    "movimiento": null,
    "viento": {
-    "viento_kmh": 5.3,
-    "viento_dir": 305,
-    "alto_kmh": 13.4,
-    "alto_dir": 27
+    "viento_kmh": 11.9,
+    "viento_dir": 335,
+    "alto_kmh": 15.2,
+    "alto_dir": 18
    },
    "codigo": "47",
    "region": "caribe",
    "departamento": "Magdalena",
-   "puntaje": 10,
+   "puntaje": 9,
    "probabilidad": "ALTA",
    "municipios": [
     "Pivijay",
@@ -62,101 +105,20 @@
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~9,903 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~7,521 km²",
-    "173 rayos en 15 min",
-    "nubes gruesas (COD ≥ 30) en ~3,884 km²",
-    "modelo: prob. lluvia 80 %, agua precipitable 55 mm, CAPE 4420 J/kg"
+    "nubes densas (cima < −40 °C) en ~10,044 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~7,252 km²",
+    "135 rayos en 15 min",
+    "nubes gruesas (COD ≥ 30) en ~3,604 km²",
+    "modelo: prob. lluvia 68 %, agua precipitable 53 mm, CAPE 3810 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 14855.036854624748,
-   "frio60": 11281.141306996346,
-   "btmin": -83.48397827148438,
-   "crec": 1.083136273382855,
-   "rayos": 173,
-   "cod_gruesa": 5825.814098358154
-  },
-  {
-   "movimiento": {
-    "hacia": "occidente",
-    "vel_kmh": 4.843328952789307,
-    "grados": 270.0
-   },
-   "viento": {
-    "viento_kmh": 4.9,
-    "viento_dir": 66,
-    "alto_kmh": 3.8,
-    "alto_dir": 288
-   },
-   "codigo": "54",
-   "region": "andina",
-   "departamento": "Norte de Santander",
-   "puntaje": 10,
-   "probabilidad": "ALTA",
-   "municipios": [
-    "El Carmen",
-    "Teorama",
-    "Convención",
-    "San Calixto"
-   ],
-   "llueve_en": [],
-   "razones": [
-    "nubes densas (cima < −40 °C) en ~2,937 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~965 km²",
-    "nubes creciendo (+96 % en 30 min)",
-    "128 rayos en 15 min",
-    "nubes gruesas (COD ≥ 30) en ~2,556 km²",
-    "modelo: prob. lluvia 98 %, agua precipitable 43 mm, CAPE 1510 J/kg"
-   ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 2936.6636892557144,
-   "frio60": 965.3394464254379,
-   "btmin": -75.18778991699219,
-   "crec": 1.9599459650766526,
-   "rayos": 128,
-   "cod_gruesa": 2555.625969171524
-  },
-  {
-   "movimiento": {
-    "hacia": "oriente",
-    "vel_kmh": 24.310646057128906,
-    "grados": 90.0
-   },
-   "viento": {
-    "viento_kmh": 0.9,
-    "viento_dir": 53,
-    "alto_kmh": 10.3,
-    "alto_dir": 111
-   },
-   "codigo": "27",
-   "region": "pacífico",
-   "departamento": "Chocó",
-   "puntaje": 9,
-   "probabilidad": "MEDIA",
-   "municipios": [
-    "Acandí",
-    "Unguía",
-    "Tadó",
-    "Riosucio"
-   ],
-   "llueve_en": [],
-   "razones": [
-    "nubes densas (cima < −40 °C) en ~10,301 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~952 km²",
-    "22 rayos en 15 min",
-    "nubes gruesas (COD ≥ 30) en ~2,170 km²",
-    "modelo: prob. lluvia 100 %, agua precipitable 64 mm, CAPE 1610 J/kg"
-   ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 15451.704782009125,
-   "frio60": 1428.3725460767746,
-   "btmin": -79.1822509765625,
-   "crec": 0.8262852451615108,
-   "rayos": 22,
-   "cod_gruesa": 3255.418372273445
+   "frio40": 15065.783073663712,
+   "frio60": 10878.22986960411,
+   "btmin": -78.13754272460938,
+   "crec": 1.0538979382319786,
+   "rayos": 135,
+   "cod_gruesa": 5406.594172000885
   },
   {
    "movimiento": {
@@ -165,10 +127,10 @@
     "grados": 90.0
    },
    "viento": {
-    "viento_kmh": 13.0,
-    "viento_dir": 112,
-    "alto_kmh": 6.1,
-    "alto_dir": 191
+    "viento_kmh": 6.9,
+    "viento_dir": 123,
+    "alto_kmh": 4.3,
+    "alto_dir": 214
    },
    "codigo": "50",
    "region": "oriente",
@@ -182,72 +144,78 @@
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~5,254 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~2,037 km²",
-    "177 rayos en 15 min",
-    "nubes gruesas (COD ≥ 30) en ~8,564 km²",
-    "modelo: prob. lluvia 98 %, agua precipitable 60 mm, CAPE 1420 J/kg"
+    "nubes densas (cima < −40 °C) en ~5,419 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~2,251 km²",
+    "233 rayos en 15 min",
+    "nubes gruesas (COD ≥ 30) en ~8,756 km²",
+    "modelo: prob. lluvia 91 %, agua precipitable 61 mm, CAPE 1440 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 10508.529848456383,
-   "frio60": 4073.108778476715,
-   "btmin": -75.86376953125,
-   "crec": 1.2222941770318234,
-   "rayos": 177,
-   "cod_gruesa": 17127.004880309105
+   "frio40": 10837.434918045998,
+   "frio60": 4501.944754958153,
+   "btmin": -73.28274536132812,
+   "crec": 1.189772741351906,
+   "rayos": 233,
+   "cod_gruesa": 17512.195850610733
   },
   {
    "movimiento": {
-    "hacia": "oriente",
-    "vel_kmh": 45.39451293157048,
-    "grados": 105.52411099675426
+    "hacia": "suroccidente",
+    "vel_kmh": 33.64283809955301,
+    "grados": 210.25643716352926
    },
    "viento": {
-    "viento_kmh": 6.9,
-    "viento_dir": 351,
-    "alto_kmh": 6.5,
-    "alto_dir": 248
+    "viento_kmh": 3.9,
+    "viento_dir": 13,
+    "alto_kmh": 5.1,
+    "alto_dir": 315
    },
-   "codigo": "81",
-   "region": "oriente",
-   "departamento": "Arauca",
+   "codigo": "54",
+   "region": "andina",
+   "departamento": "Norte de Santander",
    "puntaje": 9,
-   "probabilidad": "MEDIA",
+   "probabilidad": "ALTA",
    "municipios": [
-    "Arauquita",
-    "Tame",
-    "Saravena",
-    "Puerto Rondón"
+    "Ábrego",
+    "El Carmen",
+    "Cucutilla",
+    "Salazar"
    ],
-   "llueve_en": [],
+   "llueve_en": [
+    "Ábrego",
+    "El Carmen",
+    "Cucutilla",
+    "Salazar"
+   ],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~4,611 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~1,514 km²",
-    "25 rayos en 15 min",
-    "nubes gruesas (COD ≥ 30) en ~3,226 km²",
-    "modelo: prob. lluvia 78 %, agua precipitable 57 mm, CAPE 2430 J/kg"
+    "nubes densas (cima < −40 °C) en ~3,729 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~1,420 km²",
+    "nubes creciendo (+98 % en 30 min)",
+    "150 rayos en 15 min",
+    "nubes gruesas (COD ≥ 30) en ~3,131 km²",
+    "modelo: prob. lluvia 94 %, agua precipitable 43 mm, CAPE 1400 J/kg"
    ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 9222.479825377464,
-   "frio60": 3027.007681488991,
-   "btmin": -71.377685546875,
-   "crec": 0.8828143195120571,
-   "rayos": 25,
-   "cod_gruesa": 6451.286555051804
+   "lluvia_km2": 1671,
+   "lluvia_moderada_km2": 691,
+   "frio40": 3728.5624047517776,
+   "frio60": 1420.3165502548218,
+   "btmin": -73.03692626953125,
+   "crec": 1.9774254890944358,
+   "rayos": 150,
+   "cod_gruesa": 3130.6641532182693
   },
   {
    "movimiento": {
     "hacia": "occidente",
-    "vel_kmh": 44.44311102274888,
-    "grados": 279.4623222080256
+    "vel_kmh": 40.825874405487454,
+    "grados": 287.35402463626133
    },
    "viento": {
-    "viento_kmh": 8.2,
-    "viento_dir": 15,
-    "alto_kmh": 4.3,
-    "alto_dir": 214
+    "viento_kmh": 10.1,
+    "viento_dir": 50,
+    "alto_kmh": 2.4,
+    "alto_dir": 270
    },
    "codigo": "85",
    "region": "oriente",
@@ -256,24 +224,25 @@
    "probabilidad": "ALTA",
    "municipios": [
     "Orocué",
-    "Hato Corozal"
+    "Hato Corozal",
+    "Maní"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~1,323 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~472 km²",
-    "57 rayos en 15 min",
-    "nubes gruesas (COD ≥ 30) en ~3,636 km²",
-    "modelo: prob. lluvia 75 %, agua precipitable 60 mm, CAPE 2340 J/kg"
+    "nubes densas en ~1,312 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~617 km²",
+    "58 rayos en 15 min",
+    "nubes gruesas (COD ≥ 30) en ~3,780 km²",
+    "modelo: prob. lluvia 72 %, agua precipitable 58 mm, CAPE 2780 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 2645.2689905166626,
-   "frio60": 943.9759728908539,
-   "btmin": -75.00341796875,
-   "crec": 0.8060571123556896,
-   "rayos": 57,
-   "cod_gruesa": 7271.569297552109
+   "frio40": 2624.39519906044,
+   "frio60": 1233.1720155477524,
+   "btmin": -73.58999633789062,
+   "crec": 0.9002139604308171,
+   "rayos": 58,
+   "cod_gruesa": 7559.128720283508
   },
   {
    "movimiento": {
@@ -282,10 +251,10 @@
     "grados": 111.03751102542182
    },
    "viento": {
-    "viento_kmh": 4.9,
-    "viento_dir": 33,
-    "alto_kmh": 7.3,
-    "alto_dir": 189
+    "viento_kmh": 3.7,
+    "viento_dir": 23,
+    "alto_kmh": 7.6,
+    "alto_dir": 198
    },
    "codigo": "95",
    "region": "oriente",
@@ -294,38 +263,38 @@
    "probabilidad": "MEDIA",
    "municipios": [
     "El Retorno",
-    "San José del Guaviare",
     "Miraflores",
+    "San José del Guaviare",
     "Calamar"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~14,943 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~5,367 km²",
-    "10 rayos en 15 min",
-    "nubes gruesas (COD ≥ 30) en ~6,666 km²",
-    "modelo: prob. lluvia 78 %, agua precipitable 58 mm, CAPE 3480 J/kg"
+    "nubes densas (cima < −40 °C) en ~15,126 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~5,373 km²",
+    "6 rayos en 15 min",
+    "nubes gruesas (COD ≥ 30) en ~6,513 km²",
+    "modelo: prob. lluvia 72 %, agua precipitable 58 mm, CAPE 3670 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 29886.54539012909,
-   "frio60": 10734.00340795517,
-   "btmin": -74.32743835449219,
-   "crec": 1.0949301587659437,
-   "rayos": 10,
-   "cod_gruesa": 13332.80323779583
+   "frio40": 30252.499282479286,
+   "frio60": 10746.255949258804,
+   "btmin": -73.58999633789062,
+   "crec": 1.082434550865404,
+   "rayos": 6,
+   "cod_gruesa": 13026.690289258957
   },
   {
    "movimiento": {
     "hacia": "oriente",
-    "vel_kmh": 24.270222187042236,
+    "vel_kmh": 36.405333280563354,
     "grados": 90.0
    },
    "viento": {
-    "viento_kmh": 3.0,
-    "viento_dir": 335,
-    "alto_kmh": 7.6,
-    "alto_dir": 72
+    "viento_kmh": 3.8,
+    "viento_dir": 278,
+    "alto_kmh": 3.4,
+    "alto_dir": 45
    },
    "codigo": "05",
    "region": "andina",
@@ -333,79 +302,170 @@
    "puntaje": 8,
    "probabilidad": "ALTA",
    "municipios": [
-    "Mutatá",
+    "Santa Rosa de Osos",
+    "Angostura",
     "Ituango",
-    "Dabeiba",
-    "Turbo"
+    "Belmira"
    ],
-   "llueve_en": [],
+   "llueve_en": [
+    "Santa Rosa de Osos",
+    "Angostura",
+    "Ituango",
+    "Belmira"
+   ],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~19,265 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~2,272 km²",
-    "68 rayos en 15 min",
-    "nubes gruesas (COD ≥ 30) en ~5,311 km²",
-    "modelo: prob. lluvia 100 %, agua precipitable 40 mm, CAPE 1140 J/kg"
+    "nubes densas (cima < −40 °C) en ~19,921 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~2,566 km²",
+    "95 rayos en 15 min",
+    "nubes gruesas (COD ≥ 30) en ~5,076 km²",
+    "modelo: prob. lluvia 100 %, agua precipitable 41 mm, CAPE 850 J/kg"
    ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 19264.981329917908,
-   "frio60": 2272.4671897888184,
-   "btmin": -76.23248291015625,
-   "crec": 1.150091280330584,
-   "rayos": 68,
-   "cod_gruesa": 5311.29488325119
+   "lluvia_km2": 2116,
+   "lluvia_moderada_km2": 640,
+   "frio40": 19921.293073177338,
+   "frio60": 2565.942136645317,
+   "btmin": -81.82473754882812,
+   "crec": 1.1285677281958797,
+   "rayos": 95,
+   "cod_gruesa": 5076.150483369827
   },
   {
    "movimiento": {
-    "hacia": "oriente",
-    "vel_kmh": 36.297032833099365,
-    "grados": 90.0
+    "hacia": "suroriente",
+    "vel_kmh": 27.180128580338735,
+    "grados": 116.56505117707799
    },
    "viento": {
-    "viento_kmh": 5.9,
-    "viento_dir": 220,
-    "alto_kmh": 7.0,
-    "alto_dir": 59
+    "viento_kmh": 7.3,
+    "viento_dir": 52,
+    "alto_kmh": 7.3,
+    "alto_dir": 99
    },
-   "codigo": "23",
-   "region": "caribe",
-   "departamento": "Córdoba",
+   "codigo": "27",
+   "region": "pacífico",
+   "departamento": "Chocó",
    "puntaje": 8,
    "probabilidad": "MEDIA",
    "municipios": [
-    "Montería",
-    "Tierralta",
-    "Valencia",
-    "Puerto Libertador"
+    "Acandí",
+    "Unguía",
+    "Riosucio",
+    "Tadó"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~1,984 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~573 km²",
-    "nubes creciendo (+66 % en 30 min)",
-    "7 rayos en 15 min",
-    "modelo: prob. lluvia 100 %, agua precipitable 57 mm, CAPE 2880 J/kg"
+    "nubes densas (cima < −40 °C) en ~9,519 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~985 km²",
+    "10 rayos en 15 min",
+    "nubes gruesas (COD ≥ 30) en ~2,001 km²",
+    "modelo: prob. lluvia 100 %, agua precipitable 63 mm, CAPE 650 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 2976.067617416382,
-   "frio60": 859.3173815011978,
-   "btmin": -68.9195556640625,
-   "crec": 1.6648531412881482,
-   "rayos": 7,
-   "cod_gruesa": 559.2359515428543
+   "frio40": 14279.213662266731,
+   "frio60": 1477.9785500764847,
+   "btmin": -76.41685485839844,
+   "crec": 0.7954710009605973,
+   "rayos": 10,
+   "cod_gruesa": 3001.5975155830383
   },
   {
    "movimiento": {
     "hacia": "oriente",
-    "vel_kmh": 50.267184115079004,
-    "grados": 104.03624346792648
+    "vel_kmh": 45.36180701405798,
+    "grados": 105.52411099675426
    },
    "viento": {
-    "viento_kmh": 1.2,
-    "viento_dir": 231,
-    "alto_kmh": 9.9,
-    "alto_dir": 194
+    "viento_kmh": 5.3,
+    "viento_dir": 80,
+    "alto_kmh": 3.6,
+    "alto_dir": 270
+   },
+   "codigo": "68",
+   "region": "andina",
+   "departamento": "Santander",
+   "puntaje": 8,
+   "probabilidad": "ALTA",
+   "municipios": [
+    "El Carmen de Chucurí",
+    "Gámbita",
+    "Suratá",
+    "Matanza"
+   ],
+   "llueve_en": [
+    "El Carmen de Chucurí",
+    "Gámbita",
+    "Suratá",
+    "Matanza"
+   ],
+   "razones": [
+    "nubes densas (cima < −40 °C) en ~2,217 km²",
+    "núcleos de tormenta en ~63 km²",
+    "nubes creciendo (+69 % en 30 min)",
+    "128 rayos en 15 min",
+    "nubes gruesas (COD ≥ 30) en ~1,830 km²",
+    "modelo: prob. lluvia 73 %, agua precipitable 39 mm, CAPE 960 J/kg"
+   ],
+   "lluvia_km2": 645,
+   "lluvia_moderada_km2": 310,
+   "frio40": 2216.663619160652,
+   "frio60": 63.477399706840515,
+   "btmin": -67.75193786621094,
+   "crec": 1.685528495237861,
+   "rayos": 128,
+   "cod_gruesa": 1830.2389570474625
+  },
+  {
+   "movimiento": {
+    "hacia": "oriente",
+    "vel_kmh": 45.39451293157048,
+    "grados": 105.52411099675426
+   },
+   "viento": {
+    "viento_kmh": 6.7,
+    "viento_dir": 360,
+    "alto_kmh": 5.1,
+    "alto_dir": 225
+   },
+   "codigo": "81",
+   "region": "oriente",
+   "departamento": "Arauca",
+   "puntaje": 8,
+   "probabilidad": "MEDIA",
+   "municipios": [
+    "Tame",
+    "Arauquita",
+    "Saravena",
+    "Puerto Rondón"
+   ],
+   "llueve_en": [],
+   "razones": [
+    "nubes densas (cima < −40 °C) en ~4,253 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~1,413 km²",
+    "12 rayos en 15 min",
+    "nubes gruesas (COD ≥ 30) en ~3,029 km²",
+    "modelo: prob. lluvia 62 %, agua precipitable 58 mm, CAPE 2320 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 8506.477323770523,
+   "frio60": 2826.162830710411,
+   "btmin": -71.807861328125,
+   "crec": 0.8246025888878362,
+   "rayos": 12,
+   "cod_gruesa": 6057.227879524231
+  },
+  {
+   "movimiento": {
+    "hacia": "oriente",
+    "vel_kmh": 45.55151291609969,
+    "grados": 105.52411099675426
+   },
+   "viento": {
+    "viento_kmh": 8.0,
+    "viento_dir": 329,
+    "alto_kmh": 6.1,
+    "alto_dir": 191
    },
    "codigo": "99",
    "region": "oriente",
@@ -415,36 +475,76 @@
    "municipios": [
     "Cumaribo",
     "Puerto Carreño",
-    "La Primavera",
-    "Santa Rosalía"
+    "Santa Rosalía",
+    "La Primavera"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~20,342 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~6,231 km²",
-    "nubes gruesas (COD ≥ 30) en ~4,841 km²",
-    "modelo: prob. lluvia 96 %, agua precipitable 57 mm, CAPE 2650 J/kg"
+    "nubes densas (cima < −40 °C) en ~19,496 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~5,365 km²",
+    "nubes gruesas (COD ≥ 30) en ~4,377 km²",
+    "modelo: prob. lluvia 84 %, agua precipitable 58 mm, CAPE 2650 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 40683.13387572765,
-   "frio60": 12461.488827347755,
-   "btmin": -74.08163452148438,
-   "crec": 0.8805635802620413,
+   "frio40": 38992.59001123905,
+   "frio60": 10729.50706243515,
+   "btmin": -72.17657470703125,
+   "crec": 0.8741253556572817,
    "rayos": 0,
-   "cod_gruesa": 9682.601991534233
+   "cod_gruesa": 8754.56898677349
   },
   {
    "movimiento": {
-    "hacia": "suroriente",
-    "vel_kmh": 27.017582912213634,
-    "grados": 116.56505117707799
+    "hacia": "occidente",
+    "vel_kmh": 12.01819896697998,
+    "grados": 270.0
    },
    "viento": {
-    "viento_kmh": 9.4,
-    "viento_dir": 294,
-    "alto_kmh": 15.6,
-    "alto_dir": 23
+    "viento_kmh": 4.8,
+    "viento_dir": 299,
+    "alto_kmh": 13.7,
+    "alto_dir": 38
+   },
+   "codigo": "08",
+   "region": "caribe",
+   "departamento": "Atlántico",
+   "puntaje": 7,
+   "probabilidad": "MEDIA",
+   "municipios": [
+    "Campo de la Cruz",
+    "Sabanalarga",
+    "Suan",
+    "Santa Lucía"
+   ],
+   "llueve_en": [],
+   "razones": [
+    "nubes densas en ~491 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~244 km²",
+    "nubes creciendo (+61 % en 30 min)",
+    "8 rayos en 15 min",
+    "modelo: prob. lluvia 85 %, agua precipitable 58 mm, CAPE 4010 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 736.1095781326294,
+   "frio60": 365.9687383174896,
+   "btmin": -76.10958862304688,
+   "crec": 1.6100976987890925,
+   "rayos": 8,
+   "cod_gruesa": 743.3630228042603
+  },
+  {
+   "movimiento": {
+    "hacia": "sur",
+    "vel_kmh": 24.165260791778564,
+    "grados": 180.0
+   },
+   "viento": {
+    "viento_kmh": 6.5,
+    "viento_dir": 354,
+    "alto_kmh": 14.0,
+    "alto_dir": 20
    },
    "codigo": "13",
    "region": "caribe",
@@ -452,38 +552,39 @@
    "puntaje": 7,
    "probabilidad": "MEDIA",
    "municipios": [
-    "El Carmen de Bolívar",
-    "Zambrano",
-    "Córdoba",
-    "San Jacinto"
+    "Santa Rosa del Sur",
+    "Montecristo"
    ],
-   "llueve_en": [],
+   "llueve_en": [
+    "Santa Rosa del Sur",
+    "Montecristo"
+   ],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~2,544 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~1,261 km²",
+    "nubes densas (cima < −40 °C) en ~2,306 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~921 km²",
     "nubes disipándose",
     "27 rayos en 15 min",
-    "nubes gruesas (COD ≥ 30) en ~744 km²",
-    "modelo: prob. lluvia 43 %, agua precipitable 58 mm, CAPE 3480 J/kg"
+    "nubes gruesas (COD ≥ 30) en ~747 km²",
+    "modelo: prob. lluvia 69 %, agua precipitable 58 mm, CAPE 3560 J/kg"
    ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 3816.171529650688,
-   "frio60": 1891.0243203639984,
-   "btmin": -76.23248291015625,
-   "crec": 0.6344235161333079,
+   "lluvia_km2": 276,
+   "lluvia_moderada_km2": 151,
+   "frio40": 3459.082178235054,
+   "frio60": 1381.3837509155273,
+   "btmin": -76.41685485839844,
+   "crec": 0.6688194790337407,
    "rayos": 27,
-   "cod_gruesa": 1116.3368954658508
+   "cod_gruesa": 1120.230804681778
   },
   {
    "movimiento": {
     "hacia": "suroriente",
-    "vel_kmh": 29.549352719594147,
-    "grados": 114.44395478041653
+    "vel_kmh": 27.341765278608143,
+    "grados": 116.56505117707799
    },
    "viento": {
-    "viento_kmh": 8.4,
-    "viento_dir": 105,
+    "viento_kmh": 4.0,
+    "viento_dir": 111,
     "alto_kmh": 9.4,
     "alto_dir": 220
    },
@@ -494,76 +595,36 @@
    "probabilidad": "BAJA",
    "municipios": [
     "Solano",
-    "San Vicente del Caguán"
+    "San Vicente del Caguán",
+    "Valparaíso"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~3,656 km²",
-    "núcleos de tormenta en ~103 km²",
-    "nubes gruesas (COD ≥ 30) en ~4,624 km²",
-    "modelo: prob. lluvia 88 %, agua precipitable 59 mm, CAPE 2870 J/kg"
+    "nubes densas (cima < −40 °C) en ~3,300 km²",
+    "núcleos de tormenta en ~44 km²",
+    "nubes gruesas (COD ≥ 30) en ~5,114 km²",
+    "modelo: prob. lluvia 75 %, agua precipitable 59 mm, CAPE 2870 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 7311.0827749967575,
-   "frio60": 206.37413346767426,
-   "btmin": -63.757476806640625,
-   "crec": 0.8317228027583279,
+   "frio40": 6599.2126985788345,
+   "frio60": 88.23514413833618,
+   "btmin": -61.36079406738281,
+   "crec": 0.7678597851036978,
    "rayos": 0,
-   "cod_gruesa": 9248.32547211647
+   "cod_gruesa": 10227.832792282104
   },
   {
    "movimiento": {
-    "hacia": "nororiente",
-    "vel_kmh": 47.829241748163476,
-    "grados": 66.03751102542182
+    "hacia": "norte",
+    "vel_kmh": 0.0,
+    "grados": 0.0
    },
    "viento": {
-    "viento_kmh": 8.3,
-    "viento_dir": 20,
-    "alto_kmh": 3.6,
-    "alto_dir": 270
-   },
-   "codigo": "68",
-   "region": "andina",
-   "departamento": "Santander",
-   "puntaje": 7,
-   "probabilidad": "ALTA",
-   "municipios": [
-    "Los Santos",
-    "El Carmen de Chucurí",
-    "Zapatoca",
-    "Hato"
-   ],
-   "llueve_en": [],
-   "razones": [
-    "nubes densas en ~1,915 km²",
-    "núcleos de tormenta en ~56 km²",
-    "nubes creciendo (+109 % en 30 min)",
-    "88 rayos en 15 min",
-    "nubes gruesas (COD ≥ 30) en ~2,041 km²",
-    "modelo: prob. lluvia 100 %, agua precipitable 45 mm, CAPE 1470 J/kg"
-   ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 1915.014899611473,
-   "frio60": 56.039138078689575,
-   "btmin": -62.65130615234375,
-   "crec": 2.085942689087704,
-   "rayos": 88,
-   "cod_gruesa": 2040.8258751630783
-  },
-  {
-   "movimiento": {
-    "hacia": "suroriente",
-    "vel_kmh": 27.277705561387748,
-    "grados": 116.56505117707799
-   },
-   "viento": {
-    "viento_kmh": 4.7,
-    "viento_dir": 310,
-    "alto_kmh": 0.0,
-    "alto_dir": 270
+    "viento_kmh": 7.3,
+    "viento_dir": 281,
+    "alto_kmh": 2.7,
+    "alto_dir": 27
    },
    "codigo": "76",
    "region": "andina",
@@ -571,77 +632,39 @@
    "puntaje": 7,
    "probabilidad": "MEDIA",
    "municipios": [
-    "El Águila",
     "Ansermanuevo",
-    "El Cairo"
+    "El Cairo",
+    "Cartago",
+    "El Águila"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~2,657 km²",
-    "núcleos de tormenta en ~171 km²",
-    "44 rayos en 15 min",
-    "nubes gruesas (COD ≥ 30) en ~1,200 km²",
-    "modelo: prob. lluvia 100 %, agua precipitable 49 mm, CAPE 460 J/kg"
+    "nubes densas (cima < −40 °C) en ~2,803 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~420 km²",
+    "47 rayos en 15 min",
+    "nubes gruesas (COD ≥ 30) en ~1,410 km²",
+    "modelo: prob. lluvia 100 %, agua precipitable 35 mm, CAPE 260 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 2656.539190888405,
-   "frio60": 170.7726205587387,
-   "btmin": -69.59553527832031,
-   "crec": 1.1102767972144278,
-   "rayos": 44,
-   "cod_gruesa": 1199.8601672649384
+   "frio40": 2802.976588010788,
+   "frio60": 420.3869642019272,
+   "btmin": -74.63470458984375,
+   "crec": 1.1127162459665427,
+   "rayos": 47,
+   "cod_gruesa": 1409.5991668701172
   },
   {
    "movimiento": {
-    "hacia": "nororiente",
-    "vel_kmh": 66.65497275649506,
-    "grados": 64.35899417569472
+    "hacia": "oriente",
+    "vel_kmh": 45.45671341339835,
+    "grados": 105.52411099675426
    },
    "viento": {
-    "viento_kmh": 7.0,
-    "viento_dir": 359,
-    "alto_kmh": 15.4,
-    "alto_dir": 39
-   },
-   "codigo": "08",
-   "region": "caribe",
-   "departamento": "Atlántico",
-   "puntaje": 6,
-   "probabilidad": "MEDIA",
-   "municipios": [
-    "Campo de la Cruz",
-    "Candelaria",
-    "Ponedera",
-    "Suan"
-   ],
-   "llueve_en": [],
-   "razones": [
-    "nubes densas en ~358 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~248 km²",
-    "15 rayos en 15 min",
-    "modelo: prob. lluvia 88 %, agua precipitable 58 mm, CAPE 3680 J/kg"
-   ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 536.6528772115707,
-   "frio60": 371.8160470724106,
-   "btmin": -75.67941284179688,
-   "crec": 0.8336772277119726,
-   "rayos": 15,
-   "cod_gruesa": 682.5753580331802
-  },
-  {
-   "movimiento": {
-    "hacia": "suroriente",
-    "vel_kmh": 17.205619768719853,
-    "grados": 135.0
-   },
-   "viento": {
-    "viento_kmh": 1.2,
-    "viento_dir": 63,
-    "alto_kmh": 2.7,
-    "alto_dir": 333
+    "viento_kmh": 1.5,
+    "viento_dir": 21,
+    "alto_kmh": 3.6,
+    "alto_dir": 360
    },
    "codigo": "15",
    "region": "andina",
@@ -649,39 +672,44 @@
    "puntaje": 6,
    "probabilidad": "MEDIA",
    "municipios": [
-    "Cubará",
+    "Tununguá",
+    "Muzo",
     "San Pablo de Borbur",
-    "Buenavista",
-    "Muzo"
+    "Chitaraque"
    ],
-   "llueve_en": [],
+   "llueve_en": [
+    "Tununguá",
+    "Muzo",
+    "San Pablo de Borbur",
+    "Chitaraque"
+   ],
    "razones": [
-    "nubes densas en ~823 km²",
-    "núcleos de tormenta en ~190 km²",
-    "17 rayos en 15 min",
-    "nubes gruesas (COD ≥ 30) en ~1,746 km²",
-    "modelo: prob. lluvia 100 %, agua precipitable 38 mm, CAPE 1970 J/kg"
+    "nubes densas en ~857 km²",
+    "núcleos de tormenta en ~102 km²",
+    "7 rayos en 15 min",
+    "nubes gruesas (COD ≥ 30) en ~1,564 km²",
+    "modelo: prob. lluvia 100 %, agua precipitable 38 mm, CAPE 1500 J/kg"
    ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 823.4770048856735,
-   "frio60": 190.09971702098846,
-   "btmin": -69.84133911132812,
-   "crec": 1.2066144364113187,
-   "rayos": 17,
-   "cod_gruesa": 1746.1860711574554
+   "lluvia_km2": 255,
+   "lluvia_moderada_km2": 50,
+   "frio40": 857.4805212020874,
+   "frio60": 101.67352724075317,
+   "btmin": -68.9195556640625,
+   "crec": 1.1356702450239116,
+   "rayos": 7,
+   "cod_gruesa": 1563.6618909835815
   },
   {
    "movimiento": {
-    "hacia": "suroriente",
-    "vel_kmh": 36.08917379701443,
-    "grados": 118.30075576600639
+    "hacia": "oriente",
+    "vel_kmh": 34.04470363085069,
+    "grados": 111.03751102542182
    },
    "viento": {
-    "viento_kmh": 1.5,
-    "viento_dir": 14,
-    "alto_kmh": 3.6,
-    "alto_dir": 90
+    "viento_kmh": 4.0,
+    "viento_dir": 150,
+    "alto_kmh": 2.7,
+    "alto_dir": 117
    },
    "codigo": "19",
    "region": "andina",
@@ -690,34 +718,75 @@
    "probabilidad": "MEDIA",
    "municipios": [
     "Timbío",
-    "El Tambo"
+    "Buenos Aires"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~5,378 km²",
-    "núcleos de tormenta en ~134 km²",
-    "17 rayos en 15 min",
-    "nubes gruesas (COD ≥ 30) en ~4,501 km²",
-    "modelo: prob. lluvia 86 %, agua precipitable 40 mm, CAPE 0 J/kg"
+    "nubes densas (cima < −40 °C) en ~5,698 km²",
+    "núcleos de tormenta en ~99 km²",
+    "37 rayos en 15 min",
+    "nubes gruesas (COD ≥ 30) en ~4,517 km²",
+    "modelo: prob. lluvia 84 %, agua precipitable 42 mm, CAPE 0 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 5377.921416759491,
-   "frio60": 134.38468289375305,
-   "btmin": -63.88037109375,
-   "crec": 0.993465717228062,
-   "rayos": 17,
-   "cod_gruesa": 4500.571644186974
+   "frio40": 5698.338413953781,
+   "frio60": 98.51210117340088,
+   "btmin": -66.52287292480469,
+   "crec": 1.0749625943073093,
+   "rayos": 37,
+   "cod_gruesa": 4516.675613045692
   },
   {
    "movimiento": {
-    "hacia": "occidente",
-    "vel_kmh": 12.181159257888794,
-    "grados": 270.0
+    "hacia": "oriente",
+    "vel_kmh": 12.225613594055176,
+    "grados": 90.0
    },
    "viento": {
-    "viento_kmh": 2.7,
-    "viento_dir": 127,
+    "viento_kmh": 2.1,
+    "viento_dir": 322,
+    "alto_kmh": 5.4,
+    "alto_dir": 117
+   },
+   "codigo": "52",
+   "region": "pacífico",
+   "departamento": "Nariño",
+   "puntaje": 6,
+   "probabilidad": "MEDIA",
+   "municipios": [
+    "San Andrés de Tumaco",
+    "Samaniego",
+    "Ricaurte",
+    "La Llanada"
+   ],
+   "llueve_en": [],
+   "razones": [
+    "nubes densas (cima < −40 °C) en ~2,848 km²",
+    "núcleos de tormenta en ~44 km²",
+    "nubes disipándose",
+    "10 rayos en 15 min",
+    "nubes gruesas (COD ≥ 30) en ~1,315 km²",
+    "modelo: prob. lluvia 100 %, agua precipitable 59 mm, CAPE 1080 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 4271.771234750748,
+   "frio60": 65.76217007637024,
+   "btmin": -65.84689331054688,
+   "crec": 0.5703677576537782,
+   "rayos": 10,
+   "cod_gruesa": 1972.9674283266068
+  },
+  {
+   "movimiento": {
+    "hacia": "suroriente",
+    "vel_kmh": 43.91979429891092,
+    "grados": 123.6900675259798
+   },
+   "viento": {
+    "viento_kmh": 3.5,
+    "viento_dir": 204,
     "alto_kmh": 4.9,
     "alto_dir": 76
    },
@@ -734,106 +803,28 @@
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~1,195 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~447 km²",
-    "nubes creciendo (+309 % en 30 min)",
-    "5 rayos en 15 min",
-    "modelo: prob. lluvia 96 %, agua precipitable 41 mm, CAPE 380 J/kg"
+    "nubes densas en ~1,452 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~633 km²",
+    "nubes creciendo (+130 % en 30 min)",
+    "18 rayos en 15 min",
+    "modelo: prob. lluvia 95 %, agua precipitable 42 mm, CAPE 380 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 1194.6473226547241,
-   "frio60": 446.9256932735443,
-   "btmin": -69.59553527832031,
-   "crec": 4.087681655628815,
-   "rayos": 5,
-   "cod_gruesa": 347.35126650333405
-  },
-  {
-   "movimiento": {
-    "hacia": "oriente",
-    "vel_kmh": 12.225613594055176,
-    "grados": 90.0
-   },
-   "viento": {
-    "viento_kmh": 1.5,
-    "viento_dir": 277,
-    "alto_kmh": 7.6,
-    "alto_dir": 108
-   },
-   "codigo": "52",
-   "region": "pacífico",
-   "departamento": "Nariño",
-   "puntaje": 5,
-   "probabilidad": "BAJA",
-   "municipios": [
-    "San Andrés de Tumaco",
-    "Samaniego",
-    "Barbacoas",
-    "Ricaurte"
-   ],
-   "llueve_en": [],
-   "razones": [
-    "nubes densas (cima < −40 °C) en ~3,576 km²",
-    "núcleos de tormenta en ~55 km²",
-    "nubes disipándose",
-    "nubes gruesas (COD ≥ 30) en ~1,563 km²",
-    "modelo: prob. lluvia 100 %, agua precipitable 55 mm, CAPE 960 J/kg"
-   ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 5364.315289735794,
-   "frio60": 82.20141613483429,
-   "btmin": -66.21560668945312,
-   "crec": 0.5948385222419084,
-   "rayos": 4,
-   "cod_gruesa": 2345.2209302186966
-  },
-  {
-   "movimiento": {
-    "hacia": "oriente",
-    "vel_kmh": 26.791563749313354,
-    "grados": 90.0
-   },
-   "viento": {
-    "viento_kmh": 3.4,
-    "viento_dir": 254,
-    "alto_kmh": 4.9,
-    "alto_dir": 76
-   },
-   "codigo": "17",
-   "region": "andina",
-   "departamento": "Caldas",
-   "puntaje": 4,
-   "probabilidad": "BAJA",
-   "municipios": [
-    "Viterbo",
-    "Pensilvania",
-    "Aguadas",
-    "Samaná"
-   ],
-   "llueve_en": [],
-   "razones": [
-    "nubes densas (cima < −40 °C) en ~2,438 km²",
-    "núcleos de tormenta en ~36 km²",
-    "modelo: prob. lluvia 100 %, agua precipitable 23 mm, CAPE 740 J/kg"
-   ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 2438.400334715843,
-   "frio60": 35.62928879261017,
-   "btmin": -67.1988525390625,
-   "crec": 1.1735751280557751,
-   "rayos": 0,
-   "cod_gruesa": 69.7092936038971
+   "frio40": 1451.5297815799713,
+   "frio60": 632.5692598819733,
+   "btmin": -69.71844482421875,
+   "crec": 2.3019370989141446,
+   "rayos": 18,
+   "cod_gruesa": 409.70862078666687
   },
   {
    "movimiento": null,
    "viento": {
-    "viento_kmh": 11.7,
-    "viento_dir": 301,
-    "alto_kmh": 14.0,
-    "alto_dir": 31
+    "viento_kmh": 6.1,
+    "viento_dir": 265,
+    "alto_kmh": 12.9,
+    "alto_dir": 22
    },
    "codigo": "70",
    "region": "caribe",
@@ -842,37 +833,70 @@
    "probabilidad": "BAJA",
    "municipios": [
     "Ovejas",
-    "San Onofre",
     "San Pedro",
-    "Buenavista"
+    "Buenavista",
+    "Chalán"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~773 km²",
+    "nubes densas en ~634 km²",
     "nubes disipándose",
-    "nubes gruesas (COD ≥ 30) en ~1,026 km²",
-    "modelo: prob. lluvia 88 %, agua precipitable 51 mm, CAPE 2750 J/kg"
+    "nubes gruesas (COD ≥ 30) en ~1,203 km²",
+    "modelo: prob. lluvia 82 %, agua precipitable 54 mm, CAPE 3480 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 1159.2298941612244,
-   "frio60": 1.4536861181259155,
-   "btmin": -60.746246337890625,
-   "crec": 0.5224697583420024,
+   "frio40": 951.595237493515,
+   "frio60": 0.0,
+   "btmin": -57.489227294921875,
+   "crec": 0.5145493340764499,
    "rayos": 0,
-   "cod_gruesa": 1539.4656599760056
+   "cod_gruesa": 1804.7294532060623
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 3.1,
+    "viento_dir": 273,
+    "alto_kmh": 6.8,
+    "alto_dir": 45
+   },
+   "codigo": "17",
+   "region": "andina",
+   "departamento": "Caldas",
+   "puntaje": 3,
+   "probabilidad": "BAJA",
+   "municipios": [
+    "Aguadas",
+    "Pensilvania",
+    "Pácora",
+    "Samaná"
+   ],
+   "llueve_en": [],
+   "razones": [
+    "nubes densas (cima < −40 °C) en ~2,253 km²",
+    "modelo: prob. lluvia 100 %, agua precipitable 23 mm, CAPE 650 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 2253.2070121765137,
+   "frio60": 14.845606565475464,
+   "btmin": -63.20439147949219,
+   "crec": 0.9989287608119234,
+   "rayos": 0,
+   "cod_gruesa": 13.357880473136902
   },
   {
    "movimiento": {
     "hacia": "suroriente",
-    "vel_kmh": 69.89741783477506,
-    "grados": 120.96375653207352
+    "vel_kmh": 68.6947026418525,
+    "grados": 119.24882633654695
    },
    "viento": {
-    "viento_kmh": 3.8,
-    "viento_dir": 355,
-    "alto_kmh": 10.3,
-    "alto_dir": 36
+    "viento_kmh": 7.5,
+    "viento_dir": 63,
+    "alto_kmh": 13.4,
+    "alto_dir": 27
    },
    "codigo": "44",
    "region": "caribe",
@@ -880,34 +904,31 @@
    "puntaje": 3,
    "probabilidad": "BAJA",
    "municipios": [
-    "Urumita",
-    "La Jagua del Pilar"
+    "La Jagua del Pilar",
+    "Dibulla",
+    "Urumita"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~298 km²",
+    "nubes densas en ~179 km²",
     "nubes disipándose",
-    "nubes gruesas (COD ≥ 30) en ~517 km²",
-    "modelo: prob. lluvia 100 %, agua precipitable 50 mm, CAPE 3120 J/kg"
+    "nubes gruesas (COD ≥ 30) en ~575 km²",
+    "modelo: prob. lluvia 96 %, agua precipitable 55 mm, CAPE 2750 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 446.835569858551,
+   "frio40": 268.780885219574,
    "frio60": 0.0,
-   "btmin": -59.70155334472656,
-   "crec": 0.5693440139700137,
-   "rayos": 1,
-   "cod_gruesa": 775.9487452507019
+   "btmin": -55.95289611816406,
+   "crec": 0.36036431823156834,
+   "rayos": 2,
+   "cod_gruesa": 861.7914682626724
   },
   {
-   "movimiento": {
-    "hacia": "noroccidente",
-    "vel_kmh": 22.99515356895058,
-    "grados": 302.0053832080835
-   },
+   "movimiento": null,
    "viento": {
-    "viento_kmh": 1.8,
-    "viento_dir": 307,
+    "viento_kmh": 3.1,
+    "viento_dir": 36,
     "alto_kmh": 3.4,
     "alto_dir": 315
    },
@@ -917,37 +938,76 @@
    "puntaje": 2,
    "probabilidad": "BAJA",
    "municipios": [
-    "Pacho",
-    "El Peñón",
-    "Puerto Salgar",
-    "Villagómez"
+    "Caparrapí",
+    "La Peña",
+    "Guaduas"
    ],
-   "llueve_en": [],
+   "llueve_en": [
+    "Caparrapí",
+    "La Peña",
+    "Guaduas"
+   ],
    "razones": [
-    "nubes densas en ~899 km²",
+    "nubes densas en ~681 km²",
     "nubes disipándose",
-    "modelo: prob. lluvia 100 %, agua precipitable 41 mm, CAPE 1850 J/kg"
+    "modelo: prob. lluvia 96 %, agua precipitable 42 mm, CAPE 2050 J/kg"
    ],
-   "lluvia_km2": 0,
+   "lluvia_km2": 159,
    "lluvia_moderada_km2": 0,
-   "frio40": 898.6736110448837,
+   "frio40": 680.5882190465927,
    "frio60": 0.0,
-   "btmin": -49.561767578125,
-   "crec": 0.5328346673294792,
-   "rayos": 1,
-   "cod_gruesa": 344.82536005973816
+   "btmin": -48.824310302734375,
+   "crec": 0.5064266109139389,
+   "rayos": 0,
+   "cod_gruesa": 307.5484994649887
   },
   {
    "movimiento": {
     "hacia": "suroriente",
-    "vel_kmh": 46.01499925484541,
-    "grados": 122.0053832080835
+    "vel_kmh": 27.31691654841804,
+    "grados": 116.56505117707799
    },
    "viento": {
-    "viento_kmh": 5.0,
-    "viento_dir": 88,
+    "viento_kmh": 3.8,
+    "viento_dir": 349,
     "alto_kmh": 2.7,
-    "alto_dir": 63
+    "alto_dir": 117
+   },
+   "codigo": "41",
+   "region": "andina",
+   "departamento": "Huila",
+   "puntaje": 2,
+   "probabilidad": "BAJA",
+   "municipios": [
+    "San Agustín",
+    "La Plata"
+   ],
+   "llueve_en": [],
+   "razones": [
+    "nubes densas en ~465 km²",
+    "nubes gruesas (COD ≥ 30) en ~547 km²",
+    "modelo: prob. lluvia 65 %, agua precipitable 31 mm, CAPE 330 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 464.6204489469528,
+   "frio60": 0.0,
+   "btmin": -50.176300048828125,
+   "crec": 1.2244399958114334,
+   "rayos": 0,
+   "cod_gruesa": 547.1519562005997
+  },
+  {
+   "movimiento": {
+    "hacia": "suroriente",
+    "vel_kmh": 48.40860094064296,
+    "grados": 139.08561677997488
+   },
+   "viento": {
+    "viento_kmh": 3.0,
+    "viento_dir": 327,
+    "alto_kmh": 1.2,
+    "alto_dir": 360
    },
    "codigo": "63",
    "region": "andina",
@@ -959,118 +1019,84 @@
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~173 km²",
+    "nubes densas en ~220 km²",
     "nubes creciendo (+100 % en 30 min)",
-    "modelo: prob. lluvia 100 %, agua precipitable 37 mm, CAPE 650 J/kg"
+    "modelo: prob. lluvia 97 %, agua precipitable 29 mm, CAPE 520 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 172.5614093542099,
+   "frio40": 220.15417575836182,
    "frio60": 0.0,
-   "btmin": -54.232208251953125,
+   "btmin": -50.6064453125,
    "crec": 2.0,
-   "rayos": 1,
-   "cod_gruesa": 163.57312655448914
-  },
-  {
-   "movimiento": {
-    "hacia": "suroriente",
-    "vel_kmh": 23.074679819524246,
-    "grados": 122.0053832080835
-   },
-   "viento": {
-    "viento_kmh": 2.1,
-    "viento_dir": 211,
-    "alto_kmh": 2.7,
-    "alto_dir": 117
-   },
-   "codigo": "86",
-   "region": "oriente",
-   "departamento": "Putumayo",
-   "puntaje": 2,
-   "probabilidad": "BAJA",
-   "municipios": [
-    "Puerto Leguízamo",
-    "Mocoa",
-    "Puerto Guzmán",
-    "Puerto Asís"
-   ],
-   "llueve_en": [],
-   "razones": [
-    "nubes densas en ~298 km²",
-    "modelo: prob. lluvia 59 %, agua precipitable 55 mm, CAPE 2870 J/kg"
-   ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 596.6304619312286,
-   "frio60": 0.0,
-   "btmin": -52.0198974609375,
-   "crec": 0.761390438532149,
    "rayos": 0,
-   "cod_gruesa": 466.6021600961685
+   "cod_gruesa": 136.79713380336761
   },
   {
    "movimiento": {
     "hacia": "oriente",
-    "vel_kmh": 12.216496467590332,
-    "grados": 90.0
+    "vel_kmh": 20.897874189095326,
+    "grados": 110.55604521958347
    },
    "viento": {
-    "viento_kmh": 2.1,
-    "viento_dir": 52,
-    "alto_kmh": 8.0,
-    "alto_dir": 153
+    "viento_kmh": 1.4,
+    "viento_dir": 23,
+    "alto_kmh": 1.2,
+    "alto_dir": 90
    },
-   "codigo": "41",
-   "region": "andina",
-   "departamento": "Huila",
-   "puntaje": 0,
+   "codigo": "86",
+   "region": "oriente",
+   "departamento": "Putumayo",
+   "puntaje": 1,
    "probabilidad": "BAJA",
    "municipios": [
-    "San Agustín",
-    "La Plata"
+    "Mocoa",
+    "Puerto Leguízamo",
+    "Puerto Guzmán"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~351 km²",
+    "nubes densas en ~227 km²",
     "nubes disipándose",
-    "modelo: prob. lluvia 63 %, agua precipitable 26 mm, CAPE 300 J/kg"
+    "modelo: prob. lluvia 48 %, agua precipitable 56 mm, CAPE 3040 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 351.0744651556015,
+   "frio40": 453.06911408901215,
    "frio60": 0.0,
-   "btmin": -52.26568603515625,
-   "crec": 0.6010445878797163,
+   "btmin": -50.975189208984375,
+   "crec": 0.573819359981228,
    "rayos": 0,
-   "cod_gruesa": 426.3707731962204
+   "cod_gruesa": 714.8374682664871
   },
   {
    "movimiento": null,
    "viento": {
-    "viento_kmh": 7.0,
-    "viento_dir": 190,
-    "alto_kmh": 6.0,
-    "alto_dir": 53
+    "viento_kmh": 2.5,
+    "viento_dir": 278,
+    "alto_kmh": 1.2,
+    "alto_dir": 360
    },
    "codigo": "73",
    "region": "andina",
    "departamento": "Tolima",
    "puntaje": 0,
    "probabilidad": "BAJA",
-   "municipios": [],
+   "municipios": [
+    "Roncesvalles"
+   ],
    "llueve_en": [],
    "razones": [
-    "modelo: prob. lluvia 100 %, agua precipitable 12 mm, CAPE 130 J/kg"
+    "modelo: prob. lluvia 100 %, agua precipitable 22 mm, CAPE 260 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 35.65731179714203,
+   "frio40": 35.69045054912567,
    "frio60": 0.0,
-   "btmin": -42.617523193359375,
-   "crec": null,
+   "btmin": -46.857818603515625,
+   "crec": 0.3161102251558894,
    "rayos": 0,
-   "cod_gruesa": 271.0892904996872
+   "cod_gruesa": 312.7793426513672
   }
  ]
 }
