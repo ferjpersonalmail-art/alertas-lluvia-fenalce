@@ -1,0 +1,658 @@
+{
+ "tarde|1mm": {
+  "entrenamiento_casos": 22814,
+  "completo": {
+   "columnas": [
+    "ecmwf",
+    "ecmwf_vec_media",
+    "ecmwf_vec_max",
+    "gfs",
+    "icon",
+    "clima"
+   ],
+   "coeficientes": [
+    0.1806,
+    2.0354,
+    -0.7884,
+    0.1031,
+    0.1912,
+    0.8479
+   ],
+   "intercepto": -1.1503,
+   "octubre": {
+    "casos": 4862,
+    "frecuencia": 0.491,
+    "brier": 0.1971,
+    "BSS_vs_climatologia": 0.226,
+    "AUC": 0.768
+   },
+   "confiabilidad_octubre": [
+    {
+     "dice": "0-10 %",
+     "casos": 174,
+     "llovio": 0.05
+    },
+    {
+     "dice": "10-20 %",
+     "casos": 529,
+     "llovio": 0.17
+    },
+    {
+     "dice": "20-30 %",
+     "casos": 804,
+     "llovio": 0.27
+    },
+    {
+     "dice": "30-40 %",
+     "casos": 695,
+     "llovio": 0.43
+    },
+    {
+     "dice": "40-50 %",
+     "casos": 617,
+     "llovio": 0.5
+    },
+    {
+     "dice": "50-60 %",
+     "casos": 584,
+     "llovio": 0.57
+    },
+    {
+     "dice": "60-70 %",
+     "casos": 515,
+     "llovio": 0.72
+    },
+    {
+     "dice": "70-80 %",
+     "casos": 497,
+     "llovio": 0.75
+    },
+    {
+     "dice": "80-90 %",
+     "casos": 342,
+     "llovio": 0.85
+    },
+    {
+     "dice": "90-100 %",
+     "casos": 105,
+     "llovio": 0.96
+    }
+   ]
+  },
+  "solo_ecmwf": {
+   "columnas": [
+    "ecmwf",
+    "ecmwf_vec_media",
+    "ecmwf_vec_max",
+    "clima"
+   ],
+   "coeficientes": [
+    0.2378,
+    2.1609,
+    -0.7814,
+    0.9052
+   ],
+   "intercepto": -1.0487,
+   "octubre": {
+    "casos": 4862,
+    "frecuencia": 0.491,
+    "brier": 0.2011,
+    "BSS_vs_climatologia": 0.21,
+    "AUC": 0.758
+   },
+   "confiabilidad_octubre": [
+    {
+     "dice": "0-10 %",
+     "casos": 163,
+     "llovio": 0.07
+    },
+    {
+     "dice": "10-20 %",
+     "casos": 501,
+     "llovio": 0.16
+    },
+    {
+     "dice": "20-30 %",
+     "casos": 829,
+     "llovio": 0.29
+    },
+    {
+     "dice": "30-40 %",
+     "casos": 688,
+     "llovio": 0.39
+    },
+    {
+     "dice": "40-50 %",
+     "casos": 621,
+     "llovio": 0.54
+    },
+    {
+     "dice": "50-60 %",
+     "casos": 578,
+     "llovio": 0.56
+    },
+    {
+     "dice": "60-70 %",
+     "casos": 529,
+     "llovio": 0.7
+    },
+    {
+     "dice": "70-80 %",
+     "casos": 501,
+     "llovio": 0.75
+    },
+    {
+     "dice": "80-90 %",
+     "casos": 354,
+     "llovio": 0.8
+    },
+    {
+     "dice": "90-100 %",
+     "casos": 98,
+     "llovio": 0.97
+    }
+   ],
+   "octubre_con_ecmwf_de_un_dia_antes": {
+    "casos": 4862,
+    "frecuencia": 0.491,
+    "brier": 0.227,
+    "BSS_vs_climatologia": 0.109,
+    "AUC": 0.692
+   }
+  },
+  "ecmwf_crudo_octubre": {
+   "casos": 4862,
+   "frecuencia": 0.491,
+   "brier": 0.3323,
+   "BSS_vs_climatologia": -0.305,
+   "AUC": 0.657
+  }
+ },
+ "tarde|5mm": {
+  "entrenamiento_casos": 22814,
+  "completo": {
+   "columnas": [
+    "ecmwf",
+    "ecmwf_vec_media",
+    "ecmwf_vec_max",
+    "gfs",
+    "icon",
+    "clima"
+   ],
+   "coeficientes": [
+    0.1744,
+    1.9298,
+    -0.5105,
+    -0.0075,
+    0.1858,
+    0.8532
+   ],
+   "intercepto": -2.4265,
+   "octubre": {
+    "casos": 4862,
+    "frecuencia": 0.199,
+    "brier": 0.1315,
+    "BSS_vs_climatologia": 0.162,
+    "AUC": 0.801
+   },
+   "confiabilidad_octubre": [
+    {
+     "dice": "0-10 %",
+     "casos": 2527,
+     "llovio": 0.07
+    },
+    {
+     "dice": "10-20 %",
+     "casos": 1085,
+     "llovio": 0.21
+    },
+    {
+     "dice": "20-30 %",
+     "casos": 565,
+     "llovio": 0.37
+    },
+    {
+     "dice": "30-40 %",
+     "casos": 361,
+     "llovio": 0.45
+    },
+    {
+     "dice": "40-50 %",
+     "casos": 173,
+     "llovio": 0.49
+    },
+    {
+     "dice": "50-60 %",
+     "casos": 95,
+     "llovio": 0.74
+    },
+    {
+     "dice": "60-70 %",
+     "casos": 42,
+     "llovio": 0.86
+    },
+    {
+     "dice": "70-80 %",
+     "casos": 10,
+     "llovio": 1.0
+    },
+    {
+     "dice": "80-90 %",
+     "casos": 4,
+     "llovio": 1.0
+    }
+   ]
+  },
+  "solo_ecmwf": {
+   "columnas": [
+    "ecmwf",
+    "ecmwf_vec_media",
+    "ecmwf_vec_max",
+    "clima"
+   ],
+   "coeficientes": [
+    0.2034,
+    2.0409,
+    -0.5302,
+    0.8992
+   ],
+   "intercepto": -2.2829,
+   "octubre": {
+    "casos": 4862,
+    "frecuencia": 0.199,
+    "brier": 0.1326,
+    "BSS_vs_climatologia": 0.155,
+    "AUC": 0.794
+   },
+   "confiabilidad_octubre": [
+    {
+     "dice": "0-10 %",
+     "casos": 2511,
+     "llovio": 0.07
+    },
+    {
+     "dice": "10-20 %",
+     "casos": 1086,
+     "llovio": 0.2
+    },
+    {
+     "dice": "20-30 %",
+     "casos": 570,
+     "llovio": 0.38
+    },
+    {
+     "dice": "30-40 %",
+     "casos": 350,
+     "llovio": 0.42
+    },
+    {
+     "dice": "40-50 %",
+     "casos": 187,
+     "llovio": 0.49
+    },
+    {
+     "dice": "50-60 %",
+     "casos": 107,
+     "llovio": 0.71
+    },
+    {
+     "dice": "60-70 %",
+     "casos": 33,
+     "llovio": 0.82
+    },
+    {
+     "dice": "70-80 %",
+     "casos": 14,
+     "llovio": 1.0
+    },
+    {
+     "dice": "80-90 %",
+     "casos": 4,
+     "llovio": 1.0
+    }
+   ],
+   "octubre_con_ecmwf_de_un_dia_antes": {
+    "casos": 4862,
+    "frecuencia": 0.199,
+    "brier": 0.145,
+    "BSS_vs_climatologia": 0.076,
+    "AUC": 0.717
+   }
+  },
+  "ecmwf_crudo_octubre": {
+   "casos": 4862,
+   "frecuencia": 0.199,
+   "brier": 0.2192,
+   "BSS_vs_climatologia": -0.396,
+   "AUC": 0.636
+  }
+ },
+ "manana|1mm": {
+  "entrenamiento_casos": 22814,
+  "completo": {
+   "columnas": [
+    "ecmwf",
+    "ecmwf_vec_media",
+    "ecmwf_vec_max",
+    "gfs",
+    "icon",
+    "clima"
+   ],
+   "coeficientes": [
+    0.0032,
+    1.8967,
+    -0.2724,
+    0.1082,
+    0.3172,
+    0.2855
+   ],
+   "intercepto": -2.7643,
+   "octubre": {
+    "casos": 4862,
+    "frecuencia": 0.28,
+    "brier": 0.161,
+    "BSS_vs_climatologia": 0.222,
+    "AUC": 0.805
+   },
+   "confiabilidad_octubre": [
+    {
+     "dice": "0-10 %",
+     "casos": 2073,
+     "llovio": 0.07
+    },
+    {
+     "dice": "10-20 %",
+     "casos": 1099,
+     "llovio": 0.26
+    },
+    {
+     "dice": "20-30 %",
+     "casos": 579,
+     "llovio": 0.42
+    },
+    {
+     "dice": "30-40 %",
+     "casos": 383,
+     "llovio": 0.5
+    },
+    {
+     "dice": "40-50 %",
+     "casos": 256,
+     "llovio": 0.55
+    },
+    {
+     "dice": "50-60 %",
+     "casos": 218,
+     "llovio": 0.61
+    },
+    {
+     "dice": "60-70 %",
+     "casos": 109,
+     "llovio": 0.77
+    },
+    {
+     "dice": "70-80 %",
+     "casos": 73,
+     "llovio": 0.88
+    },
+    {
+     "dice": "80-90 %",
+     "casos": 61,
+     "llovio": 0.93
+    },
+    {
+     "dice": "90-100 %",
+     "casos": 11,
+     "llovio": 1.0
+    }
+   ]
+  },
+  "solo_ecmwf": {
+   "columnas": [
+    "ecmwf",
+    "ecmwf_vec_media",
+    "ecmwf_vec_max",
+    "clima"
+   ],
+   "coeficientes": [
+    0.0178,
+    2.1226,
+    -0.3372,
+    0.3975
+   ],
+   "intercepto": -2.4521,
+   "octubre": {
+    "casos": 4862,
+    "frecuencia": 0.28,
+    "brier": 0.1622,
+    "BSS_vs_climatologia": 0.216,
+    "AUC": 0.798
+   },
+   "confiabilidad_octubre": [
+    {
+     "dice": "0-10 %",
+     "casos": 2071,
+     "llovio": 0.08
+    },
+    {
+     "dice": "10-20 %",
+     "casos": 1064,
+     "llovio": 0.25
+    },
+    {
+     "dice": "20-30 %",
+     "casos": 597,
+     "llovio": 0.4
+    },
+    {
+     "dice": "30-40 %",
+     "casos": 403,
+     "llovio": 0.5
+    },
+    {
+     "dice": "40-50 %",
+     "casos": 299,
+     "llovio": 0.52
+    },
+    {
+     "dice": "50-60 %",
+     "casos": 198,
+     "llovio": 0.65
+    },
+    {
+     "dice": "60-70 %",
+     "casos": 96,
+     "llovio": 0.74
+    },
+    {
+     "dice": "70-80 %",
+     "casos": 83,
+     "llovio": 0.98
+    },
+    {
+     "dice": "80-90 %",
+     "casos": 41,
+     "llovio": 0.88
+    },
+    {
+     "dice": "90-100 %",
+     "casos": 10,
+     "llovio": 0.9
+    }
+   ],
+   "octubre_con_ecmwf_de_un_dia_antes": {
+    "casos": 4862,
+    "frecuencia": 0.28,
+    "brier": 0.1824,
+    "BSS_vs_climatologia": 0.119,
+    "AUC": 0.714
+   }
+  },
+  "ecmwf_crudo_octubre": {
+   "casos": 4862,
+   "frecuencia": 0.28,
+   "brier": 0.2984,
+   "BSS_vs_climatologia": -0.441,
+   "AUC": 0.706
+  }
+ },
+ "manana|5mm": {
+  "entrenamiento_casos": 22814,
+  "completo": {
+   "columnas": [
+    "ecmwf",
+    "ecmwf_vec_media",
+    "ecmwf_vec_max",
+    "gfs",
+    "icon",
+    "clima"
+   ],
+   "coeficientes": [
+    0.1963,
+    1.9383,
+    -0.329,
+    -0.0984,
+    0.3348,
+    0.5175
+   ],
+   "intercepto": -3.7424,
+   "octubre": {
+    "casos": 4862,
+    "frecuencia": 0.084,
+    "brier": 0.0673,
+    "BSS_vs_climatologia": 0.116,
+    "AUC": 0.83
+   },
+   "confiabilidad_octubre": [
+    {
+     "dice": "0-10 %",
+     "casos": 4186,
+     "llovio": 0.05
+    },
+    {
+     "dice": "10-20 %",
+     "casos": 410,
+     "llovio": 0.15
+    },
+    {
+     "dice": "20-30 %",
+     "casos": 118,
+     "llovio": 0.34
+    },
+    {
+     "dice": "30-40 %",
+     "casos": 57,
+     "llovio": 0.51
+    },
+    {
+     "dice": "40-50 %",
+     "casos": 39,
+     "llovio": 0.44
+    },
+    {
+     "dice": "50-60 %",
+     "casos": 30,
+     "llovio": 0.57
+    },
+    {
+     "dice": "60-70 %",
+     "casos": 12,
+     "llovio": 0.83
+    },
+    {
+     "dice": "70-80 %",
+     "casos": 8,
+     "llovio": 0.38
+    },
+    {
+     "dice": "80-90 %",
+     "casos": 2,
+     "llovio": 0.5
+    }
+   ]
+  },
+  "solo_ecmwf": {
+   "columnas": [
+    "ecmwf",
+    "ecmwf_vec_media",
+    "ecmwf_vec_max",
+    "clima"
+   ],
+   "coeficientes": [
+    0.1954,
+    2.1057,
+    -0.389,
+    0.5683
+   ],
+   "intercepto": -3.53,
+   "octubre": {
+    "casos": 4862,
+    "frecuencia": 0.084,
+    "brier": 0.0672,
+    "BSS_vs_climatologia": 0.117,
+    "AUC": 0.824
+   },
+   "confiabilidad_octubre": [
+    {
+     "dice": "0-10 %",
+     "casos": 4187,
+     "llovio": 0.05
+    },
+    {
+     "dice": "10-20 %",
+     "casos": 421,
+     "llovio": 0.16
+    },
+    {
+     "dice": "20-30 %",
+     "casos": 113,
+     "llovio": 0.33
+    },
+    {
+     "dice": "30-40 %",
+     "casos": 59,
+     "llovio": 0.56
+    },
+    {
+     "dice": "40-50 %",
+     "casos": 40,
+     "llovio": 0.4
+    },
+    {
+     "dice": "50-60 %",
+     "casos": 21,
+     "llovio": 0.81
+    },
+    {
+     "dice": "60-70 %",
+     "casos": 11,
+     "llovio": 0.64
+    },
+    {
+     "dice": "70-80 %",
+     "casos": 6,
+     "llovio": 0.5
+    },
+    {
+     "dice": "80-90 %",
+     "casos": 4,
+     "llovio": 0.5
+    }
+   ],
+   "octubre_con_ecmwf_de_un_dia_antes": {
+    "casos": 4862,
+    "frecuencia": 0.084,
+    "brier": 0.0768,
+    "BSS_vs_climatologia": -0.009,
+    "AUC": 0.722
+   }
+  },
+  "ecmwf_crudo_octubre": {
+   "casos": 4862,
+   "frecuencia": 0.084,
+   "brier": 0.1274,
+   "BSS_vs_climatologia": -0.673,
+   "AUC": 0.641
+  }
+ }
+}

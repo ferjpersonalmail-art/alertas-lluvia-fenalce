@@ -1,0 +1,58 @@
+name: Pronóstico de lluvia (6 horas)
+
+# Mapa y texto del pronóstico de lluvia de FENALCE, publicados en ntfy; el puente de WhatsApp los lleva al grupo.
+# Mientras PRUEBA sea "1", el título empieza con 🧪 y el puente lo manda SOLO al grupo «Pruebas».
+#   16:00 UTC = 11:00 a. m. de Colombia → ventana de la tarde (12:00 p. m. a 6:00 p. m.)
+#   00:30 UTC = 7:30 p. m. de Colombia → ventana de la mañana siguiente (6:00 a. m. a 12:00 p. m.)
+# Se programa media hora antes de las 11:30 porque GitHub suele arrancar las tareas programadas con retraso.
+on:
+  schedule:
+    - cron: "0 16 * * *"
+    - cron: "30 0 * * *"
+  workflow_dispatch:
+    inputs:
+      ventana:
+        description: "tarde | manana"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pronostico-lluvia
+  cancel-in-progress: false
+
+jobs:
+  pronostico:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PRUEBA: "1"
+      TZ: America/Bogota
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r pronostico_lluvia/requirements.txt
+
+      - name: Pronóstico y envío
+        run: |
+          VENTANA="${{ github.event.inputs.ventana }}"
+          if [ -z "$VENTANA" ]; then
+            # por la hora de Colombia: antes de las 3 p. m., la tarde de hoy; si no, la mañana de mañana
+            if [ "$(date +%H)" -lt 15 ]; then VENTANA=tarde; else VENTANA=manana; fi
+          fi
+          python pronostico_lluvia/pronostico_lluvia.py "$VENTANA" --enviar
+
+      - name: Guardar mapa y texto
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pronostico-${{ github.run_id }}
+          path: pronostico_lluvia/salida/lluvia_mm_*
+          retention-days: 30
