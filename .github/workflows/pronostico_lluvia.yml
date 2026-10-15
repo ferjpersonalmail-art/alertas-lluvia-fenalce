@@ -5,6 +5,7 @@ name: Pronóstico de lluvia (6 horas)
 #   16:00 UTC = 11:00 a. m. de Colombia → ventana de la tarde (12:00 p. m. a 6:00 p. m.)
 #   00:30 UTC = 7:30 p. m. de Colombia → ventana de la mañana siguiente (6:00 a. m. a 12:00 p. m.)
 # Se programa media hora antes de las 11:30 porque GitHub suele arrancar las tareas programadas con retraso.
+# Además guarda en pronostico_lluvia/publicado/ lo que lee la página interactiva del portal (/pronostico-lluvia/).
 on:
   schedule:
     - cron: "0 16 * * *"
@@ -17,7 +18,7 @@ on:
         default: ""
 
 permissions:
-  contents: read
+  contents: write     # subir pronostico_lluvia/publicado/
 
 concurrency:
   group: pronostico-lluvia
@@ -40,7 +41,7 @@ jobs:
 
       - run: pip install -r pronostico_lluvia/requirements.txt
 
-      - name: Pronóstico y envío
+      - name: Pronóstico, página y envío
         run: |
           VENTANA="${{ github.event.inputs.ventana }}"
           if [ -z "$VENTANA" ]; then
@@ -48,6 +49,19 @@ jobs:
             if [ "$(date +%H)" -lt 15 ]; then VENTANA=tarde; else VENTANA=manana; fi
           fi
           python pronostico_lluvia/pronostico_lluvia.py "$VENTANA" --enviar
+
+      - name: Publicar para la página
+        run: |
+          git config user.name "alertas-lluvia-bot"
+          git config user.email "alertas-lluvia-bot@users.noreply.github.com"
+          git add pronostico_lluvia/publicado
+          if ! git diff --cached --quiet; then
+            git commit -m "Pronóstico de lluvia $(date +'%Y-%m-%d %H:%M')"
+            for i in 1 2 3 4 5; do   # el motor de alertas también sube cambios cada pocos minutos
+              git pull --rebase --autostash && git push && break
+              sleep $((i * 10))
+            done
+          fi
 
       - name: Guardar mapa y texto
         if: always()

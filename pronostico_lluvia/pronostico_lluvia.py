@@ -44,6 +44,8 @@ SALIDA = AQUI / "salida"
 ZONA = ZoneInfo("America/Bogota")
 TEMA = os.environ.get("NTFY_TEMA_PRONOSTICO") or "fenalce-lluvia-2ifz77fnqg"
 PRUEBA = os.environ.get("PRUEBA", "1") != "0"
+PAGINA = "https://agroclima-fenalce-portal.vercel.app/pronostico-lluvia/"
+PUBLICADO = AQUI / "publicado"            # lo que lee la pagina interactiva (se sube al repositorio)
 VENTANAS = {"tarde": (13, 19, "Tarde", "12:00 p. m. a 6:00 p. m."), "manana": (7, 13, "Mañana", "6:00 a. m. a 12:00 p. m.")}
 CIUDADES = {"Bogotá": (4.61, -74.08), "Medellín": (6.25, -75.56), "Cali": (3.45, -76.53), "Barranquilla": (10.96, -74.80),
             "Montería": (8.75, -75.88), "Villavicencio": (4.14, -73.63), "Neiva": (2.93, -75.28), "Ibagué": (4.44, -75.23),
@@ -118,7 +120,7 @@ def calcular(puntos, e, clima, cal, calmm, ventana):
     return mm, p1
 
 
-def dibujar(puntos, mm, ventana, fecha, ruta, nota):
+def superficie(puntos, mm):
     lats = sorted({p["lat"] for p in puntos}); lons = sorted({p["lon"] for p in puntos})
     fi = {v: i for i, v in enumerate(lats)}; co = {v: j for j, v in enumerate(lons)}
     Z = np.full((len(lats), len(lons)), np.nan)
@@ -129,10 +131,10 @@ def dibujar(puntos, mm, ventana, fecha, ruta, nota):
     Zf = gaussian_filter(np.where(m, Z, 0), 1.0); W = gaussian_filter(m.astype(float), 1.0)
     S = np.clip(zoom(np.divide(Zf, W, out=np.zeros_like(Zf), where=W > 0.05), 10, order=3), 0, None)
     x = np.linspace(lons[0], lons[-1], S.shape[1]); y = np.linspace(lats[0], lats[-1], S.shape[0])
+    return x, y, S
 
-    fig = plt.figure(figsize=(9, 11), dpi=200)
-    ax = fig.add_axes([0.0, 0.075, 1.0, 0.78])
-    ax.set_facecolor("#E3EEF3")
+
+def anillos_pais():
     anillos = []
     for f in leer("departamentos.json")["features"]:
         g = f["geometry"]
@@ -141,7 +143,33 @@ def dibujar(puntos, mm, ventana, fecha, ruta, nota):
     verts, codigos = [], []
     for a in anillos:
         verts += a.tolist(); codigos += [Ruta.MOVETO] + [Ruta.LINETO] * (len(a) - 1)
-    pais = Ruta(verts, codigos)
+    return anillos, Ruta(verts, codigos)
+
+
+def capa_transparente(puntos, mm, ruta):
+    """Solo la lluvia (sin fondo, recortada a Colombia), para ponerla sobre el mapa de la pagina. Devuelve sus limites."""
+    x, y, S = superficie(puntos, mm)
+    _, pais = anillos_pais()
+    ancho, alto = (x[-1] - x[0]), (y[-1] - y[0])
+    fig = plt.figure(figsize=(ancho / 2.0, alto / 2.0), dpi=150)
+    ax = fig.add_axes([0, 0, 1, 1]); ax.set_axis_off(); fig.patch.set_alpha(0)
+    niveles = CORTES + [500]
+    rel = ax.contourf(x, y, S, levels=niveles, cmap=ListedColormap(COLORES), norm=BoundaryNorm(niveles, 6), antialiased=True)
+    recorte = PathPatch(pais, transform=ax.transData, facecolor="none", edgecolor="none")
+    ax.add_patch(recorte); rel.set_clip_path(recorte)
+    ax.set_xlim(x[0], x[-1]); ax.set_ylim(y[0], y[-1])
+    fig.savefig(ruta, transparent=True)
+    plt.close(fig)
+    return [[round(float(y[0]), 4), round(float(x[0]), 4)], [round(float(y[-1]), 4), round(float(x[-1]), 4)]]
+
+
+def dibujar(puntos, mm, ventana, fecha, ruta, nota):
+    x, y, S = superficie(puntos, mm)
+
+    fig = plt.figure(figsize=(9, 11), dpi=200)
+    ax = fig.add_axes([0.0, 0.075, 1.0, 0.78])
+    ax.set_facecolor("#E3EEF3")
+    anillos, pais = anillos_pais()
     ax.add_patch(PathPatch(pais, facecolor=CREMA_PANEL, edgecolor="none", zorder=1))
     niveles = CORTES + [500]
     rel = ax.contourf(x, y, S, levels=niveles, cmap=ListedColormap(COLORES), norm=BoundaryNorm(niveles, 6), zorder=2, antialiased=True)
@@ -216,7 +244,8 @@ def resumen(puntos, mm, p1, ventana, fecha):
         lineas += ["No se espera lluvia importante en las zonas de FENALCE.", ""]
     else:
         lineas += ["En el resto de las zonas de FENALCE no se espera lluvia importante."]
-    lineas += ["Milímetros aproximados por zonas de unos 28 km: no es el pronóstico de una finca. Entre tanto, siguen las alertas en tiempo real.",
+    lineas += [f"📍 Consulte su municipio: {PAGINA}", "",
+               "Milímetros aproximados por zonas de unos 28 km: no es el pronóstico de una finca. Entre tanto, siguen las alertas en tiempo real.",
                f"_Elaboró: {AUTORES}_", f"_{AREA}_"]
     return chr(10).join(lineas)
 
@@ -230,6 +259,28 @@ def enviar(png, texto, ventana, fecha):
     pedido = urllib.request.Request(f"https://ntfy.sh/{TEMA}", data=png.read_bytes(), method="PUT", headers=cabeceras)
     with urllib.request.urlopen(pedido, timeout=60) as r:
         print("Enviado a ntfy:", r.status, titulo)
+
+
+def publicar(puntos, mm, p1, ventana, fecha, v, calmm_todo):
+    """Lo que lee la pagina interactiva: zonas, municipios (con su zona mas cercana) y la capa del mapa."""
+    PUBLICADO.mkdir(exist_ok=True)
+    limites = capa_transparente(puntos, mm, PUBLICADO / f"capa_{ventana}.png")
+    xy = np.array([[p["lat"], p["lon"]] for p in puntos])
+    municipios = []
+    for nombre, depto, la, lo in leer("municipios_centros.json"):
+        k = int(np.argmin((xy[:, 0] - la) ** 2 + (xy[:, 1] - lo) ** 2))
+        municipios.append([nombre, depto, la, lo, mm[k], p1[k]])
+    dia = dt.date.fromisoformat(fecha)
+    datos = {"fecha": fecha, "ventana": ventana, "nombre": VENTANAS[ventana][2], "rango": VENTANAS[ventana][3],
+             "fecha_texto": f"{DIAS[dia.weekday()]} {dia.day} de {MESES[dia.month - 1]} de {dia.year}",
+             "emitido": dt.datetime.now(ZONA).isoformat(timespec="minutes"), "prueba": PRUEBA,
+             "cortes": CORTES, "colores": COLORES, "etiquetas": ETIQUETAS, "limites_capa": limites,
+             "acierto": {"clase": v["acierto_de_clase"], "clase_o_vecina": v["acierto_clase_o_vecina"],
+                         "climatologia": calmm_todo["climatologia"]["acierto_de_clase"]},
+             "zonas": [[p["lat"], p["lon"], a, b] for p, a, b in zip(puntos, mm, p1) if a is not None],
+             "municipios": municipios}
+    (PUBLICADO / f"ultimo_{ventana}.json").write_text(json.dumps(datos, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    (PUBLICADO / "ultimo.json").write_text(json.dumps({"ventana": ventana, "fecha": fecha, "emitido": datos["emitido"]}), encoding="utf-8")
 
 
 def main():
@@ -255,6 +306,7 @@ def main():
     (SALIDA / f"{base}.json").write_text(json.dumps({"fecha": fecha, "ventana": ventana, "emitido": dt.datetime.now(ZONA).isoformat(timespec="minutes"),
                                                      "puntos": [{**p, "mm": a, "p1": b, "ecmwf_mm": c} for p, a, b, c in zip(puntos, mm, p1, e)]}),
                                          encoding="utf-8")
+    publicar(puntos, mm, p1, ventana, fecha, v, calmm_todo)
     print(texto)
     if "--enviar" in sys.argv:
         enviar(png, texto, ventana, fecha)
