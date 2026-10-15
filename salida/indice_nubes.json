@@ -1,11 +1,11 @@
 {
- "hora_satelite": "2026-10-15 07:30",
+ "hora_satelite": "2026-10-15 07:40",
  "departamentos": [
   {
    "movimiento": {
     "hacia": "norte",
-    "vel_kmh": 17.115859031677246,
-    "grados": 0.0
+    "vel_kmh": 24.935456912693024,
+    "grados": 348.69006752597977
    },
    "viento": {
     "viento_kmh": 4.0,
@@ -16,36 +16,72 @@
    "codigo": "52",
    "region": "pacífico",
    "departamento": "Nariño",
-   "puntaje": 8,
+   "puntaje": 7,
    "probabilidad": "MEDIA",
    "municipios": [
     "San Andrés de Tumaco",
     "Barbacoas",
-    "Los Andes",
-    "Magüí"
+    "Roberto Payán",
+    "Francisco Pizarro"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~2,290 km²",
-    "núcleos de tormenta en ~105 km²",
-    "6 rayos en 15 min",
-    "nubes gruesas (COD ≥ 30) en ~4,639 km²",
+    "nubes densas (cima < −40 °C) en ~2,200 km²",
+    "5 rayos en 15 min",
+    "nubes gruesas (COD ≥ 30) en ~3,425 km²",
     "modelo: prob. lluvia 76 %, agua precipitable 60 mm, CAPE 2520 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 3434.5476902723312,
-   "frio60": 156.91806435585022,
-   "btmin": -62.098236083984375,
-   "crec": 1.2018823954721858,
-   "rayos": 6,
-   "cod_gruesa": 6959.018274068832
+   "frio40": 3300.003155231476,
+   "frio60": 11.956406831741333,
+   "btmin": -61.36079406738281,
+   "crec": 1.015626188664675,
+   "rayos": 5,
+   "cod_gruesa": 5137.538704037666
   },
   {
    "movimiento": null,
    "viento": {
-    "viento_kmh": 5.8,
-    "viento_dir": 353,
+    "viento_kmh": 3.6,
+    "viento_dir": 3,
+    "alto_kmh": 25.7,
+    "alto_dir": 79
+   },
+   "codigo": "50",
+   "region": "oriente",
+   "departamento": "Meta",
+   "puntaje": 3,
+   "probabilidad": "BAJA",
+   "municipios": [
+    "Puerto López",
+    "Puerto Gaitán",
+    "Cabuyaro"
+   ],
+   "llueve_en": [
+    "Puerto López",
+    "Puerto Gaitán",
+    "Cabuyaro"
+   ],
+   "razones": [
+    "nubes densas en ~117 km²",
+    "nubes creciendo (+100 % en 30 min)",
+    "modelo: prob. lluvia 40 %, agua precipitable 56 mm, CAPE 1630 J/kg"
+   ],
+   "lluvia_km2": 731,
+   "lluvia_moderada_km2": 0,
+   "frio40": 234.37183320522308,
+   "frio60": 0.0,
+   "btmin": -45.137115478515625,
+   "crec": 2.0,
+   "rayos": 0,
+   "cod_gruesa": 26.77334499359131
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 6.7,
+    "viento_dir": 2,
     "alto_kmh": 27.4,
     "alto_dir": 67
    },
@@ -59,15 +95,15 @@
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~104 km²",
+    "nubes densas en ~147 km²",
     "nubes creciendo (+100 % en 30 min)",
-    "modelo: prob. lluvia 28 %, agua precipitable 55 mm, CAPE 2020 J/kg"
+    "modelo: prob. lluvia 28 %, agua precipitable 55 mm, CAPE 2050 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 207.48336398601532,
+   "frio40": 294.0552976131439,
    "frio60": 0.0,
-   "btmin": -45.444366455078125,
+   "btmin": -47.533782958984375,
    "crec": 2.0,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -88,52 +124,17 @@
    "municipios": [],
    "llueve_en": [],
    "razones": [
-    "nubes gruesas (COD ≥ 30) en ~3,434 km²",
+    "nubes gruesas (COD ≥ 30) en ~2,916 km²",
     "modelo: prob. lluvia 2 %, agua precipitable 54 mm, CAPE 1780 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -5.62261962890625,
+   "btmin": -5.19244384765625,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 5150.378424406052
-  },
-  {
-   "movimiento": null,
-   "viento": {
-    "viento_kmh": 4.5,
-    "viento_dir": 7,
-    "alto_kmh": 25.7,
-    "alto_dir": 79
-   },
-   "codigo": "50",
-   "region": "oriente",
-   "departamento": "Meta",
-   "puntaje": 2,
-   "probabilidad": "BAJA",
-   "municipios": [
-    "Puerto López",
-    "Puerto Gaitán"
-   ],
-   "llueve_en": [
-    "Puerto López",
-    "Puerto Gaitán"
-   ],
-   "razones": [
-    "nubes densas en ~108 km²",
-    "nubes creciendo (+100 % en 30 min)",
-    "modelo: prob. lluvia 40 %, agua precipitable 55 mm, CAPE 1450 J/kg"
-   ],
-   "lluvia_km2": 571,
-   "lluvia_moderada_km2": 0,
-   "frio40": 216.45145106315613,
-   "frio60": 0.0,
-   "btmin": -44.46112060546875,
-   "crec": 2.0,
-   "rayos": 0,
-   "cod_gruesa": 366.08666479587555
+   "cod_gruesa": 4373.665843367577
   },
   {
    "movimiento": null,
@@ -151,17 +152,54 @@
    "municipios": [],
    "llueve_en": [],
    "razones": [
-    "nubes gruesas (COD ≥ 30) en ~1,348 km²",
+    "nubes gruesas (COD ≥ 30) en ~1,228 km²",
     "modelo: prob. lluvia 14 %, agua precipitable 33 mm, CAPE 1700 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -13.427215576171875,
+   "btmin": -14.226104736328125,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 1348.496419787407
+   "cod_gruesa": 1227.787073135376
+  },
+  {
+   "movimiento": {
+    "hacia": "noroccidente",
+    "vel_kmh": 37.33521363439997,
+    "grados": 328.3924977537511
+   },
+   "viento": {
+    "viento_kmh": 8.5,
+    "viento_dir": 269,
+    "alto_kmh": 42.4,
+    "alto_dir": 115
+   },
+   "codigo": "86",
+   "region": "oriente",
+   "departamento": "Putumayo",
+   "puntaje": 2,
+   "probabilidad": "BAJA",
+   "municipios": [
+    "San Miguel",
+    "Valle del Guamuez",
+    "Villagarzón"
+   ],
+   "llueve_en": [],
+   "razones": [
+    "nubes densas en ~106 km²",
+    "nubes creciendo (+100 % en 30 min)",
+    "modelo: prob. lluvia 17 %, agua precipitable 54 mm, CAPE 1210 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 212.37188494205475,
+   "frio60": 0.0,
+   "btmin": -46.91925048828125,
+   "crec": 2.0,
+   "rayos": 0,
+   "cod_gruesa": 92.72476422786713
   },
   {
    "movimiento": null,
@@ -179,17 +217,17 @@
    "municipios": [],
    "llueve_en": [],
    "razones": [
-    "nubes gruesas (COD ≥ 30) en ~2,614 km²",
+    "nubes gruesas (COD ≥ 30) en ~2,012 km²",
     "modelo: prob. lluvia 0 %, agua precipitable 18 mm, CAPE 620 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -9.985809326171875,
+   "btmin": -9.248382568359375,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 2613.632458925247
+   "cod_gruesa": 2012.497652053833
   },
   {
    "movimiento": null,
@@ -213,7 +251,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 16.6849365234375,
+   "btmin": 17.79107666015625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -240,7 +278,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 5.80767822265625,
+   "btmin": 12.56756591796875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -265,12 +303,12 @@
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 5.982763051986694,
+   "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -41.63427734375,
-   "crec": 0.023952050877772375,
+   "btmin": -38.868865966796875,
+   "crec": 0.0,
    "rayos": 0,
-   "cod_gruesa": 26.909444093704224
+   "cod_gruesa": 13.440311193466187
   },
   {
    "movimiento": null,
@@ -288,17 +326,17 @@
    "municipios": [],
    "llueve_en": [],
    "razones": [
-    "nubes gruesas (COD ≥ 30) en ~1,437 km²",
+    "nubes gruesas (COD ≥ 30) en ~881 km²",
     "modelo: prob. lluvia 0 %, agua precipitable 37 mm, CAPE 820 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -31.924652099609375,
+   "btmin": -31.37158203125,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 1437.1068642139435
+   "cod_gruesa": 880.5001971721649
   },
   {
    "movimiento": null,
@@ -322,7 +360,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -3.96337890625,
+   "btmin": -2.73431396484375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -349,38 +387,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 13.366455078125,
+   "btmin": 13.612274169921875,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 26.456944227218628
-  },
-  {
-   "movimiento": null,
-   "viento": {
-    "viento_kmh": 8.9,
-    "viento_dir": 84,
-    "alto_kmh": 21.9,
-    "alto_dir": 99
-   },
-   "codigo": "25",
-   "region": "andina",
-   "departamento": "Cundinamarca",
-   "puntaje": 1,
-   "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
-   "razones": [
-    "nubes gruesas (COD ≥ 30) en ~889 km²",
-    "modelo: prob. lluvia 0 %, agua precipitable 22 mm, CAPE 120 J/kg"
-   ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
-   "frio60": 0.0,
-   "btmin": -35.550384521484375,
-   "crec": null,
-   "rayos": 0,
-   "cod_gruesa": 889.3066523075104
+   "cod_gruesa": 41.14310884475708
   },
   {
    "movimiento": null,
@@ -404,10 +414,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -23.38262939453125,
+   "btmin": -23.566986083984375,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 107.56357002258301
+   "cod_gruesa": 180.79639399051666
   },
   {
    "movimiento": null,
@@ -431,10 +441,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 1.198699951171875,
+   "btmin": 1.813232421875,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 17.286850690841675
+   "cod_gruesa": 35.72639441490173
   },
   {
    "movimiento": null,
@@ -458,7 +468,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -1.443817138671875,
+   "btmin": -0.70635986328125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -485,7 +495,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -22.030670166015625,
+   "btmin": -23.07537841796875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -506,25 +516,25 @@
    "municipios": [],
    "llueve_en": [],
    "razones": [
-    "nubes gruesas (COD ≥ 30) en ~984 km²",
+    "nubes gruesas (COD ≥ 30) en ~890 km²",
     "modelo: prob. lluvia 0 %, agua precipitable 47 mm, CAPE 1210 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -31.494476318359375,
+   "btmin": -31.6788330078125,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 983.6948825120926
+   "cod_gruesa": 889.7121732234955
   },
   {
    "movimiento": null,
    "viento": {
-    "viento_kmh": 5.1,
-    "viento_dir": 276,
-    "alto_kmh": 25.2,
-    "alto_dir": 65
+    "viento_kmh": 3.6,
+    "viento_dir": 297,
+    "alto_kmh": 26.3,
+    "alto_dir": 66
    },
    "codigo": "81",
    "region": "oriente",
@@ -536,16 +546,16 @@
    ],
    "llueve_en": [],
    "razones": [
-    "modelo: prob. lluvia 36 %, agua precipitable 56 mm, CAPE 2050 J/kg"
+    "modelo: prob. lluvia 44 %, agua precipitable 56 mm, CAPE 2230 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 168.3749099969864,
+   "frio40": 39.90047883987427,
    "frio60": 0.0,
-   "btmin": -43.416412353515625,
-   "crec": 0.8325367495531696,
+   "btmin": -40.71246337890625,
+   "crec": 0.16374828750350656,
    "rayos": 0,
-   "cod_gruesa": 542.0499138832092
+   "cod_gruesa": 234.94340801239014
   },
   {
    "movimiento": null,
@@ -561,28 +571,28 @@
    "puntaje": 1,
    "probabilidad": "BAJA",
    "municipios": [
-    "Tauramena",
     "Villanueva",
+    "Tauramena",
     "Monterrey",
-    "Sabanalarga"
+    "Maní"
    ],
    "llueve_en": [
-    "Tauramena",
     "Villanueva",
+    "Tauramena",
     "Monterrey",
-    "Sabanalarga"
+    "Maní"
    ],
    "razones": [
     "modelo: prob. lluvia 9 %, agua precipitable 57 mm, CAPE 2480 J/kg"
    ],
-   "lluvia_km2": 605,
+   "lluvia_km2": 239,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -29.036346435546875,
+   "btmin": -28.974884033203125,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 438.7412792444229
+   "cod_gruesa": 330.61550283432007
   },
   {
    "movimiento": null,
@@ -606,14 +616,14 @@
    "razones": [
     "modelo: prob. lluvia 26 %, agua precipitable 55 mm, CAPE 2130 J/kg"
    ],
-   "lluvia_km2": 42,
+   "lluvia_km2": 55,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -31.863189697265625,
+   "btmin": -37.332550048828125,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 310.700053691864
+   "cod_gruesa": 238.10399985313416
   },
   {
    "movimiento": null,
@@ -637,10 +647,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -29.466522216796875,
+   "btmin": -32.662078857421875,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 117.34107327461243
+   "cod_gruesa": 60.87111186981201
   },
   {
    "movimiento": null,
@@ -664,10 +674,37 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -12.81268310546875,
+   "btmin": -10.66180419921875,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 40.01526725292206
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 8.9,
+    "viento_dir": 84,
+    "alto_kmh": 21.9,
+    "alto_dir": 99
+   },
+   "codigo": "25",
+   "region": "andina",
+   "departamento": "Cundinamarca",
+   "puntaje": 0,
+   "probabilidad": "BAJA",
+   "municipios": [],
+   "llueve_en": [],
+   "razones": [
+    "modelo: prob. lluvia 0 %, agua precipitable 22 mm, CAPE 120 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 0.0,
+   "frio60": 0.0,
+   "btmin": -28.79052734375,
+   "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 495.9613174200058
   },
   {
    "movimiento": null,
@@ -691,10 +728,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -9.617095947265625,
+   "btmin": 2.857940673828125,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 13.163583755493164
+   "cod_gruesa": 13.168816924095154
   },
   {
    "movimiento": null,
@@ -718,7 +755,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -4.0863037109375,
+   "btmin": -2.611419677734375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -745,7 +782,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -4.0863037109375,
+   "btmin": -0.337646484375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -772,44 +809,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 20.67938232421875,
+   "btmin": 21.1710205078125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": {
-    "hacia": "norte",
-    "vel_kmh": 36.68866753578186,
-    "grados": 0.0
-   },
-   "viento": {
-    "viento_kmh": 10.9,
-    "viento_dir": 277,
-    "alto_kmh": 42.6,
-    "alto_dir": 112
-   },
-   "codigo": "86",
-   "region": "oriente",
-   "departamento": "Putumayo",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [
-    "San Miguel",
-    "Valle del Guamuez"
-   ],
-   "llueve_en": [],
-   "razones": [
-    "modelo: prob. lluvia 45 %, agua precipitable 53 mm, CAPE 640 J/kg"
-   ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 142.08871591091156,
-   "frio60": 0.0,
-   "btmin": -49.80755615234375,
-   "crec": 2.0,
-   "rayos": 0,
-   "cod_gruesa": 151.0372635126114
   }
  ]
 }
