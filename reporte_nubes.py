@@ -39,8 +39,9 @@ COLOR = {"ALTA": ("⛈️", "ALTA"), "MEDIA": ("🌦️", "MEDIA"), "BAJA": ("�
 ORDEN = {"BAJA": 0, "MEDIA": 1, "ALTA": 2}
 # Departamentos que reciben avisos (sin límite diario; 1 h entre eventos, actualización cada 3 h). Para agregar o quitar uno, editar su código DANE.
 # Todo el país menos la región Amazonía (18 Caquetá, 86 Putumayo, 95 Guaviare; 91/94/97 inactivos)
-PRESENCIA = {"05", "08", "13", "15", "17", "19", "20", "23", "25", "27", "41", "44", "47",
-             "50", "52", "54", "63", "66", "68", "70", "73", "76", "81", "85", "99"}
+# Sin Vichada (99) ni La Guajira (44) desde el 15-oct-2026, a pedido de Juan Fer.
+PRESENCIA = {"05", "08", "13", "15", "17", "19", "20", "23", "25", "27", "41", "47",
+             "50", "52", "54", "63", "66", "68", "70", "73", "76", "81", "85"}
 DIR_VIENTO = ["norte", "nororiente", "oriente", "suroriente", "sur", "suroccidente", "occidente", "noroccidente"]
 
 
