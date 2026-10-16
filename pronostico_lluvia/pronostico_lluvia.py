@@ -105,7 +105,21 @@ def pronostico_ecmwf(puntos, fecha, ventana):
     return salida
 
 
-ISOYETA_CADA_GRADOS = 2.2     # una cifra cada ~240 km de linea
+ISOYETA_CADA_GRADOS = 3.0     # una cifra cada ~330 km de linea
+GRADOS_POR_PUNTO = 12.7 / (9 * 72)   # escala del mapa: el eje mide 12,7 grados de ancho en 9 pulgadas
+
+
+def caja_texto(x, y, texto, puntos, ha="center", va="center", margen=0.12):
+    """Caja aproximada (en grados) que ocupa un texto en el mapa, con un margen."""
+    ancho = len(texto) * 0.68 * puntos * GRADOS_POR_PUNTO
+    alto = 1.15 * puntos * GRADOS_POR_PUNTO
+    x0 = x - ancho / 2 if ha == "center" else x if ha == "left" else x - ancho
+    y0 = y - alto / 2 if va == "center" else y if va == "bottom" else y - alto
+    return (x0 - margen, y0 - margen, x0 + ancho + margen, y0 + alto + margen)
+
+
+def choca(caja, ocupado):
+    return any(caja[0] < b[2] and caja[2] > b[0] and caja[1] < b[3] and caja[3] > b[1] for b in ocupado)
 MAXIMOS = 7                   # cuantos nucleos de lluvia se marcan con su valor
 
 
@@ -152,19 +166,31 @@ def geometria_isoyetas(x, y, S, pais):
     return lineas, etiquetas, maximos
 
 
-def isoyetas(ax, x, y, S, recorte, pais):
-    """Dibuja las isoyetas con su valor a lo largo de la linea y los maximos de lluvia con su valor."""
+def isoyetas(ax, x, y, S, recorte, pais, ocupado):
+    """Dibuja las isoyetas y los maximos; ningun numero se pone encima de un nombre de ciudad, de un maximo o de otro numero."""
     import matplotlib.patheffects as pe
     halo = [pe.withStroke(linewidth=2.6, foreground="white")]
     lineas, etiquetas, maximos = geometria_isoyetas(x, y, S, pais)
     for nivel, seg in lineas:
-        ax.plot(seg[:, 0], seg[:, 1], color=NAVY, lw=0.75, alpha=0.9, zorder=3.5)
+        ax.plot(seg[:, 0], seg[:, 1], color=NAVY, lw=0.7, alpha=0.85, zorder=3.5)
+    # 1. los maximos primero (lo mas importante): se busca el lado libre
+    for valor, px, py in maximos:
+        texto = f"{valor:.0f}"
+        for dx, dy, ha, va in ((0.14, -0.04, "left", "top"), (-0.14, -0.04, "right", "top"), (0, 0.16, "center", "bottom"), (0, -0.16, "center", "top")):
+            caja = caja_texto(px + dx, py + dy, texto, 8.2, ha, va, 0.08)
+            if not choca(caja, ocupado):
+                break
+        ax.plot(px, py, marker="o", ms=4.2, color="white", mec=NAVY, mew=1.2, zorder=7)
+        ax.text(px + dx, py + dy, texto, fontsize=8.2, color=NAVY, weight="bold", ha=ha, va=va, zorder=7, path_effects=halo)
+        ocupado.append(caja); ocupado.append((px - 0.12, py - 0.12, px + 0.12, py + 0.12))
+    # 2. el valor de las isoyetas, solo donde queda libre
     for px, py, nivel, ang in etiquetas:
+        caja = caja_texto(px, py, f"{nivel:g}", 6.6, margen=0.16)
+        if choca(caja, ocupado):
+            continue
         ax.text(px, py, f"{nivel:g}", fontsize=6.6, color=NAVY, weight="bold", rotation=ang, rotation_mode="anchor",
                 ha="center", va="center", zorder=6, path_effects=halo)
-    for valor, px, py in maximos:
-        ax.plot(px, py, marker="o", ms=4.2, color="white", mec=NAVY, mew=1.2, zorder=7)
-        ax.text(px + 0.12, py - 0.05, f"{valor:.0f}", fontsize=8.2, color=NAVY, weight="bold", ha="left", va="top", zorder=7, path_effects=halo)
+        ocupado.append(caja)
 
 
 def calcular(puntos, e, clima, cal, calmm, ventana):
@@ -242,18 +268,32 @@ def dibujar(puntos, mm, ventana, fecha, ruta, nota):
     recorte = PathPatch(pais, transform=ax.transData, facecolor="none", edgecolor="none")
     ax.add_patch(recorte); rel.set_clip_path(recorte)
     for a in anillos:
-        ax.plot(a[:, 0], a[:, 1], color=PIZARRA_INK, lw=0.45, alpha=0.8, zorder=3)
-    ax.add_patch(PathPatch(pais, facecolor="none", edgecolor=NAVY, lw=1.0, zorder=3))
+        ax.plot(a[:, 0], a[:, 1], color=PIZARRA_INK, lw=0.35, alpha=0.45, zorder=3)
+    # contorno exterior del pais (sin los limites internos): borde de la mascara «dentro de Colombia» en la rejilla fina
+    XX, YY = np.meshgrid(x, y)
+    en_pais = pais.contains_points(np.column_stack([XX.ravel(), YY.ravel()])).reshape(XX.shape).astype(float)
+    ax.contour(x, y, gaussian_filter(en_pais, 0.6), levels=[0.5], colors=NAVY, linewidths=0.9, zorder=3.3)
     marca = DATOS / "logo-vertical-azul.png"
     if marca.exists():
         img = plt.imread(str(marca))
         alto_img, ancho_img = img.shape[:2]
         ancho = 6.5; alto = ancho * alto_img / ancho_img            # grados; centrado en Colombia
-        ax.imshow(img, extent=[-73.2 - ancho / 2, -73.2 + ancho / 2, 4.2 - alto / 2, 4.2 + alto / 2], alpha=0.10, zorder=3.2, interpolation="antialiased")
-    isoyetas(ax, x, y, S, recorte, pais)
+        ax.imshow(img, extent=[-73.2 - ancho / 2, -73.2 + ancho / 2, 4.2 - alto / 2, 4.2 + alto / 2], alpha=0.06, zorder=3.2, interpolation="antialiased")
+    maximos = geometria_isoyetas(x, y, S, pais)[2]
+    puntos_max = [(px - 0.15, py - 0.15, px + 0.15, py + 0.15) for _, px, py in maximos]
+    lado_ciudad, ocupado = {}, []
     for nombre, (la, lo) in CIUDADES.items():
-        ax.plot(lo, la, "o", ms=2.6, color=NAVY, zorder=5)
-        ax.text(lo + 0.13, la + 0.07, nombre, fontsize=6.8, color=NAVY, zorder=5, bbox=dict(boxstyle="round,pad=0.12", fc="white", ec="none", alpha=0.75))
+        derecha = caja_texto(lo + 0.13, la + 0.07, nombre, 6.4, "left", "bottom", 0.08)
+        izquierda = caja_texto(lo - 0.13, la + 0.07, nombre, 6.4, "right", "bottom", 0.08)
+        lado_ciudad[nombre] = "right" if choca(derecha, puntos_max) and not choca(izquierda, puntos_max) else "left"
+        ocupado.append(derecha if lado_ciudad[nombre] == "left" else izquierda)
+        ocupado.append((lo - 0.1, la - 0.1, lo + 0.1, la + 0.1))
+    isoyetas(ax, x, y, S, recorte, pais, ocupado)
+    for nombre, (la, lo) in CIUDADES.items():
+        ax.plot(lo, la, "o", ms=2.4, color=NAVY, zorder=5)
+        ha = lado_ciudad.get(nombre, "left")
+        ax.text(lo + (0.13 if ha == "left" else -0.13), la + 0.07, nombre, fontsize=6.4, color=NAVY, ha=ha, zorder=5,
+                bbox=dict(boxstyle="round,pad=0.1", fc="white", ec="none", alpha=0.7))
     ax.set_xlim(-79.4, -66.7); ax.set_ylim(-4.4, 12.7); ax.set_aspect("equal"); ax.axis("off")
 
     def banda(rect, color):
