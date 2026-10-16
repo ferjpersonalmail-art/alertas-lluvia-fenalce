@@ -195,6 +195,11 @@ def dibujar(puntos, mm, ventana, fecha, ruta, nota):
     logo = DATOS / "logo-horizontal-blanca.png"
     if logo.exists():
         lax = fig.add_axes([0.70, 0.895, 0.27, 0.085]); lax.imshow(plt.imread(str(logo))); lax.axis("off")
+    qr = DATOS / "qr_pagina.png"
+    if qr.exists():   # codigo QR de la pagina interactiva, abajo a la derecha (espacio vacio del mapa)
+        qax = fig.add_axes([0.765, 0.105, 0.17, 0.14]); qax.imshow(plt.imread(str(qr))); qax.axis("off")
+        fig.text(0.85, 0.252, "Consulte su municipio", fontsize=9, color=NAVY, weight="bold", ha="center")
+        fig.text(0.85, 0.097, "Escanee el código", fontsize=7.5, color=PIZARRA_INK, ha="center")
     ley = ax.legend(handles=[Patch(facecolor=CREMA_PANEL, edgecolor=PIZARRA_CLARO, label="Menos de 1 mm")]
                     + [Patch(facecolor=c, edgecolor="none", label=e) for c, e in zip(COLORES, ETIQUETAS)],
                     loc="lower left", bbox_to_anchor=(0.02, 0.03), fontsize=8.5, title="Lluvia en 6 horas", title_fontsize=9.5,
