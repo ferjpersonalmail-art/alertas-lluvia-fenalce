@@ -44,7 +44,7 @@ SALIDA = AQUI / "salida"
 ZONA = ZoneInfo("America/Bogota")
 TEMA = os.environ.get("NTFY_TEMA_PRONOSTICO") or "fenalce-lluvia-2ifz77fnqg"
 PRUEBA = os.environ.get("PRUEBA", "1") != "0"
-PAGINA = "https://agroclima-fenalce-portal.vercel.app/pronostico-lluvia/"
+PAGINA = "https://agroclima-fenalce-portal.vercel.app/#lluvia"     # la seccion del mapa en la pagina principal del portal
 PUBLICADO = AQUI / "publicado"            # lo que lee la pagina interactiva (se sube al repositorio)
 VENTANAS = {"tarde": (13, 19, "Tarde", "12:00 p. m. a 6:00 p. m."), "manana": (7, 13, "Mañana", "6:00 a. m. a 12:00 p. m.")}
 CIUDADES = {"Bogotá": (4.61, -74.08), "Medellín": (6.25, -75.56), "Cali": (3.45, -76.53), "Barranquilla": (10.96, -74.80),
@@ -109,41 +109,60 @@ ISOYETA_CADA_GRADOS = 2.2     # una cifra cada ~240 km de linea
 MAXIMOS = 7                   # cuantos nucleos de lluvia se marcan con su valor
 
 
-def isoyetas(ax, x, y, S, recorte, pais):
-    """Isoyetas en los cortes de la escala, con su valor repetido a lo largo de la linea, y los maximos de lluvia marcados."""
-    import matplotlib.patheffects as pe
+def geometria_isoyetas(x, y, S, pais):
+    """Lineas de igual lluvia (en los cortes de la escala) solo dentro de Colombia, puntos para su valor y maximos de lluvia."""
     from scipy.ndimage import maximum_filter
-    halo = [pe.withStroke(linewidth=2.6, foreground="white")]
-    cs = ax.contour(x, y, S, levels=CORTES, colors=NAVY, linewidths=0.75, alpha=0.9, zorder=3.5)
-    cs.set_clip_path(recorte)
-    # valor a lo largo de cada isoyeta, solo en los tramos dentro de Colombia
+    fig = plt.figure(); cs = plt.contour(x, y, S, levels=CORTES); plt.close(fig)
+    lineas, etiquetas = [], []
     for nivel, segmentos in zip(cs.levels, cs.allsegs):
         for seg in segmentos:
             if len(seg) < 4:
                 continue
-            d = np.r_[0, np.cumsum(np.hypot(*np.diff(seg, axis=0).T))]
-            if d[-1] < 0.8:                                   # lineas muy cortas: sin cifra
-                continue
-            for objetivo in np.arange(0.4, d[-1], ISOYETA_CADA_GRADOS):
-                k = int(np.searchsorted(d, objetivo))
-                k = min(max(k, 1), len(seg) - 2)
-                px, py = seg[k]
-                if not pais.contains_point((px, py)):
-                    continue
-                dx, dy = seg[k + 1] - seg[k - 1]
-                ang = np.degrees(np.arctan2(dy, dx))
-                ang = ang - 180 if ang > 90 else ang + 180 if ang < -90 else ang
-                ax.text(px, py, f"{nivel:g}", fontsize=6.6, color=NAVY, weight="bold", rotation=ang, rotation_mode="anchor",
-                        ha="center", va="center", zorder=6, path_effects=halo)
-    # maximos: picos del campo de lluvia (al menos 5 mm), separados por ~1,5 grados, dentro de Colombia
+            dentro = pais.contains_points(seg)
+            # tramos continuos dentro de Colombia
+            tramo = []
+            for punto, ok in zip(seg, dentro):
+                if ok:
+                    tramo.append(punto)
+                elif len(tramo) > 1:
+                    lineas.append((float(nivel), np.array(tramo))); tramo = []
+                else:
+                    tramo = []
+            if len(tramo) > 1:
+                lineas.append((float(nivel), np.array(tramo)))
+    for nivel, seg in lineas:
+        if len(seg) < 4:
+            continue
+        d = np.r_[0, np.cumsum(np.hypot(*np.diff(seg, axis=0).T))]
+        if d[-1] < 0.8:                                       # lineas muy cortas: sin cifra
+            continue
+        for objetivo in np.arange(0.4, d[-1], ISOYETA_CADA_GRADOS):
+            k = min(max(int(np.searchsorted(d, objetivo)), 1), len(seg) - 2)
+            dx, dy = seg[k + 1] - seg[k - 1]
+            ang = np.degrees(np.arctan2(dy, dx))
+            ang = ang - 180 if ang > 90 else ang + 180 if ang < -90 else ang
+            etiquetas.append((float(seg[k][0]), float(seg[k][1]), nivel, float(ang)))
     paso = (x[1] - x[0]) if len(x) > 1 else 0.025
     vent = max(3, int(round(1.5 / paso)))
     XX, YY = np.meshgrid(x, y)
-    dentro = pais.contains_points(np.column_stack([XX.ravel(), YY.ravel()])).reshape(S.shape)
-    Sd = np.where(dentro, S, -1.0)                              # el maximo se busca solo dentro de Colombia
+    en_pais = pais.contains_points(np.column_stack([XX.ravel(), YY.ravel()])).reshape(S.shape)
+    Sd = np.where(en_pais, S, -1.0)                           # el maximo se busca solo dentro de Colombia
     picos = (Sd == maximum_filter(Sd, size=vent)) & (Sd >= 5)
-    candidatos = sorted(((Sd[a, b], x[b], y[a]) for a, b in zip(*np.nonzero(picos))), reverse=True)
-    for valor, px, py in candidatos[:MAXIMOS]:
+    maximos = sorted(((float(Sd[a, b]), float(x[b]), float(y[a])) for a, b in zip(*np.nonzero(picos))), reverse=True)[:MAXIMOS]
+    return lineas, etiquetas, maximos
+
+
+def isoyetas(ax, x, y, S, recorte, pais):
+    """Dibuja las isoyetas con su valor a lo largo de la linea y los maximos de lluvia con su valor."""
+    import matplotlib.patheffects as pe
+    halo = [pe.withStroke(linewidth=2.6, foreground="white")]
+    lineas, etiquetas, maximos = geometria_isoyetas(x, y, S, pais)
+    for nivel, seg in lineas:
+        ax.plot(seg[:, 0], seg[:, 1], color=NAVY, lw=0.75, alpha=0.9, zorder=3.5)
+    for px, py, nivel, ang in etiquetas:
+        ax.text(px, py, f"{nivel:g}", fontsize=6.6, color=NAVY, weight="bold", rotation=ang, rotation_mode="anchor",
+                ha="center", va="center", zorder=6, path_effects=halo)
+    for valor, px, py in maximos:
         ax.plot(px, py, marker="o", ms=4.2, color="white", mec=NAVY, mew=1.2, zorder=7)
         ax.text(px + 0.12, py - 0.05, f"{valor:.0f}", fontsize=8.2, color=NAVY, weight="bold", ha="left", va="top", zorder=7, path_effects=halo)
 
@@ -330,6 +349,9 @@ def publicar(puntos, mm, p1, ventana, fecha, v, calmm_todo):
     """Lo que lee la pagina interactiva: zonas, municipios (con su zona mas cercana) y la capa del mapa."""
     PUBLICADO.mkdir(exist_ok=True)
     limites = capa_transparente(puntos, mm, PUBLICADO / f"capa_{ventana}.png")
+    x, y, S = superficie(puntos, mm)
+    lineas, etiquetas, maximos = geometria_isoyetas(x, y, S, anillos_pais()[1])
+    isoyetas_web = [{"nivel": n, "linea": [[round(float(b), 3), round(float(a), 3)] for a, b in seg[::2]]} for n, seg in lineas]   # [lat, lon]
     xy = np.array([[p["lat"], p["lon"]] for p in puntos])
     municipios = []
     for nombre, depto, la, lo in leer("municipios_centros.json"):
@@ -344,7 +366,9 @@ def publicar(puntos, mm, p1, ventana, fecha, v, calmm_todo):
              "acierto": {"clase": v["acierto_de_clase"], "clase_o_vecina": v["acierto_clase_o_vecina"],
                          "climatologia": calmm_todo["climatologia"]["acierto_de_clase"]},
              "zonas": [[p["lat"], p["lon"], a, b] for p, a, b in zip(puntos, mm, p1) if a is not None],
-             "municipios": municipios}
+             "municipios": municipios, "isoyetas": isoyetas_web,
+             "etiquetas_isoyetas": [[round(py, 3), round(px, 3), n, round(a)] for px, py, n, a in etiquetas],
+             "maximos": [[round(py, 3), round(px, 3), round(v)] for v, px, py in maximos]}
     (PUBLICADO / f"ultimo_{ventana}.json").write_text(json.dumps(datos, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     (PUBLICADO / "ultimo.json").write_text(json.dumps({"ventana": ventana, "fecha": fecha, "emitido": datos["emitido"]}), encoding="utf-8")
 
