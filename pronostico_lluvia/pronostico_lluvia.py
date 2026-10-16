@@ -53,11 +53,11 @@ CIUDADES = {"Bogotá": (4.61, -74.08), "Medellín": (6.25, -75.56), "Cali": (3.4
             "Pasto": (1.21, -77.28), "Popayán": (2.44, -76.61), "Sincelejo": (9.30, -75.40), "Arauca": (7.08, -70.76),
             "Puerto Carreño": (6.19, -67.49), "Florencia": (1.61, -75.61), "Tunja": (5.53, -73.36), "Quibdó": (5.69, -76.66)}
 CORTES = [1, 2, 5, 10, 20, 40]
-COLORES = ["#D3EBEC", "#9BD0D4", "#60B0B8", "#688898", "#B87070", "#7E3B44"]   # colores del logo de FENALCE; mas lluvia, mas oscuro y mas calido
+COLORES = ["#D6ECF5", "#9DCDE6", "#5AA6D4", "#2F78B7", "#1D4E8C", "#103050"]   # solo azules (el rojo se lee como tiempo seco); el mas intenso es el azul marino del logo
 ETIQUETAS = ["1 - 2 mm", "2 - 5 mm", "5 - 10 mm", "10 - 20 mm", "20 - 40 mm", "40 mm o más"]
 NOMBRE_CLASE = {6: "Lluvias extremas (40 mm o más)", 5: "Lluvias muy fuertes (20 a 40 mm)", 4: "Lluvias fuertes (10 a 20 mm)",
                 3: "Lluvias moderadas (5 a 10 mm)", 2: "Lluvias ligeras (2 a 5 mm)", 1: "Lloviznas (1 a 2 mm)"}
-ICONO = {6: "🔴", 5: "🟤", 4: "🔵", 3: "🔷", 2: "💧"}
+ICONO = {6: "⛈️", 5: "🌧️", 4: "🔵", 3: "🔷", 2: "💧"}
 NAVY, GOLD, PIZARRA_CLARO, PIZARRA_INK, CREMA_PANEL, CREMA_BORDE = "#133353", "#F3C26B", "#A8BFCD", "#546D80", "#F7F5EE", "#E6DECA"
 AUTORES = "Juan Fernando Gómez Bolaños y Jhon Jairo Valencia Monroy"
 AREA = "FENALCE · Área de Agroclimatología y Modelación"
