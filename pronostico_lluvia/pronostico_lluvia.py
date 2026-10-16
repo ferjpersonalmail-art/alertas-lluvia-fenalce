@@ -101,65 +101,47 @@ def pronostico_ecmwf(puntos, fecha, ventana):
     return salida
 
 
-ALTURA_SIN_ISOBARAS_M = 1500   # sobre la cordillera la presion «a nivel del mar» es una extrapolacion del modelo: no se dibuja
+ISOYETA_CADA_GRADOS = 2.2     # una cifra cada ~240 km de linea
+MAXIMOS = 7                   # cuantos nucleos de lluvia se marcan con su valor
 
 
-def campos_presion(fecha, ventana):
-    """Presion a nivel del mar (hPa) y altura de 500 hPa (dam) de ECMWF al final de la ventana, en una rejilla de 0,5 grados."""
-    hora = f"{fecha}T{VENTANAS[ventana][1] - 1:02d}:00"          # fin de la ventana: 18:00 la tarde, 12:00 la manana
-    cache = SALIDA / f"cache_presion_{fecha}_{ventana}_{dt.datetime.now(ZONA):%Y%m%d%H}.json"
-    if cache.exists():
-        d = json.loads(cache.read_text(encoding="utf-8"))
-    else:
-        lats = [round(-4.5 + 0.5 * i, 2) for i in range(36)]
-        lons = [round(-80.0 + 0.5 * j, 2) for j in range(28)]
-        pts = [(la, lo) for la in lats for lo in lons]
-        P, Z, H = [], [], []
-        for i in range(0, len(pts), 100):
-            lote = pts[i:i + 100]
-            url = ("https://api.open-meteo.com/v1/forecast?latitude=" + ",".join(str(a) for a, _ in lote) + "&longitude=" + ",".join(str(b) for _, b in lote)
-                   + "&hourly=pressure_msl,geopotential_height_500hPa&models=ecmwf_ifs025&timezone=America/Bogota&forecast_days=3")
-            r = pedir(url)
-            time.sleep(1.5)
-            for res in (r if isinstance(r, list) else [r]):
-                k = res["hourly"]["time"].index(hora) if hora in res["hourly"]["time"] else None
-                P.append(None if k is None else res["hourly"]["pressure_msl"][k])
-                Z.append(None if k is None else res["hourly"]["geopotential_height_500hPa"][k])
-                H.append(res.get("elevation"))
-        d = {"lats": lats, "lons": lons, "presion": P, "z500": Z, "elevacion": H, "hora": hora}
-        SALIDA.mkdir(exist_ok=True)
-        cache.write_text(json.dumps(d), encoding="utf-8")
-    n, m = len(d["lats"]), len(d["lons"])
-    a = lambda v: np.array([np.nan if x is None else x for x in v], float).reshape(n, m)
-    P, Z, H = a(d["presion"]), a(d["z500"]) / 10.0, a(d["elevacion"])
-    from scipy.ndimage import binary_dilation
-    P[binary_dilation(H > ALTURA_SIN_ISOBARAS_M, iterations=1)] = np.nan   # una celda de margen: sin pedazos pegados a la cordillera
-    return np.array(d["lons"]), np.array(d["lats"]), P, Z
-
-
-def isolineas(ax, campos):
-    """Isobaras cada 1 hPa (linea continua) e isohipsas de 500 hPa cada 1 dam (punteadas), con su valor."""
-    if campos is None:
-        return
-    lons, lats, P, Z = campos
-    f = 4                                                     # lineas suaves: campo suavizado y ampliado
-    xf = np.linspace(lons[0], lons[-1], (len(lons) - 1) * f + 1); yf = np.linspace(lats[0], lats[-1], (len(lats) - 1) * f + 1)
-    def fino(C, sigma):
-        m = np.isfinite(C)
-        S = gaussian_filter(np.where(m, C, np.nanmean(C)), sigma)
-        Sf = zoom(S, ((len(yf)) / C.shape[0], (len(xf)) / C.shape[1]), order=3)
-        Mf = zoom(m.astype(float), ((len(yf)) / C.shape[0], (len(xf)) / C.shape[1]), order=1) > 0.5
-        return np.where(Mf, Sf, np.nan)
-    if np.isfinite(P).any():
-        Ps = fino(P, 1.3)
-        niv = np.arange(np.floor(np.nanmin(Ps)), np.ceil(np.nanmax(Ps)) + 1, 1)
-        cs = ax.contour(xf, yf, Ps, levels=niv, colors="#33475A", linewidths=0.6, alpha=0.75, zorder=4)
-        ax.clabel(cs, fmt="%d", fontsize=6.3, inline=True, inline_spacing=3, colors="#33475A")
-    if np.isfinite(Z).any():
-        Zs = fino(Z, 1.5)
-        niv = np.arange(np.floor(np.nanmin(Zs)), np.ceil(np.nanmax(Zs)) + 1, 1)
-        cz = ax.contour(xf, yf, Zs, levels=niv, colors="#8A6420", linewidths=0.8, linestyles=[(0, (4, 3))], alpha=0.8, zorder=4)
-        ax.clabel(cz, fmt="%d", fontsize=6.3, inline=True, inline_spacing=3, colors="#8A6420")
+def isoyetas(ax, x, y, S, recorte, pais):
+    """Isoyetas en los cortes de la escala, con su valor repetido a lo largo de la linea, y los maximos de lluvia marcados."""
+    import matplotlib.patheffects as pe
+    from scipy.ndimage import maximum_filter
+    halo = [pe.withStroke(linewidth=2.6, foreground="white")]
+    cs = ax.contour(x, y, S, levels=CORTES, colors=NAVY, linewidths=0.75, alpha=0.9, zorder=3.5)
+    cs.set_clip_path(recorte)
+    # valor a lo largo de cada isoyeta, solo en los tramos dentro de Colombia
+    for nivel, segmentos in zip(cs.levels, cs.allsegs):
+        for seg in segmentos:
+            if len(seg) < 4:
+                continue
+            d = np.r_[0, np.cumsum(np.hypot(*np.diff(seg, axis=0).T))]
+            if d[-1] < 0.8:                                   # lineas muy cortas: sin cifra
+                continue
+            for objetivo in np.arange(0.4, d[-1], ISOYETA_CADA_GRADOS):
+                k = int(np.searchsorted(d, objetivo))
+                k = min(max(k, 1), len(seg) - 2)
+                px, py = seg[k]
+                if not pais.contains_point((px, py)):
+                    continue
+                dx, dy = seg[k + 1] - seg[k - 1]
+                ang = np.degrees(np.arctan2(dy, dx))
+                ang = ang - 180 if ang > 90 else ang + 180 if ang < -90 else ang
+                ax.text(px, py, f"{nivel:g}", fontsize=6.6, color=NAVY, weight="bold", rotation=ang, rotation_mode="anchor",
+                        ha="center", va="center", zorder=6, path_effects=halo)
+    # maximos: picos del campo de lluvia (al menos 5 mm), separados por ~1,5 grados, dentro de Colombia
+    paso = (x[1] - x[0]) if len(x) > 1 else 0.025
+    vent = max(3, int(round(1.5 / paso)))
+    XX, YY = np.meshgrid(x, y)
+    dentro = pais.contains_points(np.column_stack([XX.ravel(), YY.ravel()])).reshape(S.shape)
+    Sd = np.where(dentro, S, -1.0)                              # el maximo se busca solo dentro de Colombia
+    picos = (Sd == maximum_filter(Sd, size=vent)) & (Sd >= 5)
+    candidatos = sorted(((Sd[a, b], x[b], y[a]) for a, b in zip(*np.nonzero(picos))), reverse=True)
+    for valor, px, py in candidatos[:MAXIMOS]:
+        ax.plot(px, py, marker="o", ms=4.2, color="white", mec=NAVY, mew=1.2, zorder=7)
+        ax.text(px + 0.12, py - 0.05, f"{valor:.0f}", fontsize=8.2, color=NAVY, weight="bold", ha="left", va="top", zorder=7, path_effects=halo)
 
 
 def calcular(puntos, e, clima, cal, calmm, ventana):
@@ -224,7 +206,7 @@ def capa_transparente(puntos, mm, ruta):
     return [[round(float(y[0]), 4), round(float(x[0]), 4)], [round(float(y[-1]), 4), round(float(x[-1]), 4)]]
 
 
-def dibujar(puntos, mm, ventana, fecha, ruta, nota, campos=None):
+def dibujar(puntos, mm, ventana, fecha, ruta, nota):
     x, y, S = superficie(puntos, mm)
 
     fig = plt.figure(figsize=(9, 11), dpi=200)
@@ -239,7 +221,7 @@ def dibujar(puntos, mm, ventana, fecha, ruta, nota, campos=None):
     for a in anillos:
         ax.plot(a[:, 0], a[:, 1], color=PIZARRA_INK, lw=0.45, alpha=0.8, zorder=3)
     ax.add_patch(PathPatch(pais, facecolor="none", edgecolor=NAVY, lw=1.0, zorder=3))
-    isolineas(ax, campos)
+    isoyetas(ax, x, y, S, recorte, pais)
     for nombre, (la, lo) in CIUDADES.items():
         ax.plot(lo, la, "o", ms=2.6, color=NAVY, zorder=5)
         ax.text(lo + 0.13, la + 0.07, nombre, fontsize=6.8, color=NAVY, zorder=5, bbox=dict(boxstyle="round,pad=0.12", fc="white", ec="none", alpha=0.75))
@@ -264,9 +246,8 @@ def dibujar(puntos, mm, ventana, fecha, ruta, nota, campos=None):
         fig.text(0.85, 0.252, "Consulte su municipio", fontsize=9, color=NAVY, weight="bold", ha="center", bbox=caja, zorder=30)
         fig.text(0.85, 0.097, "Escanee el código", fontsize=7.5, color=PIZARRA_INK, ha="center", bbox=caja, zorder=30)
     from matplotlib.lines import Line2D
-    fin = "6:00 p. m." if ventana == "tarde" else "12:00 p. m."
-    lineas = [Line2D([], [], color="#33475A", lw=0.9, label=f"Isobaras (hPa, a las {fin})"),
-              Line2D([], [], color="#8A6420", lw=1.0, ls=(0, (4, 3)), label="Isohipsas de 500 hPa (dam)")] if campos is not None else []
+    lineas = [Line2D([], [], color=NAVY, lw=0.9, label="Isoyetas (valor en mm)"),
+              Line2D([], [], color="white", marker="o", mec=NAVY, mew=1.2, ms=5, lw=0, label="Máximo esperado (mm)")]
     ley = ax.legend(handles=[Patch(facecolor=CREMA_PANEL, edgecolor=PIZARRA_CLARO, label="Menos de 1 mm")]
                     + [Patch(facecolor=c, edgecolor="none", label=e) for c, e in zip(COLORES, ETIQUETAS)] + lineas,
                     loc="lower left", bbox_to_anchor=(0.02, 0.03), fontsize=8.5, title="Lluvia en 6 horas", title_fontsize=9.5,
@@ -374,13 +355,7 @@ def main():
             f"{round(calmm_todo['climatologia']['acierto_de_clase'] * 100)} %). Milímetros aproximados por zonas de unos 28 km; no es el pronóstico de una finca.")
     base = f"lluvia_mm_{ventana}_{fecha}"
     png = SALIDA / f"{base}.png"
-    try:
-        campos = campos_presion(fecha, ventana)
-    except Exception as error:          # sin isolineas el mapa de lluvia sale igual
-        print("Sin isolíneas:", str(error)[:100])
-        campos = None
-    nota += " Isobaras: presión a nivel del mar (sobre 1.500 m no se dibujan: el modelo la extrapola)."
-    dibujar(puntos, mm, ventana, fecha, png, nota, campos)
+    dibujar(puntos, mm, ventana, fecha, png, nota)
     texto = resumen(puntos, mm, p1, ventana, fecha)
     (SALIDA / f"{base}.txt").write_text(texto, encoding="utf-8")
     (SALIDA / f"{base}.json").write_text(json.dumps({"fecha": fecha, "ventana": ventana, "emitido": dt.datetime.now(ZONA).isoformat(timespec="minutes"),
