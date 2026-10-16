@@ -89,6 +89,10 @@ def pronostico_ecmwf(puntos, fecha, ventana):
     cache = SALIDA / f"cache_ecmwf_{fecha}_{ventana}_{dt.datetime.now(ZONA):%Y%m%d%H}.json"   # redibujar no vuelve a consultar
     if cache.exists():
         return json.loads(cache.read_text(encoding="utf-8"))
+    if "--sin-descargar" in sys.argv:                   # pruebas de diseno: el ultimo pronostico ya bajado, sin gastar consultas
+        previos = sorted(SALIDA.glob(f"cache_ecmwf_{fecha}_{ventana}_*.json"))
+        if previos:
+            return json.loads(previos[-1].read_text(encoding="utf-8"))
     salida = [None] * len(puntos)
     for i in range(0, len(puntos), 50):
         lote = puntos[i:i + 50]
@@ -259,10 +263,22 @@ def dibujar(puntos, mm, ventana, fecha, ruta, nota):
     x, y, S = superficie(puntos, mm)
 
     fig = plt.figure(figsize=(9, 11), dpi=200)
-    ax = fig.add_axes([0.0, 0.075, 1.0, 0.78])
-    ax.set_facecolor("#E3EEF3")
+    caja_mapa = [0.0, 0.075, 1.0, 0.78]
+    fondo_mar = fig.add_axes(caja_mapa, zorder=0); fondo_mar.set_facecolor("#E3EEF3"); fondo_mar.set_xticks([]); fondo_mar.set_yticks([])
+    for s in fondo_mar.spines.values():
+        s.set_visible(False)
+    marca = DATOS / "logo-vertical-azul.png"
+    if marca.exists():                                   # marca de agua grande, al fondo de toda el area del mapa
+        img = plt.imread(str(marca))
+        alto_img, ancho_img = img.shape[:2]
+        ancho_fig = 0.80; alto_fig = ancho_fig * (alto_img / ancho_img) * (9 / 11)   # fraccion de la figura (9 x 11 pulgadas)
+        alto_fig = min(alto_fig, 0.70); ancho_fig = alto_fig / ((alto_img / ancho_img) * (9 / 11))
+        mx = fig.add_axes([0.5 - ancho_fig / 2, 0.075 + 0.39 - alto_fig / 2, ancho_fig, alto_fig], zorder=1)
+        mx.imshow(img, alpha=0.10, interpolation="antialiased"); mx.axis("off")
+    ax = fig.add_axes(caja_mapa, zorder=2)
+    ax.patch.set_alpha(0)                               # transparente: deja ver el fondo y la marca de agua
     anillos, pais = anillos_pais()
-    ax.add_patch(PathPatch(pais, facecolor=CREMA_PANEL, edgecolor="none", zorder=1))
+    ax.add_patch(PathPatch(pais, facecolor=CREMA_PANEL, edgecolor="none", alpha=0.82, zorder=1))
     niveles = CORTES + [500]
     rel = ax.contourf(x, y, S, levels=niveles, cmap=ListedColormap(COLORES), norm=BoundaryNorm(niveles, len(COLORES)), zorder=2, antialiased=True)
     recorte = PathPatch(pais, transform=ax.transData, facecolor="none", edgecolor="none")
@@ -273,12 +289,6 @@ def dibujar(puntos, mm, ventana, fecha, ruta, nota):
     XX, YY = np.meshgrid(x, y)
     en_pais = pais.contains_points(np.column_stack([XX.ravel(), YY.ravel()])).reshape(XX.shape).astype(float)
     ax.contour(x, y, gaussian_filter(en_pais, 0.6), levels=[0.5], colors=NAVY, linewidths=0.9, zorder=3.3)
-    marca = DATOS / "logo-vertical-azul.png"
-    if marca.exists():
-        img = plt.imread(str(marca))
-        alto_img, ancho_img = img.shape[:2]
-        ancho = 6.5; alto = ancho * alto_img / ancho_img            # grados; centrado en Colombia
-        ax.imshow(img, extent=[-73.2 - ancho / 2, -73.2 + ancho / 2, 4.2 - alto / 2, 4.2 + alto / 2], alpha=0.06, zorder=3.2, interpolation="antialiased")
     maximos = geometria_isoyetas(x, y, S, pais)[2]
     puntos_max = [(px - 0.15, py - 0.15, px + 0.15, py + 0.15) for _, px, py in maximos]
     lado_ciudad, ocupado = {}, []
