@@ -56,10 +56,14 @@ CIUDADES = {"Bogotá": (4.61, -74.08), "Medellín": (6.25, -75.56), "Cali": (3.4
 CORTES = [1, 2, 5, 10, 20]
 COLORES = ["#D6ECF5", "#9DCDE6", "#5AA6D4", "#2368AE", "#103050"]   # solo azules (el rojo se lee como tiempo seco); el mas intenso es el azul marino del logo
 ETIQUETAS = ["1 - 2 mm", "2 - 5 mm", "5 - 10 mm", "10 - 20 mm", "20 mm o más (fuerte posible)"]
-NOMBRE_CLASE = {5: "Lluvia fuerte posible (20 mm o más)", 4: "Lluvias fuertes (10 a 20 mm)",
-                3: "Lluvias moderadas (5 a 10 mm)", 2: "Lluvias ligeras (2 a 5 mm)", 1: "Lloviznas (1 a 2 mm)"}
+NOMBRE_CLASE = {5: "Lluvias muy abundantes (20 mm o más, posibles eventos fuertes)", 4: "Lluvias abundantes (10 a 20 mm)",
+                3: "Lluvias moderadas (5 a 10 mm)", 2: "Lluvias ligeras (2 a 5 mm)", 1: "Lluvias muy ligeras (1 a 2 mm)"}
 ICONO = {5: "⛈️", 4: "🌧️", 3: "🔷", 2: "💧"}
-NOMBRES_PAGINA = ["Sin lluvia importante", "Lloviznas", "Lluvias ligeras", "Lluvias moderadas", "Lluvias fuertes", "Lluvia fuerte posible"]
+NOMBRES_PAGINA = ["Sin lluvias o lloviznas", "Lluvias muy ligeras", "Lluvias ligeras", "Lluvias moderadas", "Lluvias abundantes", "Lluvias muy abundantes"]
+# Leyenda (diseno aprobado por el usuario): rango, nombre y gotas de cada nivel
+LEYENDA = [("Menos de\n1 mm", "Sin lluvias\no lloviznas", 0), ("1 – 2\nmm", "Lluvias\nmuy ligeras", 2), ("2 – 5\nmm", "Lluvias\nligeras", 2),
+           ("5 – 10\nmm", "Lluvias\nmoderadas", 3), ("10 – 20\nmm", "Lluvias\nabundantes", 4), ("20 mm\no más", "Lluvias muy abundantes\n(posibles eventos fuertes)", 6)]
+FONDO_FILA = ["#EEF1F4", "#E2F2FA", "#CDE6F5", "#A7D2EE", "#2368AE", "#103050"]
 RESPONSABILIDAD = "Pronóstico de FENALCE: complementa y no reemplaza los avisos oficiales del IDEAM y de la gestión del riesgo."
 CREDITOS_DATOS = "Datos: ECMWF (CC BY 4.0) vía Open-Meteo · lluvia satelital NASA GPM IMERG"
 NAVY, GOLD, PIZARRA_CLARO, PIZARRA_INK, CREMA_PANEL, CREMA_BORDE = "#133353", "#F3C26B", "#A8BFCD", "#546D80", "#F7F5EE", "#E6DECA"
@@ -110,7 +114,9 @@ def pronostico_ecmwf(puntos, fecha, ventana):
 
 
 ISOYETA_CADA_GRADOS = 3.0     # una cifra cada ~330 km de linea
-GRADOS_POR_PUNTO = 12.7 / (9 * 72)   # escala del mapa: el eje mide 12,7 grados de ancho en 9 pulgadas
+LAT_MIN, LAT_MAX = -4.35, 12.6
+ALTO_MAPA_IN = 8.25                  # pulgadas de alto del mapa (ver dibujar)
+GRADOS_POR_PUNTO = (LAT_MAX - LAT_MIN) / (ALTO_MAPA_IN * 72)   # escala del mapa (aspecto 1:1)
 
 
 def caja_texto(x, y, texto, puntos, ha="center", va="center", margen=0.12):
@@ -176,7 +182,7 @@ def isoyetas(ax, x, y, S, recorte, pais, ocupado):
     halo = [pe.withStroke(linewidth=2.6, foreground="white")]
     lineas, etiquetas, maximos = geometria_isoyetas(x, y, S, pais)
     for nivel, seg in lineas:
-        ax.plot(seg[:, 0], seg[:, 1], color=NAVY, lw=0.7, alpha=0.85, zorder=3.5)
+        ax.plot(seg[:, 0], seg[:, 1], color=NAVY, lw=0.8, alpha=0.85, ls=(0, (4, 2)), zorder=3.5)
     # 1. los maximos primero (lo mas importante): se busca el lado libre
     for valor, px, py in maximos:
         texto = f"{valor:.0f}"
@@ -259,24 +265,51 @@ def capa_transparente(puntos, mm, ruta):
     return [[round(float(y[0]), 4), round(float(x[0]), 4)], [round(float(y[-1]), 4), round(float(x[-1]), 4)]]
 
 
-def dibujar(puntos, mm, ventana, fecha, ruta, nota):
-    x, y, S = superficie(puntos, mm)
+def nube(ax, cx, cy, s, gotas, color_gota, borde):
+    """Icono: nube blanca con borde y gotas debajo (s = escala en pulgadas)."""
+    from matplotlib.patches import Circle, FancyBboxPatch, Polygon
+    piezas = [Circle((cx - 0.13 * s, cy + 0.02 * s), 0.11 * s), Circle((cx + 0.01 * s, cy + 0.09 * s), 0.15 * s),
+              Circle((cx + 0.15 * s, cy + 0.01 * s), 0.10 * s)]
+    base = lambda: FancyBboxPatch((cx - 0.24 * s, cy - 0.09 * s), 0.49 * s, 0.13 * s, boxstyle=f"round,pad=0,rounding_size={0.06 * s}")
+    for pz in piezas + [base()]:                      # primero con borde...
+        pz.set(facecolor="white", edgecolor=borde, linewidth=1.3, zorder=3); ax.add_patch(pz)
+    for c in piezas:                                  # ...y encima sin borde: solo queda el contorno exterior
+        ax.add_patch(Circle(c.center, c.radius - 0.012 * s, facecolor="white", edgecolor="none", zorder=4))
+    b = base(); b.set(facecolor="white", edgecolor="none", zorder=4); b.set_bounds(cx - 0.235 * s, cy - 0.085 * s, 0.48 * s, 0.12 * s); ax.add_patch(b)
+    if not gotas:
+        return
+    tt = np.linspace(0, 2 * np.pi, 40)
+    gota = np.column_stack([0.035 * s * np.sin(tt) * np.sin(tt / 2), 0.055 * s * np.cos(tt)])
+    filas = [gotas] if gotas <= 3 else [gotas - gotas // 2, gotas // 2]
+    for f, n in enumerate(filas):
+        xs = cx + (np.arange(n) - (n - 1) / 2) * 0.11 * s + (0.05 * s if f else 0)
+        for gx in xs:
+            ax.add_patch(Polygon(gota + [gx, cy - 0.19 * s - f * 0.14 * s], closed=True, facecolor=color_gota, edgecolor="none", zorder=4))
 
-    fig = plt.figure(figsize=(9, 11), dpi=200)
-    caja_mapa = [0.0, 0.075, 1.0, 0.78]
+
+def dibujar(puntos, mm, ventana, fecha, ruta, nota):
+    from matplotlib.lines import Line2D
+    from matplotlib.patches import FancyBboxPatch
+    x, y, S = superficie(puntos, mm)
+    ANCHO, ALTO = 9.0, 14.6                          # pulgadas
+    F = lambda x0, y0, w, h: [x0 / ANCHO, y0 / ALTO, w / ANCHO, h / ALTO]
+    fig = plt.figure(figsize=(ANCHO, ALTO), dpi=200)
+    caja_mapa = F(0, 4.9, ANCHO, ALTO_MAPA_IN)
+
+    # --- fondo del mapa (mar) y marca de agua grande detras ---
     fondo_mar = fig.add_axes(caja_mapa, zorder=0); fondo_mar.set_facecolor("#E3EEF3"); fondo_mar.set_xticks([]); fondo_mar.set_yticks([])
-    for s in fondo_mar.spines.values():
-        s.set_visible(False)
+    for s_ in fondo_mar.spines.values():
+        s_.set_visible(False)
     marca = DATOS / "logo-vertical-azul.png"
-    if marca.exists():                                   # marca de agua grande, al fondo de toda el area del mapa
+    if marca.exists():
         img = plt.imread(str(marca))
-        alto_img, ancho_img = img.shape[:2]
-        ancho_fig = 0.80; alto_fig = ancho_fig * (alto_img / ancho_img) * (9 / 11)   # fraccion de la figura (9 x 11 pulgadas)
-        alto_fig = min(alto_fig, 0.70); ancho_fig = alto_fig / ((alto_img / ancho_img) * (9 / 11))
-        mx = fig.add_axes([0.5 - ancho_fig / 2, 0.075 + 0.39 - alto_fig / 2, ancho_fig, alto_fig], zorder=1)
+        h_in = ALTO_MAPA_IN * 0.88; w_in = h_in * img.shape[1] / img.shape[0]
+        mx = fig.add_axes(F((ANCHO - w_in) / 2, 4.9 + (ALTO_MAPA_IN - h_in) / 2, w_in, h_in), zorder=1)
         mx.imshow(img, alpha=0.10, interpolation="antialiased"); mx.axis("off")
+
+    # --- mapa ---
     ax = fig.add_axes(caja_mapa, zorder=2)
-    ax.patch.set_alpha(0)                               # transparente: deja ver el fondo y la marca de agua
+    ax.patch.set_alpha(0)
     anillos, pais = anillos_pais()
     ax.add_patch(PathPatch(pais, facecolor=CREMA_PANEL, edgecolor="none", alpha=0.82, zorder=1))
     niveles = CORTES + [500]
@@ -285,7 +318,6 @@ def dibujar(puntos, mm, ventana, fecha, ruta, nota):
     ax.add_patch(recorte); rel.set_clip_path(recorte)
     for a in anillos:
         ax.plot(a[:, 0], a[:, 1], color=PIZARRA_INK, lw=0.35, alpha=0.45, zorder=3)
-    # contorno exterior del pais (sin los limites internos): borde de la mascara «dentro de Colombia» en la rejilla fina
     XX, YY = np.meshgrid(x, y)
     en_pais = pais.contains_points(np.column_stack([XX.ravel(), YY.ravel()])).reshape(XX.shape).astype(float)
     ax.contour(x, y, gaussian_filter(en_pais, 0.6), levels=[0.5], colors=NAVY, linewidths=0.9, zorder=3.3)
@@ -304,39 +336,60 @@ def dibujar(puntos, mm, ventana, fecha, ruta, nota):
         ha = lado_ciudad.get(nombre, "left")
         ax.text(lo + (0.13 if ha == "left" else -0.13), la + 0.07, nombre, fontsize=6.4, color=NAVY, ha=ha, zorder=5,
                 bbox=dict(boxstyle="round,pad=0.1", fc="white", ec="none", alpha=0.7))
-    ax.set_xlim(-79.4, -66.7); ax.set_ylim(-4.4, 12.7); ax.set_aspect("equal"); ax.axis("off")
+    ax.set_ylim(LAT_MIN, LAT_MAX); ax.set_xlim(-73.05 - 6.5, -73.05 + 6.5)
+    ax.set_aspect("equal", adjustable="datalim"); ax.axis("off")
 
+    # --- encabezado y pie ---
     def banda(rect, color):
         b = fig.add_axes(rect); b.set_facecolor(color); b.set_xticks([]); b.set_yticks([])
-        for s in b.spines.values():
-            s.set_visible(False)
-    banda([0, 0.875, 1, 0.125], NAVY); banda([0, 0.869, 1, 0.006], GOLD); banda([0, 0, 1, 0.03], NAVY)
+        for s_ in b.spines.values():
+            s_.set_visible(False)
+    banda(F(0, 13.22, ANCHO, ALTO - 13.22), NAVY); banda(F(0, 13.15, ANCHO, 0.07), GOLD); banda(F(0, 0, ANCHO, 0.38), NAVY)
     dia = dt.date.fromisoformat(fecha)
-    fig.text(0.04, 0.955, f"Pronóstico de lluvia · {VENTANAS[ventana][2]}", fontsize=20, weight="bold", color="white")
-    fig.text(0.04, 0.922, f"Válido de {VENTANAS[ventana][3]} · {DIAS[dia.weekday()]} {dia.day} de {MESES[dia.month - 1]} de {dia.year}", fontsize=11.5, color="white")
-    fig.text(0.04, 0.893, "Lluvia acumulada en la ventana de 6 horas (milímetros)", fontsize=9.5, color=PIZARRA_CLARO)
+    fig.text(0.36 / ANCHO, 14.05 / ALTO, f"Pronóstico de lluvia · {VENTANAS[ventana][2]}", fontsize=20, weight="bold", color="white")
+    fig.text(0.36 / ANCHO, 13.7 / ALTO, f"Válido de {VENTANAS[ventana][3]} · {DIAS[dia.weekday()]} {dia.day} de {MESES[dia.month - 1]} de {dia.year}", fontsize=11.5, color="white")
+    fig.text(0.36 / ANCHO, 13.38 / ALTO, "Lluvia acumulada en la ventana de 6 horas (milímetros)", fontsize=9.5, color=PIZARRA_CLARO)
     logo = DATOS / "logo-horizontal-blanca.png"
     if logo.exists():
-        lax = fig.add_axes([0.70, 0.895, 0.27, 0.085]); lax.imshow(plt.imread(str(logo))); lax.axis("off")
+        lax = fig.add_axes(F(6.3, 13.4, 2.45, 1.0)); lax.imshow(plt.imread(str(logo))); lax.axis("off")
+
+    # --- leyenda (franja propia, debajo del mapa) ---
+    lg = fig.add_axes(F(0.3, 1.2, 5.4, 3.6)); lg.set_xlim(0, 5.4); lg.set_ylim(0, 3.6); lg.set_aspect("equal"); lg.axis("off")
+    lg.add_patch(FancyBboxPatch((0, 3.12), 5.4, 0.46, boxstyle="round,pad=0,rounding_size=0.1", facecolor=NAVY, edgecolor="none"))
+    lg.text(2.7, 3.35, "Lluvia en 6 horas (mm)", ha="center", va="center", fontsize=14, weight="bold", color="white")
+    muestras = [CREMA_PANEL] + COLORES
+    for k, (rango, nombre_k, gotas) in enumerate(LEYENDA):
+        y0 = 3.12 - 0.06 - (k + 1) * 0.505 + 0.02
+        oscuro = k >= 4
+        texto = "white" if oscuro else NAVY
+        lg.add_patch(FancyBboxPatch((0, y0), 5.4, 0.46, boxstyle="round,pad=0,rounding_size=0.08", facecolor=FONDO_FILA[k], edgecolor="none"))
+        lg.add_patch(FancyBboxPatch((0.12, y0 + 0.08), 0.6, 0.3, boxstyle="round,pad=0,rounding_size=0.05", facecolor=muestras[k],
+                                    edgecolor="#9AA9B4" if k == 0 else ("white" if oscuro else "none"), linewidth=1.0))
+        nube(lg, 1.12, y0 + 0.28, 0.62, gotas, "white" if oscuro else "#2F8FD8", NAVY)
+        lg.text(1.6, y0 + 0.23, rango, va="center", fontsize=9.6, weight="bold", color=texto, linespacing=1.0)
+        lg.plot([2.95, 2.95], [y0 + 0.08, y0 + 0.38], color=texto, lw=0.8, alpha=0.5)
+        lg.text(3.08, y0 + 0.23, nombre_k, va="center", fontsize=8.6 if k < 5 else 8.0, color=texto, linespacing=1.05)
+
+    # --- isoyetas, maximo y QR (columna derecha) ---
+    der = fig.add_axes(F(5.85, 1.2, 2.85, 3.6)); der.set_xlim(0, 2.85); der.set_ylim(0, 3.6); der.set_aspect("equal"); der.axis("off")
+    for yy, titulo, texto in ((3.06, "Isoyetas", "Líneas de igual lluvia (mm)"), (2.48, "Máximo esperado", "Zona con más lluvia (mm)")):
+        der.add_patch(FancyBboxPatch((0, yy), 2.85, 0.52, boxstyle="round,pad=0,rounding_size=0.08", facecolor="#F1F4F7", edgecolor="none"))
+        if titulo == "Isoyetas":
+            der.add_line(Line2D([0.12, 0.62], [yy + 0.26, yy + 0.26], color=NAVY, lw=2.2, ls=(0, (3, 1.6))))
+        else:
+            der.plot(0.37, yy + 0.26, marker="o", ms=11, color="white", mec=NAVY, mew=2.2)
+        der.text(0.78, yy + 0.33, titulo, va="center", fontsize=9.6, weight="bold", color=NAVY)
+        der.text(0.78, yy + 0.15, texto, va="center", fontsize=7.6, color=PIZARRA_INK)
     qr = DATOS / "qr_pagina.png"
-    if qr.exists():   # codigo QR de la pagina interactiva, abajo a la derecha (espacio vacio del mapa)
-        qax = fig.add_axes([0.765, 0.105, 0.17, 0.14]); qax.imshow(plt.imread(str(qr))); qax.axis("off")
-        caja = dict(boxstyle="round,pad=0.3", fc="white", ec="none")
-        fig.text(0.85, 0.252, "Consulte su municipio", fontsize=9, color=NAVY, weight="bold", ha="center", bbox=caja, zorder=30)
-        fig.text(0.85, 0.097, "Escanee el código", fontsize=7.5, color=PIZARRA_INK, ha="center", bbox=caja, zorder=30)
-    from matplotlib.lines import Line2D
-    lineas = [Line2D([], [], color=NAVY, lw=0.9, label="Isoyetas (valor en mm)"),
-              Line2D([], [], color="white", marker="o", mec=NAVY, mew=1.2, ms=5, lw=0, label="Máximo esperado (mm)")]
-    ley = ax.legend(handles=[Patch(facecolor=CREMA_PANEL, edgecolor=PIZARRA_CLARO, label="Menos de 1 mm")]
-                    + [Patch(facecolor=c, edgecolor="none", label=e) for c, e in zip(COLORES, ETIQUETAS)] + lineas,
-                    loc="lower left", bbox_to_anchor=(0.02, 0.03), fontsize=8.5, title="Lluvia en 6 horas", title_fontsize=9.5,
-                    frameon=True, framealpha=0.96, edgecolor=CREMA_BORDE)
-    ley.get_title().set_weight("bold"); ley.get_title().set_color(NAVY)
-    ley.set_zorder(20)                                         # por encima de las lineas y sus valores
-    fondo = dict(boxstyle="square,pad=0.25", fc="white", ec="none")   # las isolineas pasan por detras
-    fig.text(0.04, 0.084, chr(10).join(textwrap.wrap(nota, 165)), fontsize=7.0, color=PIZARRA_INK, va="top", bbox=fondo, zorder=30)
-    fig.text(0.04, 0.038, f"Elaboró: {AUTORES} · {AREA}", fontsize=7.6, color=NAVY, weight="bold")
-    fig.text(0.04, 0.010, f"{CREDITOS_DATOS} · agroclima-fenalce-portal.vercel.app", fontsize=7.2, color="white")
+    if qr.exists():
+        der.text(1.425, 2.28, "Consulte su municipio", ha="center", va="center", fontsize=9.4, weight="bold", color=NAVY)
+        qax = fig.add_axes(F(5.85 + 0.52, 1.2 + 0.36, 1.8, 1.8)); qax.imshow(plt.imread(str(qr))); qax.axis("off")
+        der.text(1.425, 0.2, "Escanee el código", ha="center", va="center", fontsize=7.6, color=PIZARRA_INK)
+
+    # --- nota, creditos ---
+    fig.text(0.36 / ANCHO, 1.1 / ALTO, chr(10).join(textwrap.wrap(nota, 165)), fontsize=7.0, color=PIZARRA_INK, va="top")
+    fig.text(0.36 / ANCHO, 0.5 / ALTO, f"Elaboró: {AUTORES} · {AREA}", fontsize=7.6, color=NAVY, weight="bold")
+    fig.text(0.36 / ANCHO, 0.14 / ALTO, f"{CREDITOS_DATOS} · agroclima-fenalce-portal.vercel.app", fontsize=7.2, color="white")
     SALIDA.mkdir(exist_ok=True)
     fig.savefig(ruta, facecolor="white")
     plt.close(fig)
@@ -372,7 +425,7 @@ def resumen(puntos, mm, p1, ventana, fecha):
         lineas.append("")
     llovizna = sorted(d for d, n in nivel.items() if n == 1)
     if llovizna:
-        lineas += ["⚪ *Lloviznas (1 a 2 mm):* " + ", ".join(llovizna), ""]
+        lineas += ["⚪ *Lluvias muy ligeras (1 a 2 mm):* " + ", ".join(llovizna), ""]
     if not any(n >= 1 for n in nivel.values()):
         lineas += ["No se espera lluvia importante en las zonas de FENALCE.", ""]
     else:
