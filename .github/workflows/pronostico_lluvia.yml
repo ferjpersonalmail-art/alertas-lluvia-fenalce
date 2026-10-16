@@ -2,14 +2,15 @@ name: Pronóstico de lluvia (6 horas)
 
 # Mapa y texto del pronóstico de lluvia de FENALCE, publicados en ntfy; el puente de WhatsApp los lleva al grupo.
 # Mientras PRUEBA sea "1", el título empieza con 🧪 y el puente lo manda SOLO al grupo «Pruebas».
-#   16:00 UTC = 11:00 a. m. de Colombia → ventana de la tarde (12:00 p. m. a 6:00 p. m.)
-#   00:30 UTC = 7:30 p. m. de Colombia → ventana de la mañana siguiente (6:00 a. m. a 12:00 p. m.)
-# Se programa media hora antes de las 11:30 porque GitHub suele arrancar las tareas programadas con retraso.
+# Lo dispara el motor de alertas (servicio_continuo.py) a la hora exacta de Colombia:
+#   11:30 a. m. → ventana de la tarde (12:00 p. m. a 6:00 p. m.)
+#   7:30 p. m. → ventana de la mañana siguiente (6:00 a. m. a 12:00 p. m.)
+# El horario de abajo es solo de respaldo (12:30 p. m. y 8:30 p. m.): si esa emisión ya salió, no hace nada.
 # Además guarda en pronostico_lluvia/publicado/ lo que lee la página interactiva del portal (/pronostico-lluvia/).
 on:
   schedule:
-    - cron: "0 16 * * *"
-    - cron: "30 0 * * *"
+    - cron: "30 17 * * *"
+    - cron: "30 1 * * *"
   workflow_dispatch:
     inputs:
       ventana:
@@ -48,7 +49,9 @@ jobs:
             # por la hora de Colombia: antes de las 3 p. m., la tarde de hoy; si no, la mañana de mañana
             if [ "$(date +%H)" -lt 15 ]; then VENTANA=tarde; else VENTANA=manana; fi
           fi
-          python pronostico_lluvia/pronostico_lluvia.py "$VENTANA" --enviar
+          RESPALDO=""
+          if [ "${{ github.event_name }}" = "schedule" ]; then RESPALDO="--si-falta"; fi
+          python pronostico_lluvia/pronostico_lluvia.py "$VENTANA" --enviar $RESPALDO
 
       - name: Publicar para la página
         run: |

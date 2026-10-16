@@ -14,11 +14,13 @@ Uso local de prueba:  python servicio_continuo.py --duracion-min 12
 from __future__ import annotations
 
 import argparse
+import json
 import logging
+import os
 import subprocess
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent
@@ -49,6 +51,37 @@ def guardar(mensaje: str, push: bool):
     log.warning("No se pudo hacer push; se reintentará en el próximo ciclo")
 
 
+# Pronostico de lluvia a 6 horas (pronostico_lluvia.yml): el cron de GitHub llega a atrasarse horas,
+# asi que lo dispara este servicio, que ya esta corriendo, a la hora exacta de Colombia.
+EMISIONES = {(11, 30): "tarde", (19, 30): "manana"}
+ESTADO_PRONOSTICO = BASE / "estado" / "pronostico_disparado.json"
+
+
+def disparar_pronostico():
+    """A partir de las 11:30 (tarde) y de las 19:30 (manana del dia siguiente), y durante una hora, lanza el flujo
+    una sola vez por emision. Nunca debe tumbar el motor de alertas."""
+    try:
+        ahora = datetime.now(timezone.utc) - timedelta(hours=5)          # hora de Colombia
+        estado = json.loads(ESTADO_PRONOSTICO.read_text(encoding="utf-8")) if ESTADO_PRONOSTICO.exists() else {}
+        for (h, m), ventana in EMISIONES.items():
+            inicio = ahora.replace(hour=h, minute=m, second=0, microsecond=0)
+            clave = f"{ahora:%Y-%m-%d}|{ventana}"
+            if not (inicio <= ahora < inicio + timedelta(hours=1)) or clave in estado:
+                continue
+            if not os.environ.get("GH_TOKEN"):
+                log.warning("Pronóstico: falta GH_TOKEN para dispararlo")
+                return
+            rc = sh("gh", "workflow", "run", "pronostico_lluvia.yml", "--ref", "main", "-f", f"ventana={ventana}")
+            log.info("Pronóstico de lluvia (%s) disparado a las %s: código %s", ventana, ahora.strftime("%H:%M"), rc)
+            if rc == 0:
+                estado[clave] = ahora.strftime("%H:%M")
+                estado = dict(sorted(estado.items())[-20:])
+                ESTADO_PRONOSTICO.parent.mkdir(exist_ok=True)
+                ESTADO_PRONOSTICO.write_text(json.dumps(estado, indent=1), encoding="utf-8")
+    except Exception as e:  # noqa: BLE001 — el pronostico nunca debe tumbar las alertas
+        log.warning("Pronóstico: %s", e)
+
+
 def solo_rayos():
     import rayos_glm
     r = rayos_glm.solo_colombia(rayos_glm.descargar_rayos(30), BASE / "datos" / "municipios_mgn2024.geojson")
@@ -72,6 +105,7 @@ def main():
         hora = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
         rc = sh(sys.executable, "motor_alertas.py", "--modo", "normal")
         log.info("Motor terminó con código %s", rc)
+        disparar_pronostico()
         guardar(f"Bitácora de alertas {hora}", push)
 
         # Refresco intermedio de rayos, a mitad del ciclo

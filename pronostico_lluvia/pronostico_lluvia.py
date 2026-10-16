@@ -52,12 +52,16 @@ CIUDADES = {"Bogotá": (4.61, -74.08), "Medellín": (6.25, -75.56), "Cali": (3.4
             "Bucaramanga": (7.12, -73.12), "Cúcuta": (7.89, -72.50), "Valledupar": (10.46, -73.25), "Yopal": (5.35, -72.40),
             "Pasto": (1.21, -77.28), "Popayán": (2.44, -76.61), "Sincelejo": (9.30, -75.40), "Arauca": (7.08, -70.76),
             "Puerto Carreño": (6.19, -67.49), "Florencia": (1.61, -75.61), "Tunja": (5.53, -73.36), "Quibdó": (5.69, -76.66)}
-CORTES = [1, 2, 5, 10, 20, 40]
-COLORES = ["#D6ECF5", "#9DCDE6", "#5AA6D4", "#2F78B7", "#1D4E8C", "#103050"]   # solo azules (el rojo se lee como tiempo seco); el mas intenso es el azul marino del logo
-ETIQUETAS = ["1 - 2 mm", "2 - 5 mm", "5 - 10 mm", "10 - 20 mm", "20 - 40 mm", "40 mm o más"]
-NOMBRE_CLASE = {6: "Lluvias extremas (40 mm o más)", 5: "Lluvias muy fuertes (20 a 40 mm)", 4: "Lluvias fuertes (10 a 20 mm)",
+# Una sola clase desde 20 mm: en la evaluacion de octubre, de 20 mm o mas solo se encontro 6 de cada 100 y 92 de cada 100 anuncios fallaron.
+CORTES = [1, 2, 5, 10, 20]
+COLORES = ["#D6ECF5", "#9DCDE6", "#5AA6D4", "#2368AE", "#103050"]   # solo azules (el rojo se lee como tiempo seco); el mas intenso es el azul marino del logo
+ETIQUETAS = ["1 - 2 mm", "2 - 5 mm", "5 - 10 mm", "10 - 20 mm", "20 mm o más (fuerte posible)"]
+NOMBRE_CLASE = {5: "Lluvia fuerte posible (20 mm o más)", 4: "Lluvias fuertes (10 a 20 mm)",
                 3: "Lluvias moderadas (5 a 10 mm)", 2: "Lluvias ligeras (2 a 5 mm)", 1: "Lloviznas (1 a 2 mm)"}
-ICONO = {6: "⛈️", 5: "🌧️", 4: "🔵", 3: "🔷", 2: "💧"}
+ICONO = {5: "⛈️", 4: "🌧️", 3: "🔷", 2: "💧"}
+NOMBRES_PAGINA = ["Sin lluvia importante", "Lloviznas", "Lluvias ligeras", "Lluvias moderadas", "Lluvias fuertes", "Lluvia fuerte posible"]
+RESPONSABILIDAD = "Pronóstico de FENALCE: complementa y no reemplaza los avisos oficiales del IDEAM y de la gestión del riesgo."
+CREDITOS_DATOS = "Datos: ECMWF (CC BY 4.0) vía Open-Meteo · lluvia satelital NASA GPM IMERG"
 NAVY, GOLD, PIZARRA_CLARO, PIZARRA_INK, CREMA_PANEL, CREMA_BORDE = "#133353", "#F3C26B", "#A8BFCD", "#546D80", "#F7F5EE", "#E6DECA"
 AUTORES = "Juan Fernando Gómez Bolaños y Jhon Jairo Valencia Monroy"
 AREA = "FENALCE · Área de Agroclimatología y Modelación"
@@ -197,7 +201,7 @@ def capa_transparente(puntos, mm, ruta):
     fig = plt.figure(figsize=(ancho / 2.0, alto / 2.0), dpi=150)
     ax = fig.add_axes([0, 0, 1, 1]); ax.set_axis_off(); fig.patch.set_alpha(0)
     niveles = CORTES + [500]
-    rel = ax.contourf(x, y, S, levels=niveles, cmap=ListedColormap(COLORES), norm=BoundaryNorm(niveles, 6), antialiased=True)
+    rel = ax.contourf(x, y, S, levels=niveles, cmap=ListedColormap(COLORES), norm=BoundaryNorm(niveles, len(COLORES)), antialiased=True)
     recorte = PathPatch(pais, transform=ax.transData, facecolor="none", edgecolor="none")
     ax.add_patch(recorte); rel.set_clip_path(recorte)
     ax.set_xlim(x[0], x[-1]); ax.set_ylim(y[0], y[-1])
@@ -215,12 +219,18 @@ def dibujar(puntos, mm, ventana, fecha, ruta, nota):
     anillos, pais = anillos_pais()
     ax.add_patch(PathPatch(pais, facecolor=CREMA_PANEL, edgecolor="none", zorder=1))
     niveles = CORTES + [500]
-    rel = ax.contourf(x, y, S, levels=niveles, cmap=ListedColormap(COLORES), norm=BoundaryNorm(niveles, 6), zorder=2, antialiased=True)
+    rel = ax.contourf(x, y, S, levels=niveles, cmap=ListedColormap(COLORES), norm=BoundaryNorm(niveles, len(COLORES)), zorder=2, antialiased=True)
     recorte = PathPatch(pais, transform=ax.transData, facecolor="none", edgecolor="none")
     ax.add_patch(recorte); rel.set_clip_path(recorte)
     for a in anillos:
         ax.plot(a[:, 0], a[:, 1], color=PIZARRA_INK, lw=0.45, alpha=0.8, zorder=3)
     ax.add_patch(PathPatch(pais, facecolor="none", edgecolor=NAVY, lw=1.0, zorder=3))
+    marca = DATOS / "logo-vertical-azul.png"
+    if marca.exists():
+        img = plt.imread(str(marca))
+        alto_img, ancho_img = img.shape[:2]
+        ancho = 6.5; alto = ancho * alto_img / ancho_img            # grados; centrado en Colombia
+        ax.imshow(img, extent=[-73.2 - ancho / 2, -73.2 + ancho / 2, 4.2 - alto / 2, 4.2 + alto / 2], alpha=0.10, zorder=3.2, interpolation="antialiased")
     isoyetas(ax, x, y, S, recorte, pais)
     for nombre, (la, lo) in CIUDADES.items():
         ax.plot(lo, la, "o", ms=2.6, color=NAVY, zorder=5)
@@ -257,8 +267,7 @@ def dibujar(puntos, mm, ventana, fecha, ruta, nota):
     fondo = dict(boxstyle="square,pad=0.25", fc="white", ec="none")   # las isolineas pasan por detras
     fig.text(0.04, 0.084, chr(10).join(textwrap.wrap(nota, 165)), fontsize=7.0, color=PIZARRA_INK, va="top", bbox=fondo, zorder=30)
     fig.text(0.04, 0.038, f"Elaboró: {AUTORES} · {AREA}", fontsize=7.6, color=NAVY, weight="bold")
-    fig.text(0.04, 0.010, "Pronóstico automático: ECMWF corregido con lluvia satelital (IMERG) · agroclima-fenalce-portal.vercel.app",
-             fontsize=7.2, color="white")
+    fig.text(0.04, 0.010, f"{CREDITOS_DATOS} · agroclima-fenalce-portal.vercel.app", fontsize=7.2, color="white")
     SALIDA.mkdir(exist_ok=True)
     fig.savefig(ruta, facecolor="white")
     plt.close(fig)
@@ -281,7 +290,7 @@ def resumen(puntos, mm, p1, ventana, fecha):
     dia = dt.date.fromisoformat(fecha)
     lineas = [f"🌧️ *Pronóstico de lluvia FENALCE · {VENTANAS[ventana][2]}*",
               f"{DIAS[dia.weekday()].capitalize()} {dia.day} de {MESES[dia.month - 1]} · {VENTANAS[ventana][3]}", ""]
-    for c in (6, 5, 4, 3, 2):
+    for c in (5, 4, 3, 2):
         deptos = sorted(d for d, n in nivel.items() if n == c)
         if not deptos:
             continue
@@ -301,6 +310,7 @@ def resumen(puntos, mm, p1, ventana, fecha):
         lineas += ["En el resto de las zonas de FENALCE no se espera lluvia importante."]
     lineas += [f"📍 Consulte su municipio: {PAGINA}", "",
                "Milímetros aproximados por zonas de unos 28 km: no es el pronóstico de una finca. Entre tanto, siguen las alertas en tiempo real.",
+               f"_{RESPONSABILIDAD}_",
                f"_Elaboró: {AUTORES}_", f"_{AREA}_"]
     return chr(10).join(lineas)
 
@@ -329,7 +339,8 @@ def publicar(puntos, mm, p1, ventana, fecha, v, calmm_todo):
     datos = {"fecha": fecha, "ventana": ventana, "nombre": VENTANAS[ventana][2], "rango": VENTANAS[ventana][3],
              "fecha_texto": f"{DIAS[dia.weekday()]} {dia.day} de {MESES[dia.month - 1]} de {dia.year}",
              "emitido": dt.datetime.now(ZONA).isoformat(timespec="minutes"), "prueba": PRUEBA,
-             "cortes": CORTES, "colores": COLORES, "etiquetas": ETIQUETAS, "limites_capa": limites,
+             "cortes": CORTES, "colores": COLORES, "etiquetas": ETIQUETAS, "nombres_clase": NOMBRES_PAGINA, "limites_capa": limites,
+             "responsabilidad": RESPONSABILIDAD, "creditos": CREDITOS_DATOS,
              "acierto": {"clase": v["acierto_de_clase"], "clase_o_vecina": v["acierto_clase_o_vecina"],
                          "climatologia": calmm_todo["climatologia"]["acierto_de_clase"]},
              "zonas": [[p["lat"], p["lon"], a, b] for p, a, b in zip(puntos, mm, p1) if a is not None],
@@ -343,6 +354,10 @@ def main():
     hoy = dt.datetime.now(ZONA).date()
     fechas = [a for a in sys.argv[2:] if a[:2] == "20"]
     fecha = fechas[0] if fechas else (hoy if ventana == "tarde" else hoy + dt.timedelta(days=1)).isoformat()
+    publicado = PUBLICADO / f"ultimo_{ventana}.json"
+    if "--si-falta" in sys.argv and publicado.exists() and json.loads(publicado.read_text(encoding="utf-8")).get("fecha") == fecha:
+        print(f"La emisión de {ventana} para {fecha} ya salió: el respaldo no hace nada.")
+        return
     puntos = leer("rejilla_025.json")
     clima = leer("clima_025.json")[f"{int(fecha[5:7])}|{ventana}"]
     cal = leer("calibracion.json")
@@ -352,7 +367,7 @@ def main():
     v = calmm_todo["vecindad"]
     nota = (f"Medido en octubre de 2026, sin usarlo para ajustar: acertó la clase de milímetros en {round(v['acierto_de_clase'] * 100)} % de las zonas "
             f"y la clase o la vecina en {round(v['acierto_clase_o_vecina'] * 100)} % (lo que suele llover a esa hora: "
-            f"{round(calmm_todo['climatologia']['acierto_de_clase'] * 100)} %). Milímetros aproximados por zonas de unos 28 km; no es el pronóstico de una finca.")
+            f"{round(calmm_todo['climatologia']['acierto_de_clase'] * 100)} %). Milímetros aproximados por zonas de unos 28 km; no es el pronóstico de una finca. " + RESPONSABILIDAD)
     base = f"lluvia_mm_{ventana}_{fecha}"
     png = SALIDA / f"{base}.png"
     dibujar(puntos, mm, ventana, fecha, png, nota)
