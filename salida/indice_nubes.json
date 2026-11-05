@@ -1,11 +1,11 @@
 {
- "hora_satelite": "2026-11-05 03:20",
+ "hora_satelite": "2026-11-05 03:30",
  "departamentos": [
   {
    "movimiento": {
     "hacia": "suroriente",
-    "vel_kmh": 37.44954819286826,
-    "grados": 140.19442890773482
+    "vel_kmh": 29.26474900095175,
+    "grados": 124.99202019855868
    },
    "viento": {
     "viento_kmh": 9.1,
@@ -16,28 +16,33 @@
    "codigo": "44",
    "region": "caribe",
    "departamento": "La Guajira",
-   "puntaje": 4,
-   "probabilidad": "BAJA",
+   "puntaje": 5,
+   "probabilidad": "MEDIA",
    "municipios": [
     "Riohacha"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~339 km²",
-    "nubes creciendo (+33 % en 30 min)",
+    "nubes densas en ~348 km²",
+    "núcleos de tormenta en ~42 km²",
+    "5 rayos en 15 min",
     "modelo: prob. lluvia 75 %, agua precipitable 59 mm, CAPE 1640 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 508.775022983551,
-   "frio60": 0.0,
-   "btmin": -57.857940673828125,
-   "crec": 1.3307448126198114,
-   "rayos": 4,
+   "frio40": 521.6538444757462,
+   "frio60": 63.22330379486084,
+   "btmin": -75.67941284179688,
+   "crec": 1.2138377393022148,
+   "rayos": 5,
    "cod_gruesa": 0.0
   },
   {
-   "movimiento": null,
+   "movimiento": {
+    "hacia": "noroccidente",
+    "vel_kmh": 18.98722154887724,
+    "grados": 320.1944289077348
+   },
    "viento": {
     "viento_kmh": 3.8,
     "viento_dir": 121,
@@ -50,30 +55,30 @@
    "puntaje": 3,
    "probabilidad": "BAJA",
    "municipios": [
-    "Bahía Solano",
     "Bajo Baudó",
     "Juradó",
-    "Nuquí"
+    "Nuquí",
+    "Bahía Solano"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~641 km²",
+    "nubes densas en ~586 km²",
     "modelo: prob. lluvia 100 %, agua precipitable 62 mm, CAPE 450 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 961.2989848852158,
-   "frio60": 31.056053400039673,
-   "btmin": -69.71844482421875,
-   "crec": 0.8738498039938806,
+   "frio40": 878.6789929866791,
+   "frio60": 20.718514323234558,
+   "btmin": -68.18209838867188,
+   "crec": 0.879156150167056,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": {
-    "hacia": "suroccidente",
-    "vel_kmh": 14.239556591163126,
-    "grados": 239.03624346792648
+    "hacia": "occidente",
+    "vel_kmh": 20.865002325625678,
+    "grados": 249.44395478041653
    },
    "viento": {
     "viento_kmh": 3.8,
@@ -93,23 +98,61 @@
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~859 km²",
+    "nubes densas en ~898 km²",
     "modelo: prob. lluvia 2 %, agua precipitable 54 mm, CAPE 1810 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 1717.7272934913635,
+   "frio40": 1795.1494178771973,
    "frio60": 0.0,
-   "btmin": -53.433319091796875,
-   "crec": 0.794748629645827,
+   "btmin": -52.572967529296875,
+   "crec": 0.9142752465002763,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": {
+    "hacia": "sur",
+    "vel_kmh": 7.3353681564331055,
+    "grados": 180.0
+   },
+   "viento": {
+    "viento_kmh": 3.1,
+    "viento_dir": 173,
+    "alto_kmh": 35.0,
+    "alto_dir": 84
+   },
+   "codigo": "52",
+   "region": "pacífico",
+   "departamento": "Nariño",
+   "puntaje": 3,
+   "probabilidad": "BAJA",
+   "municipios": [
+    "Francisco Pizarro",
+    "San Andrés de Tumaco",
+    "Mosquera"
+   ],
+   "llueve_en": [],
+   "razones": [
+    "nubes densas en ~926 km²",
+    "núcleos de tormenta en ~42 km²",
+    "nubes disipándose",
+    "modelo: prob. lluvia 98 %, agua precipitable 66 mm, CAPE 480 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 1389.5752465724945,
+   "frio60": 62.73088300228119,
+   "btmin": -65.96978759765625,
+   "crec": 0.45830064077811167,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": {
     "hacia": "suroccidente",
-    "vel_kmh": 32.58016343356727,
-    "grados": 228.01278750418334
+    "vel_kmh": 31.012437007465465,
+    "grados": 231.3401917459099
    },
    "viento": {
     "viento_kmh": 3.3,
@@ -128,91 +171,52 @@
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~514 km²",
-    "nubes creciendo (+523 % en 30 min)",
+    "nubes densas en ~612 km²",
+    "nubes creciendo (+218 % en 30 min)",
     "modelo: prob. lluvia 0 %, agua precipitable 19 mm, CAPE 0 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 513.5650572776794,
+   "frio40": 612.2443274259567,
    "frio60": 0.0,
-   "btmin": -51.220977783203125,
-   "crec": 6.232769677133952,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": {
-    "hacia": "sur",
-    "vel_kmh": 4.89024543762207,
-    "grados": 180.0
-   },
-   "viento": {
-    "viento_kmh": 1.5,
-    "viento_dir": 194,
-    "alto_kmh": 35.0,
-    "alto_dir": 84
-   },
-   "codigo": "52",
-   "region": "pacífico",
-   "departamento": "Nariño",
-   "puntaje": 2,
-   "probabilidad": "BAJA",
-   "municipios": [
-    "Francisco Pizarro",
-    "San Andrés de Tumaco",
-    "Barbacoas",
-    "Mosquera"
-   ],
-   "llueve_en": [],
-   "razones": [
-    "nubes densas en ~1,264 km²",
-    "nubes disipándose",
-    "modelo: prob. lluvia 98 %, agua precipitable 66 mm, CAPE 890 J/kg"
-   ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 1896.2357573509216,
-   "frio60": 35.84539771080017,
-   "btmin": -61.8524169921875,
-   "crec": 0.505162315826005,
+   "btmin": -52.572967529296875,
+   "crec": 3.176404277142855,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": {
     "hacia": "suroccidente",
-    "vel_kmh": 37.95644767995263,
-    "grados": 219.80557109226518
+    "vel_kmh": 35.04469742285126,
+    "grados": 213.69006752597977
    },
    "viento": {
-    "viento_kmh": 5.2,
-    "viento_dir": 311,
-    "alto_kmh": 8.7,
-    "alto_dir": 74
+    "viento_kmh": 4.7,
+    "viento_dir": 317,
+    "alto_kmh": 9.1,
+    "alto_dir": 67
    },
    "codigo": "81",
    "region": "oriente",
    "departamento": "Arauca",
-   "puntaje": 2,
+   "puntaje": 3,
    "probabilidad": "BAJA",
    "municipios": [
-    "Arauca",
     "Arauquita",
+    "Arauca",
     "Puerto Rondón"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~853 km²",
-    "nubes disipándose",
-    "modelo: prob. lluvia 3 %, agua precipitable 54 mm, CAPE 1740 J/kg"
+    "nubes densas en ~806 km²",
+    "modelo: prob. lluvia 3 %, agua precipitable 54 mm, CAPE 1770 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 1706.9201868772507,
-   "frio60": 38.34304666519165,
-   "btmin": -62.65130615234375,
-   "crec": 0.6337543613700733,
+   "frio40": 1611.1735138893127,
+   "frio60": 22.125033974647522,
+   "btmin": -61.36079406738281,
+   "crec": 0.7257572254605973,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
@@ -223,8 +227,8 @@
     "grados": 239.03624346792648
    },
    "viento": {
-    "viento_kmh": 3.2,
-    "viento_dir": 333,
+    "viento_kmh": 3.3,
+    "viento_dir": 331,
     "alto_kmh": 34.9,
     "alto_dir": 86
    },
@@ -239,14 +243,14 @@
    "llueve_en": [],
    "razones": [
     "nubes densas en ~111 km²",
-    "modelo: prob. lluvia 0 %, agua precipitable 52 mm, CAPE 2300 J/kg"
+    "modelo: prob. lluvia 0 %, agua precipitable 52 mm, CAPE 2360 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 222.85612869262695,
+   "frio40": 222.85468339920044,
    "frio60": 0.0,
-   "btmin": -49.991912841796875,
-   "crec": 1.120288400295636,
+   "btmin": -49.80755615234375,
+   "crec": 1.0796948808995048,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
@@ -269,28 +273,28 @@
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~247 km²",
-    "nubes creciendo (+708 % en 30 min)",
+    "nubes densas en ~298 km²",
+    "nubes creciendo (+196 % en 30 min)",
     "modelo: prob. lluvia 0 %, agua precipitable 52 mm, CAPE 1190 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 494.1831018924713,
+   "frio40": 595.7455167770386,
    "frio60": 0.0,
-   "btmin": -50.913726806640625,
-   "crec": 8.077933473632854,
+   "btmin": -52.26568603515625,
+   "crec": 2.956511232606525,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": {
-    "hacia": "suroccidente",
-    "vel_kmh": 18.531019612689573,
-    "grados": 203.19859051364818
+    "hacia": "sur",
+    "vel_kmh": 17.71426974851939,
+    "grados": 195.94539590092288
    },
    "viento": {
     "viento_kmh": 2.2,
-    "viento_dir": 312,
+    "viento_dir": 305,
     "alto_kmh": 12.4,
     "alto_dir": 61
    },
@@ -301,34 +305,30 @@
    "probabilidad": "BAJA",
    "municipios": [
     "Socotá",
-    "Paya",
     "Pisba",
-    "Chita"
+    "Socha",
+    "Tasco"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~807 km²",
+    "nubes densas en ~533 km²",
     "nubes disipándose",
-    "modelo: prob. lluvia 0 %, agua precipitable 19 mm, CAPE 0 J/kg"
+    "modelo: prob. lluvia 0 %, agua precipitable 17 mm, CAPE 0 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 806.7126758098602,
+   "frio40": 532.829155921936,
    "frio60": 0.0,
-   "btmin": -51.835540771484375,
-   "crec": 0.43360468864651897,
+   "btmin": -49.193023681640625,
+   "crec": 0.3564170585255943,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
-   "movimiento": {
-    "hacia": "suroccidente",
-    "vel_kmh": 14.259720157343077,
-    "grados": 239.03624346792648
-   },
+   "movimiento": null,
    "viento": {
-    "viento_kmh": 3.3,
-    "viento_dir": 347,
+    "viento_kmh": 3.8,
+    "viento_dir": 352,
     "alto_kmh": 31.3,
     "alto_dir": 86
    },
@@ -342,14 +342,47 @@
    ],
    "llueve_en": [],
    "razones": [
-    "modelo: prob. lluvia 0 %, agua precipitable 54 mm, CAPE 2170 J/kg"
+    "modelo: prob. lluvia 0 %, agua precipitable 54 mm, CAPE 1970 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 125.63105297088623,
+   "frio40": 50.85044991970062,
    "frio60": 0.0,
-   "btmin": -49.50030517578125,
-   "crec": 0.3559275817408854,
+   "btmin": -47.04217529296875,
+   "crec": 0.1626772789408601,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": {
+    "hacia": "suroccidente",
+    "vel_kmh": 27.261208158346925,
+    "grados": 206.565051177078
+   },
+   "viento": {
+    "viento_kmh": 2.4,
+    "viento_dir": 318,
+    "alto_kmh": 15.6,
+    "alto_dir": 113
+   },
+   "codigo": "99",
+   "region": "oriente",
+   "departamento": "Vichada",
+   "puntaje": 1,
+   "probabilidad": "BAJA",
+   "municipios": [
+    "Cumaribo"
+   ],
+   "llueve_en": [],
+   "razones": [
+    "modelo: prob. lluvia 0 %, agua precipitable 48 mm, CAPE 1530 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 195.37177109718323,
+   "frio60": 0.0,
+   "btmin": -45.874542236328125,
+   "crec": 1.4239229308100105,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
@@ -375,7 +408,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -13.611572265625,
+   "btmin": -16.0697021484375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -402,7 +435,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 14.288238525390625,
+   "btmin": 12.751922607421875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -429,7 +462,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -19.818359375,
+   "btmin": -19.63397216796875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -456,7 +489,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -8.94110107421875,
+   "btmin": -6.54443359375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -483,7 +516,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -27.745819091796875,
+   "btmin": -27.93017578125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -510,7 +543,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -12.68975830078125,
+   "btmin": -11.890869140625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -537,7 +570,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -6.4215087890625,
+   "btmin": -5.991363525390625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -564,7 +597,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -9.0025634765625,
+   "btmin": -5.991363525390625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -591,7 +624,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -25.349151611328125,
+   "btmin": -27.93017578125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -645,7 +678,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -15.5166015625,
+   "btmin": -12.81268310546875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -672,7 +705,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -4.147735595703125,
+   "btmin": -3.779022216796875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -699,7 +732,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -38.991790771484375,
+   "btmin": -37.148193359375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -726,7 +759,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 2.48919677734375,
+   "btmin": 4.332794189453125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -753,7 +786,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -17.851837158203125,
+   "btmin": -17.544586181640625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -780,20 +813,20 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -15.27081298828125,
+   "btmin": -15.762420654296875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": {
-    "hacia": "occidente",
-    "vel_kmh": 25.427027000525854,
-    "grados": 253.30075576600638
+    "hacia": "suroccidente",
+    "vel_kmh": 27.229354229386217,
+    "grados": 243.43494882292202
    },
    "viento": {
-    "viento_kmh": 0.8,
-    "viento_dir": 207,
+    "viento_kmh": 0.6,
+    "viento_dir": 236,
     "alto_kmh": 13.0,
     "alto_dir": 56
    },
@@ -804,55 +837,22 @@
    "probabilidad": "BAJA",
    "municipios": [
     "Tauramena",
-    "Támara",
     "Maní",
+    "Támara",
     "Hato Corozal"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~198 km²",
+    "nubes densas en ~148 km²",
     "nubes disipándose",
-    "modelo: prob. lluvia 0 %, agua precipitable 52 mm, CAPE 1280 J/kg"
+    "modelo: prob. lluvia 0 %, agua precipitable 52 mm, CAPE 1190 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 396.3697975873947,
+   "frio40": 295.5454263687134,
    "frio60": 0.0,
-   "btmin": -49.193023681640625,
-   "crec": 0.3389713038503612,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": {
-    "hacia": "suroccidente",
-    "vel_kmh": 27.261208158346925,
-    "grados": 206.565051177078
-   },
-   "viento": {
-    "viento_kmh": 2.6,
-    "viento_dir": 326,
-    "alto_kmh": 15.6,
-    "alto_dir": 113
-   },
-   "codigo": "99",
-   "region": "oriente",
-   "departamento": "Vichada",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [
-    "Cumaribo"
-   ],
-   "llueve_en": [],
-   "razones": [
-    "modelo: prob. lluvia 0 %, agua precipitable 49 mm, CAPE 1490 J/kg"
-   ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 184.9285352230072,
-   "frio60": 0.0,
-   "btmin": -47.04217529296875,
-   "crec": 0.8855765155770057,
+   "btmin": -49.561767578125,
+   "crec": 0.35535141295561223,
    "rayos": 0,
    "cod_gruesa": 0.0
   }
