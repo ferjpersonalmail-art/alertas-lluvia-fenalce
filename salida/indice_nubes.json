@@ -1,18 +1,18 @@
 {
- "hora_satelite": "2026-11-09 01:10",
+ "hora_satelite": "2026-11-09 01:20",
  "departamentos": [
   {
    "movimiento": null,
    "viento": {
-    "viento_kmh": 2.8,
-    "viento_dir": 75,
-    "alto_kmh": 11.1,
-    "alto_dir": 41
+    "viento_kmh": 2.2,
+    "viento_dir": 76,
+    "alto_kmh": 10.2,
+    "alto_dir": 45
    },
    "codigo": "76",
    "region": "andina",
    "departamento": "Valle del Cauca",
-   "puntaje": 4,
+   "puntaje": 5,
    "probabilidad": "MEDIA",
    "municipios": [
     "Buenaventura",
@@ -20,27 +20,31 @@
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~317 km²",
-    "nubes creciendo (+100 % en 30 min)",
-    "7 rayos en 15 min",
-    "modelo: prob. lluvia 46 %, agua precipitable 65 mm, CAPE 2220 J/kg"
+    "nubes densas en ~492 km²",
+    "nubes creciendo (+844 % en 30 min)",
+    "36 rayos en 15 min",
+    "modelo: prob. lluvia 88 %, agua precipitable 63 mm, CAPE 2410 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 317.1919710636139,
-   "frio60": 0.0,
-   "btmin": -51.835540771484375,
-   "crec": 2.0,
-   "rayos": 7,
+   "frio40": 491.5985515117645,
+   "frio60": 25.33783721923828,
+   "btmin": -66.09269714355469,
+   "crec": 9.436029616359313,
+   "rayos": 36,
    "cod_gruesa": 0.0
   },
   {
-   "movimiento": null,
+   "movimiento": {
+    "hacia": "suroriente",
+    "vel_kmh": 85.54435770228298,
+    "grados": 149.03624346792648
+   },
    "viento": {
-    "viento_kmh": 3.5,
-    "viento_dir": 66,
-    "alto_kmh": 19.3,
-    "alto_dir": 83
+    "viento_kmh": 4.8,
+    "viento_dir": 127,
+    "alto_kmh": 20.4,
+    "alto_dir": 87
    },
    "codigo": "52",
    "region": "pacífico",
@@ -52,23 +56,23 @@
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~152 km²",
-    "nubes creciendo (+100 % en 30 min)",
-    "modelo: prob. lluvia 66 %, agua precipitable 61 mm, CAPE 2070 J/kg"
+    "nubes densas en ~158 km²",
+    "nubes creciendo (+319 % en 30 min)",
+    "modelo: prob. lluvia 66 %, agua precipitable 61 mm, CAPE 1600 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 228.67323887348175,
+   "frio40": 237.67496764659882,
    "frio60": 0.0,
-   "btmin": -57.673583984375,
-   "crec": 2.0,
-   "rayos": 1,
+   "btmin": -55.95289611816406,
+   "crec": 4.18535702260449,
+   "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": {
     "hacia": "occidente",
-    "vel_kmh": 19.567289352416992,
+    "vel_kmh": 12.22955584526062,
     "grados": 270.0
    },
    "viento": {
@@ -80,22 +84,23 @@
    "codigo": "86",
    "region": "oriente",
    "departamento": "Putumayo",
-   "puntaje": 3,
+   "puntaje": 2,
    "probabilidad": "BAJA",
    "municipios": [
     "Puerto Leguízamo"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~763 km²",
+    "nubes densas en ~623 km²",
+    "nubes disipándose",
     "modelo: prob. lluvia 6 %, agua precipitable 49 mm, CAPE 1790 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 1525.620554447174,
+   "frio40": 1245.924211025238,
    "frio60": 0.0,
-   "btmin": -52.4500732421875,
-   "crec": 0.7127901075310832,
+   "btmin": -51.405364990234375,
+   "crec": 0.5841532499615698,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
@@ -121,7 +126,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 20.37213134765625,
+   "btmin": 20.3106689453125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -148,8 +153,39 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -11.767974853515625,
+   "btmin": -19.63397216796875,
    "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 2.7,
+    "viento_dir": 200,
+    "alto_kmh": 22.8,
+    "alto_dir": 87
+   },
+   "codigo": "18",
+   "region": "oriente",
+   "departamento": "Caquetá",
+   "puntaje": 1,
+   "probabilidad": "BAJA",
+   "municipios": [
+    "Solano"
+   ],
+   "llueve_en": [
+    "Solano"
+   ],
+   "razones": [
+    "modelo: prob. lluvia 0 %, agua precipitable 48 mm, CAPE 2230 J/kg"
+   ],
+   "lluvia_km2": 60,
+   "lluvia_moderada_km2": 0,
+   "frio40": 16.443537950515747,
+   "frio60": 0.0,
+   "btmin": -40.4666748046875,
+   "crec": 0.14667063828243948,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
@@ -175,7 +211,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 11.15411376953125,
+   "btmin": 11.461395263671875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -183,28 +219,26 @@
   {
    "movimiento": null,
    "viento": {
-    "viento_kmh": 2.4,
-    "viento_dir": 132,
-    "alto_kmh": 9.4,
-    "alto_dir": 40
+    "viento_kmh": 5.0,
+    "viento_dir": 235,
+    "alto_kmh": 8.0,
+    "alto_dir": 27
    },
    "codigo": "27",
    "region": "pacífico",
    "departamento": "Chocó",
    "puntaje": 1,
    "probabilidad": "BAJA",
-   "municipios": [
-    "El Litoral del San Juan"
-   ],
+   "municipios": [],
    "llueve_en": [],
    "razones": [
-    "modelo: prob. lluvia 29 %, agua precipitable 62 mm, CAPE 2170 J/kg"
+    "modelo: prob. lluvia 16 %, agua precipitable 59 mm, CAPE 2380 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 41.6730215549469,
+   "frio40": 8.929686784744263,
    "frio60": 0.0,
-   "btmin": -47.963958740234375,
+   "btmin": -41.14263916015625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -231,7 +265,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -0.70635986328125,
+   "btmin": -0.6448974609375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -258,7 +292,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -4.332122802734375,
+   "btmin": -4.209197998046875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -312,7 +346,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 14.779876708984375,
+   "btmin": 13.6737060546875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -339,7 +373,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -3.96337890625,
+   "btmin": -6.974609375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -366,7 +400,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -6.17572021484375,
+   "btmin": -8.26513671875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -393,7 +427,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -13.365753173828125,
+   "btmin": -13.795928955078125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -420,7 +454,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -17.851837158203125,
+   "btmin": -17.29876708984375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -447,7 +481,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 3.103729248046875,
+   "btmin": -4.45501708984375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -474,7 +508,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -7.527679443359375,
+   "btmin": -8.20367431640625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -501,44 +535,8 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -3.901947021484375,
+   "btmin": -3.59466552734375,
    "crec": null,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": {
-    "hacia": "occidente",
-    "vel_kmh": 19.56417465209961,
-    "grados": 270.0
-   },
-   "viento": {
-    "viento_kmh": 0.5,
-    "viento_dir": 315,
-    "alto_kmh": 22.1,
-    "alto_dir": 103
-   },
-   "codigo": "18",
-   "region": "oriente",
-   "departamento": "Caquetá",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [
-    "Solano",
-    "San José del Fragua"
-   ],
-   "llueve_en": [
-    "Solano"
-   ],
-   "razones": [
-    "modelo: prob. lluvia 31 %, agua precipitable 26 mm, CAPE 90 J/kg"
-   ],
-   "lluvia_km2": 18,
-   "lluvia_moderada_km2": 0,
-   "frio40": 133.0390087366104,
-   "frio60": 0.0,
-   "btmin": -44.0924072265625,
-   "crec": 2.40541061899429,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
@@ -562,9 +560,9 @@
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
+   "frio40": 10.464063048362732,
    "frio60": 0.0,
-   "btmin": -29.097808837890625,
+   "btmin": -40.4666748046875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -591,7 +589,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -24.427337646484375,
+   "btmin": -24.120086669921875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -618,7 +616,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 1.32159423828125,
+   "btmin": 1.137237548828125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -645,7 +643,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -19.511077880859375,
+   "btmin": -20.92449951171875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -672,7 +670,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -18.282012939453125,
+   "btmin": -19.63397216796875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -699,7 +697,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 0.276885986328125,
+   "btmin": 0.215423583984375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -753,7 +751,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -19.080902099609375,
+   "btmin": -19.203826904296875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -780,7 +778,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -6.974609375,
+   "btmin": -6.05279541015625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
