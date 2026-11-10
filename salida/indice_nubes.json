@@ -1,11 +1,11 @@
 {
- "hora_satelite": "2026-11-10 06:00",
+ "hora_satelite": "2026-11-10 06:10",
  "departamentos": [
   {
    "movimiento": {
-    "hacia": "noroccidente",
-    "vel_kmh": 27.261208158346925,
-    "grados": 296.565051177078
+    "hacia": "occidente",
+    "vel_kmh": 24.38316583633423,
+    "grados": 270.0
    },
    "viento": {
     "viento_kmh": 3.5,
@@ -28,30 +28,30 @@
     "Cumaribo"
    ],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~18,110 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~7,840 km²",
-    "228 rayos en 15 min",
-    "nubes gruesas (COD ≥ 30) en ~12,568 km²",
+    "nubes densas (cima < −40 °C) en ~18,371 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~7,492 km²",
+    "252 rayos en 15 min",
+    "nubes gruesas (COD ≥ 30) en ~17,721 km²",
     "modelo: prob. lluvia 94 %, agua precipitable 60 mm, CAPE 1190 J/kg"
    ],
-   "lluvia_km2": 454,
-   "lluvia_moderada_km2": 248,
-   "frio40": 36219.73120760918,
-   "frio60": 15680.97572004795,
-   "btmin": -73.58999633789062,
-   "crec": 1.0753108880435813,
-   "rayos": 228,
-   "cod_gruesa": 25135.102159023285
+   "lluvia_km2": 685,
+   "lluvia_moderada_km2": 373,
+   "frio40": 36741.31430768967,
+   "frio60": 14984.80256164074,
+   "btmin": -76.41685485839844,
+   "crec": 1.0583622198449365,
+   "rayos": 252,
+   "cod_gruesa": 35441.11284375191
   },
   {
    "movimiento": {
-    "hacia": "norte",
-    "vel_kmh": 0.0,
-    "grados": 0.0
+    "hacia": "occidente",
+    "vel_kmh": 12.155323028564453,
+    "grados": 270.0
    },
    "viento": {
-    "viento_kmh": 0.4,
-    "viento_dir": 297,
+    "viento_kmh": 0.9,
+    "viento_dir": 323,
     "alto_kmh": 22.3,
     "alto_dir": 54
    },
@@ -64,23 +64,53 @@
     "Bajo Baudó",
     "Medio Baudó",
     "Istmina",
-    "Medio Atrato"
+    "Bahía Solano"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~4,520 km²",
+    "nubes densas (cima < −40 °C) en ~3,352 km²",
     "nubes disipándose",
-    "8 rayos en 15 min",
-    "modelo: prob. lluvia 35 %, agua precipitable 59 mm, CAPE 1690 J/kg"
+    "7 rayos en 15 min",
+    "modelo: prob. lluvia 49 %, agua precipitable 60 mm, CAPE 1840 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 6780.738132476807,
-   "frio60": 11.704869627952576,
-   "btmin": -65.53961181640625,
-   "crec": 0.5292960360590566,
-   "rayos": 8,
+   "frio40": 5027.719982385635,
+   "frio60": 0.0,
+   "btmin": -58.411041259765625,
+   "crec": 0.4604245731298308,
+   "rayos": 7,
    "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 5.2,
+    "viento_dir": 149,
+    "alto_kmh": 17.1,
+    "alto_dir": 51
+   },
+   "codigo": "18",
+   "region": "oriente",
+   "departamento": "Caquetá",
+   "puntaje": 2,
+   "probabilidad": "BAJA",
+   "municipios": [
+    "Solano"
+   ],
+   "llueve_en": [],
+   "razones": [
+    "nubes gruesas (COD ≥ 30) en ~881 km²",
+    "modelo: prob. lluvia 85 %, agua precipitable 60 mm, CAPE 850 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 67.29964601993561,
+   "frio60": 0.0,
+   "btmin": -45.260009765625,
+   "crec": 0.45454973056968856,
+   "rayos": 0,
+   "cod_gruesa": 1761.699639081955
   },
   {
    "movimiento": null,
@@ -104,10 +134,66 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -22.52227783203125,
+   "btmin": -23.628448486328125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 5.1,
+    "viento_dir": 238,
+    "alto_kmh": 23.9,
+    "alto_dir": 72
+   },
+   "codigo": "81",
+   "region": "oriente",
+   "departamento": "Arauca",
+   "puntaje": 2,
+   "probabilidad": "BAJA",
+   "municipios": [],
+   "llueve_en": [],
+   "razones": [
+    "nubes gruesas (COD ≥ 30) en ~1,418 km²",
+    "modelo: prob. lluvia 28 %, agua precipitable 51 mm, CAPE 2630 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 0.0,
+   "frio60": 0.0,
+   "btmin": -4.577911376953125,
+   "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 2836.8349426984787
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 5.5,
+    "viento_dir": 251,
+    "alto_kmh": 24.7,
+    "alto_dir": 76
+   },
+   "codigo": "85",
+   "region": "oriente",
+   "departamento": "Casanare",
+   "puntaje": 2,
+   "probabilidad": "BAJA",
+   "municipios": [],
+   "llueve_en": [],
+   "razones": [
+    "nubes gruesas (COD ≥ 30) en ~776 km²",
+    "modelo: prob. lluvia 12 %, agua precipitable 48 mm, CAPE 1950 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 0.0,
+   "frio60": 0.0,
+   "btmin": -39.299041748046875,
+   "crec": null,
+   "rayos": 1,
+   "cod_gruesa": 1552.6276438236237
   },
   {
    "movimiento": null,
@@ -131,7 +217,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 17.48382568359375,
+   "btmin": 19.634674072265625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -158,38 +244,9 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 9.925048828125,
+   "btmin": 11.58428955078125,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {
-    "viento_kmh": 4.3,
-    "viento_dir": 156,
-    "alto_kmh": 17.1,
-    "alto_dir": 51
-   },
-   "codigo": "18",
-   "region": "oriente",
-   "departamento": "Caquetá",
-   "puntaje": 1,
-   "probabilidad": "BAJA",
-   "municipios": [
-    "Solano"
-   ],
-   "llueve_en": [],
-   "razones": [
-    "modelo: prob. lluvia 85 %, agua precipitable 59 mm, CAPE 780 J/kg"
-   ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 98.7059623003006,
-   "frio60": 0.0,
-   "btmin": -46.304718017578125,
-   "crec": 0.7415770809873318,
-   "rayos": 1,
    "cod_gruesa": 0.0
   },
   {
@@ -214,7 +271,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -1.751068115234375,
+   "btmin": -1.443817138671875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -241,7 +298,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -21.170318603515625,
+   "btmin": -9.80145263671875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -268,9 +325,9 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -1.259429931640625,
+   "btmin": -1.013641357421875,
    "crec": null,
-   "rayos": 0,
+   "rayos": 1,
    "cod_gruesa": 0.0
   },
   {
@@ -295,7 +352,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -4.332122802734375,
+   "btmin": -4.147735595703125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -322,7 +379,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -2.30413818359375,
+   "btmin": -1.197998046875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -349,7 +406,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 18.405609130859375,
+   "btmin": 18.712890625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -357,56 +414,38 @@
   {
    "movimiento": null,
    "viento": {
-    "viento_kmh": 5.1,
-    "viento_dir": 238,
+    "viento_kmh": 2.9,
+    "viento_dir": 266,
     "alto_kmh": 23.9,
     "alto_dir": 72
    },
-   "codigo": "81",
+   "codigo": "95",
    "region": "oriente",
-   "departamento": "Arauca",
+   "departamento": "Guaviare",
    "puntaje": 1,
    "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
-   "razones": [
-    "modelo: prob. lluvia 28 %, agua precipitable 51 mm, CAPE 2630 J/kg"
+   "municipios": [
+    "San José del Guaviare",
+    "Calamar",
+    "Miraflores"
    ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
+   "llueve_en": [
+    "San José del Guaviare",
+    "Calamar",
+    "Miraflores"
+   ],
+   "razones": [
+    "nubes gruesas (COD ≥ 30) en ~1,913 km²",
+    "modelo: prob. lluvia 68 %, agua precipitable 54 mm, CAPE 1080 J/kg"
+   ],
+   "lluvia_km2": 1256,
+   "lluvia_moderada_km2": 363,
+   "frio40": 37.305352091789246,
    "frio60": 0.0,
-   "btmin": -4.76226806640625,
+   "btmin": -45.505828857421875,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {
-    "viento_kmh": 5.5,
-    "viento_dir": 251,
-    "alto_kmh": 24.7,
-    "alto_dir": 76
-   },
-   "codigo": "85",
-   "region": "oriente",
-   "departamento": "Casanare",
-   "puntaje": 1,
-   "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
-   "razones": [
-    "modelo: prob. lluvia 12 %, agua precipitable 48 mm, CAPE 1950 J/kg"
-   ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 2.9637653827667236,
-   "frio60": 0.0,
-   "btmin": -40.896820068359375,
-   "crec": null,
-   "rayos": 1,
-   "cod_gruesa": 0.0
+   "cod_gruesa": 3826.0097391605377
   },
   {
    "movimiento": null,
@@ -430,7 +469,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -37.762725830078125,
+   "btmin": -37.94708251953125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -457,7 +496,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -3.840484619140625,
+   "btmin": -3.471771240234375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -484,7 +523,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -3.6561279296875,
+   "btmin": -3.533203125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -511,7 +550,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -24.980438232421875,
+   "btmin": -21.907745361328125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -538,7 +577,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -1.56671142578125,
+   "btmin": -0.890716552734375,
    "crec": null,
    "rayos": 1,
    "cod_gruesa": 0.0
@@ -565,7 +604,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -3.71759033203125,
+   "btmin": -2.242706298828125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -592,7 +631,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 0.522705078125,
+   "btmin": 0.952880859375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -619,7 +658,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 0.768524169921875,
+   "btmin": 0.645599365234375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -646,7 +685,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -11.214874267578125,
+   "btmin": -9.8629150390625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -673,7 +712,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 0.03106689453125,
+   "btmin": 0.338348388671875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -727,7 +766,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -21.170318603515625,
+   "btmin": -35.550384521484375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -754,42 +793,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -34.751495361328125,
-   "crec": 0.0,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {
-    "viento_kmh": 0.2,
-    "viento_dir": 270,
-    "alto_kmh": 15.4,
-    "alto_dir": 51
-   },
-   "codigo": "95",
-   "region": "oriente",
-   "departamento": "Guaviare",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [
-    "San José del Guaviare",
-    "Miraflores",
-    "Calamar"
-   ],
-   "llueve_en": [
-    "San José del Guaviare",
-    "Miraflores",
-    "Calamar"
-   ],
-   "razones": [
-    "modelo: prob. lluvia 68 %, agua precipitable 57 mm, CAPE 960 J/kg"
-   ],
-   "lluvia_km2": 1187,
-   "lluvia_moderada_km2": 487,
-   "frio40": 20.890824794769287,
-   "frio60": 0.0,
-   "btmin": -46.550537109375,
+   "btmin": -32.723541259765625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
