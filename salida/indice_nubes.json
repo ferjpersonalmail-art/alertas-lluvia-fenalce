@@ -1,5 +1,5 @@
 {
- "hora_satelite": "2026-11-11 04:20",
+ "hora_satelite": "2026-11-11 04:30",
  "departamentos": [
   {
    "movimiento": {
@@ -8,8 +8,8 @@
     "grados": 116.56505117707799
    },
    "viento": {
-    "viento_kmh": 0.7,
-    "viento_dir": 76,
+    "viento_kmh": 0.3,
+    "viento_dir": 135,
     "alto_kmh": 21.9,
     "alto_dir": 99
    },
@@ -19,26 +19,27 @@
    "puntaje": 8,
    "probabilidad": "MEDIA",
    "municipios": [
-    "Turbo",
-    "Carepa",
-    "Murindó",
-    "Apartadó"
+    "Nechí",
+    "El Bagre"
    ],
-   "llueve_en": [],
+   "llueve_en": [
+    "Nechí",
+    "El Bagre"
+   ],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~4,236 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~2,546 km²",
-    "nubes creciendo (+43 % en 30 min)",
-    "30 rayos en 15 min",
-    "modelo: prob. lluvia 61 %, agua precipitable 60 mm, CAPE 1810 J/kg"
+    "nubes densas (cima < −40 °C) en ~4,469 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~2,645 km²",
+    "nubes creciendo (+33 % en 30 min)",
+    "12 rayos en 15 min",
+    "modelo: prob. lluvia 61 %, agua precipitable 60 mm, CAPE 1840 J/kg"
    ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 4235.860406041145,
-   "frio60": 2546.0391076803207,
-   "btmin": -73.03692626953125,
-   "crec": 1.4252844779699334,
-   "rayos": 30,
+   "lluvia_km2": 70,
+   "lluvia_moderada_km2": 12,
+   "frio40": 4468.875473022461,
+   "frio60": 2644.512192130089,
+   "btmin": -75.5565185546875,
+   "crec": 1.3334447123082398,
+   "rayos": 12,
    "cod_gruesa": 0.0
   },
   {
@@ -60,23 +61,95 @@
    "probabilidad": "BAJA",
    "municipios": [
     "Carmen del Darién",
-    "Bahía Solano",
     "Alto Baudó",
-    "Bojayá"
+    "Bahía Solano",
+    "Nuquí"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~7,241 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~1,830 km²",
+    "nubes densas (cima < −40 °C) en ~6,748 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~1,486 km²",
     "modelo: prob. lluvia 75 %, agua precipitable 60 mm, CAPE 2210 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 10861.10281920433,
-   "frio60": 2745.4512861967087,
-   "btmin": -73.58999633789062,
-   "crec": 0.9499169113019892,
-   "rayos": 2,
+   "frio40": 10121.818878531456,
+   "frio60": 2228.870462179184,
+   "btmin": -72.05366516113281,
+   "crec": 0.883352987102916,
+   "rayos": 1,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": {
+    "hacia": "noroccidente",
+    "vel_kmh": 23.07100681652097,
+    "grados": 302.0053832080835
+   },
+   "viento": {
+    "viento_kmh": 1.5,
+    "viento_dir": 249,
+    "alto_kmh": 19.5,
+    "alto_dir": 79
+   },
+   "codigo": "18",
+   "region": "oriente",
+   "departamento": "Caquetá",
+   "puntaje": 3,
+   "probabilidad": "BAJA",
+   "municipios": [
+    "Solano"
+   ],
+   "llueve_en": [
+    "Solano"
+   ],
+   "razones": [
+    "nubes densas en ~865 km²",
+    "nubes creciendo (+47 % en 30 min)",
+    "modelo: prob. lluvia 8 %, agua precipitable 51 mm, CAPE 580 J/kg"
+   ],
+   "lluvia_km2": 332,
+   "lluvia_moderada_km2": 3,
+   "frio40": 1730.5210243463516,
+   "frio60": 0.0,
+   "btmin": -56.38307189941406,
+   "crec": 1.4738810419835708,
+   "rayos": 1,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": {
+    "hacia": "suroriente",
+    "vel_kmh": 27.05421093211732,
+    "grados": 116.56505117707799
+   },
+   "viento": {
+    "viento_kmh": 0.0,
+    "viento_dir": 270,
+    "alto_kmh": 20.5,
+    "alto_dir": 97
+   },
+   "codigo": "23",
+   "region": "caribe",
+   "departamento": "Córdoba",
+   "puntaje": 3,
+   "probabilidad": "BAJA",
+   "municipios": [
+    "Tierralta"
+   ],
+   "llueve_en": [],
+   "razones": [
+    "nubes densas en ~109 km²",
+    "nubes creciendo (+100 % en 30 min)",
+    "modelo: prob. lluvia 55 %, agua precipitable 47 mm, CAPE 1790 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 162.99203050136566,
+   "frio60": 24.95923602581024,
+   "btmin": -63.327301025390625,
+   "crec": 2.0,
+   "rayos": 3,
    "cod_gruesa": 0.0
   },
   {
@@ -94,7 +167,7 @@
    "codigo": "52",
    "region": "pacífico",
    "departamento": "Nariño",
-   "puntaje": 4,
+   "puntaje": 3,
    "probabilidad": "BAJA",
    "municipios": [
     "San Andrés de Tumaco",
@@ -103,53 +176,15 @@
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~711 km²",
-    "núcleos de tormenta en ~36 km²",
+    "nubes densas en ~708 km²",
     "modelo: prob. lluvia 31 %, agua precipitable 59 mm, CAPE 1610 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 1066.5564354658127,
-   "frio60": 53.804866313934326,
-   "btmin": -62.958587646484375,
-   "crec": 0.7040501325223275,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": {
-    "hacia": "occidente",
-    "vel_kmh": 19.56417465209961,
-    "grados": 270.0
-   },
-   "viento": {
-    "viento_kmh": 2.0,
-    "viento_dir": 270,
-    "alto_kmh": 19.5,
-    "alto_dir": 79
-   },
-   "codigo": "18",
-   "region": "oriente",
-   "departamento": "Caquetá",
-   "puntaje": 3,
-   "probabilidad": "BAJA",
-   "municipios": [
-    "Solano"
-   ],
-   "llueve_en": [
-    "Solano"
-   ],
-   "razones": [
-    "nubes densas en ~756 km²",
-    "nubes creciendo (+44 % en 30 min)",
-    "modelo: prob. lluvia 8 %, agua precipitable 52 mm, CAPE 680 J/kg"
-   ],
-   "lluvia_km2": 323,
-   "lluvia_moderada_km2": 123,
-   "frio40": 1512.1507048606873,
-   "frio60": 0.0,
-   "btmin": -55.76853942871094,
-   "crec": 1.4360757357828091,
+   "frio40": 1062.105661392212,
+   "frio60": 28.396991729736328,
+   "btmin": -61.4222412109375,
+   "crec": 0.9092354870751929,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
@@ -202,7 +237,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -0.030364990234375,
+   "btmin": 1.936126708984375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -229,36 +264,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -2.85723876953125,
-   "crec": null,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {
-    "viento_kmh": 2.5,
-    "viento_dir": 94,
-    "alto_kmh": 20.5,
-    "alto_dir": 97
-   },
-   "codigo": "23",
-   "region": "caribe",
-   "departamento": "Córdoba",
-   "puntaje": 1,
-   "probabilidad": "BAJA",
-   "municipios": [
-    "Tierralta"
-   ],
-   "llueve_en": [],
-   "razones": [
-    "modelo: prob. lluvia 55 %, agua precipitable 48 mm, CAPE 1790 J/kg"
-   ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 74.88181471824646,
-   "frio60": 5.873004674911499,
-   "btmin": -60.93061828613281,
+   "btmin": -3.041595458984375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -285,7 +291,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -2.058349609375,
+   "btmin": -2.119781494140625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -312,7 +318,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -4.700836181640625,
+   "btmin": -4.88519287109375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -339,7 +345,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 10.0479736328125,
+   "btmin": 9.6177978515625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -366,7 +372,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -4.577911376953125,
+   "btmin": -3.779022216796875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -393,7 +399,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -2.611419677734375,
+   "btmin": -2.549957275390625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -420,7 +426,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -19.32672119140625,
+   "btmin": -16.192596435546875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -447,7 +453,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -2.549957275390625,
+   "btmin": -2.918670654296875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -501,7 +507,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -11.337799072265625,
+   "btmin": -14.3489990234375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -528,7 +534,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -16.991485595703125,
+   "btmin": -6.8516845703125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -555,7 +561,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 0.645599365234375,
+   "btmin": 0.768524169921875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -609,7 +615,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -0.522003173828125,
+   "btmin": -0.030364990234375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -636,7 +642,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -13.98028564453125,
+   "btmin": -7.158966064453125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -663,7 +669,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -14.226104736328125,
+   "btmin": -16.131134033203125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -681,16 +687,18 @@
    "departamento": "Valle del Cauca",
    "puntaje": 0,
    "probabilidad": "BAJA",
-   "municipios": [],
+   "municipios": [
+    "Buenaventura"
+   ],
    "llueve_en": [],
    "razones": [
     "modelo: prob. lluvia 4 %, agua precipitable 28 mm, CAPE 110 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
+   "frio40": 20.85912013053894,
    "frio60": 0.0,
-   "btmin": -8.20367431640625,
+   "btmin": -51.835540771484375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -717,7 +725,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -2.549957275390625,
+   "btmin": -2.119781494140625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -744,7 +752,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -5.438262939453125,
+   "btmin": -3.28741455078125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -771,7 +779,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -25.594970703125,
+   "btmin": -32.354827880859375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -798,7 +806,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 7.221099853515625,
+   "btmin": 6.114959716796875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
