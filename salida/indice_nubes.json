@@ -1,18 +1,23 @@
 {
- "hora_satelite": "2026-11-11 01:50",
+ "hora_satelite": "2026-11-11 02:00",
  "departamentos": [
   {
    "movimiento": {
-    "hacia": "suroriente",
-    "vel_kmh": 27.180128580338735,
-    "grados": 116.56505117707799
+    "hacia": "oriente",
+    "vel_kmh": 19.448516845703125,
+    "grados": 90.0
    },
-   "viento": {},
+   "viento": {
+    "viento_kmh": 3.0,
+    "viento_dir": 287,
+    "alto_kmh": 27.6,
+    "alto_dir": 90
+   },
    "codigo": "27",
    "region": "pacífico",
    "departamento": "Chocó",
-   "puntaje": 6,
-   "probabilidad": "MEDIA",
+   "puntaje": 9,
+   "probabilidad": "ALTA",
    "municipios": [
     "Bojayá",
     "Bahía Solano",
@@ -21,26 +26,33 @@
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~3,659 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~1,994 km²",
-    "49 rayos en 15 min"
+    "nubes densas (cima < −40 °C) en ~4,163 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~2,293 km²",
+    "nubes creciendo (+32 % en 30 min)",
+    "62 rayos en 15 min",
+    "modelo: prob. lluvia 69 %, agua precipitable 58 mm, CAPE 2190 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 5489.222931027412,
-   "frio60": 2991.3420602083206,
-   "btmin": -74.88052368164062,
-   "crec": 1.215803808124514,
-   "rayos": 49,
+   "frio40": 6244.477619051933,
+   "frio60": 3439.3488570451736,
+   "btmin": -74.20452880859375,
+   "crec": 1.3197693484485717,
+   "rayos": 62,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": {
     "hacia": "norte",
-    "vel_kmh": 0.0,
+    "vel_kmh": 12.225613594055176,
     "grados": 0.0
    },
-   "viento": {},
+   "viento": {
+    "viento_kmh": 1.8,
+    "viento_dir": 90,
+    "alto_kmh": 21.0,
+    "alto_dir": 66
+   },
    "codigo": "52",
    "region": "pacífico",
    "departamento": "Nariño",
@@ -54,25 +66,31 @@
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~2,032 km²",
-    "núcleos de tormenta en ~174 km²"
+    "nubes densas en ~1,973 km²",
+    "núcleos de tormenta en ~161 km²",
+    "modelo: prob. lluvia 31 %, agua precipitable 59 mm, CAPE 2390 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 3048.6139982938766,
-   "frio60": 261.5478525161743,
-   "btmin": -68.42791748046875,
-   "crec": 1.033466061144568,
+   "frio40": 2959.069671869278,
+   "frio60": 242.11341536045074,
+   "btmin": -65.53961181640625,
+   "crec": 0.9621687058404446,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": {
     "hacia": "oriente",
-    "vel_kmh": 13.069914638299485,
-    "grados": 111.80140948635182
+    "vel_kmh": 12.135111093521118,
+    "grados": 90.0
    },
-   "viento": {},
+   "viento": {
+    "viento_kmh": 1.0,
+    "viento_dir": 45,
+    "alto_kmh": 26.4,
+    "alto_dir": 93
+   },
    "codigo": "05",
    "region": "andina",
    "departamento": "Antioquia",
@@ -87,61 +105,243 @@
     "Zaragoza"
    ],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~3,429 km²",
-    "nubes disipándose"
+    "nubes densas (cima < −40 °C) en ~2,378 km²",
+    "nubes disipándose",
+    "modelo: prob. lluvia 45 %, agua precipitable 48 mm, CAPE 1300 J/kg"
    ],
-   "lluvia_km2": 265,
-   "lluvia_moderada_km2": 178,
-   "frio40": 3429.290734052658,
-   "frio60": 8.776639342308044,
-   "btmin": -61.11497497558594,
-   "crec": 0.6320458282477674,
-   "rayos": 3,
+   "lluvia_km2": 456,
+   "lluvia_moderada_km2": 226,
+   "frio40": 2378.0274889469147,
+   "frio60": 13.164917469024658,
+   "btmin": -61.54515075683594,
+   "crec": 0.4730602598014127,
+   "rayos": 4,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": null,
-   "viento": {},
+   "viento": {
+    "viento_kmh": 11.5,
+    "viento_dir": 17,
+    "alto_kmh": 24.5,
+    "alto_dir": 101
+   },
    "codigo": "08",
    "region": "caribe",
    "departamento": "Atlántico",
-   "puntaje": 0,
+   "puntaje": 1,
    "probabilidad": "BAJA",
    "municipios": [],
    "llueve_en": [],
-   "razones": [],
+   "razones": [
+    "modelo: prob. lluvia 0 %, agua precipitable 45 mm, CAPE 3190 J/kg"
+   ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 21.96990966796875,
+   "btmin": 21.355377197265625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": null,
-   "viento": {},
+   "viento": {
+    "viento_kmh": 7.4,
+    "viento_dir": 267,
+    "alto_kmh": 21.0,
+    "alto_dir": 77
+   },
    "codigo": "13",
    "region": "caribe",
    "departamento": "Bolívar",
-   "puntaje": 0,
+   "puntaje": 1,
    "probabilidad": "BAJA",
    "municipios": [],
    "llueve_en": [],
-   "razones": [],
+   "razones": [
+    "modelo: prob. lluvia 16 %, agua precipitable 56 mm, CAPE 3950 J/kg"
+   ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 3.04229736328125,
+   "btmin": 3.77972412109375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": null,
-   "viento": {},
+   "viento": {
+    "viento_kmh": 1.8,
+    "viento_dir": 37,
+    "alto_kmh": 27.6,
+    "alto_dir": 92
+   },
+   "codigo": "20",
+   "region": "caribe",
+   "departamento": "Cesar",
+   "puntaje": 1,
+   "probabilidad": "BAJA",
+   "municipios": [],
+   "llueve_en": [],
+   "razones": [
+    "modelo: prob. lluvia 4 %, agua precipitable 50 mm, CAPE 2100 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 0.0,
+   "frio60": 0.0,
+   "btmin": -2.242706298828125,
+   "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 11.4,
+    "viento_dir": 254,
+    "alto_kmh": 20.4,
+    "alto_dir": 90
+   },
+   "codigo": "23",
+   "region": "caribe",
+   "departamento": "Córdoba",
+   "puntaje": 1,
+   "probabilidad": "BAJA",
+   "municipios": [],
+   "llueve_en": [],
+   "razones": [
+    "modelo: prob. lluvia 10 %, agua precipitable 56 mm, CAPE 3300 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 0.0,
+   "frio60": 0.0,
+   "btmin": -24.67315673828125,
+   "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 20.6,
+    "viento_dir": 84,
+    "alto_kmh": 22.5,
+    "alto_dir": 115
+   },
+   "codigo": "44",
+   "region": "caribe",
+   "departamento": "La Guajira",
+   "puntaje": 1,
+   "probabilidad": "BAJA",
+   "municipios": [],
+   "llueve_en": [],
+   "razones": [
+    "modelo: prob. lluvia 0 %, agua precipitable 44 mm, CAPE 3390 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 0.0,
+   "frio60": 0.0,
+   "btmin": -1.812530517578125,
+   "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 4.0,
+    "viento_dir": 260,
+    "alto_kmh": 27.7,
+    "alto_dir": 108
+   },
+   "codigo": "47",
+   "region": "caribe",
+   "departamento": "Magdalena",
+   "puntaje": 1,
+   "probabilidad": "BAJA",
+   "municipios": [],
+   "llueve_en": [],
+   "razones": [
+    "modelo: prob. lluvia 0 %, agua precipitable 46 mm, CAPE 3150 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 0.0,
+   "frio60": 0.0,
+   "btmin": -4.02484130859375,
+   "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 6.6,
+    "viento_dir": 287,
+    "alto_kmh": 24.1,
+    "alto_dir": 96
+   },
+   "codigo": "70",
+   "region": "caribe",
+   "departamento": "Sucre",
+   "puntaje": 1,
+   "probabilidad": "BAJA",
+   "municipios": [],
+   "llueve_en": [],
+   "razones": [
+    "modelo: prob. lluvia 8 %, agua precipitable 54 mm, CAPE 3240 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 0.0,
+   "frio60": 0.0,
+   "btmin": 12.87481689453125,
+   "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 2.8,
+    "viento_dir": 195,
+    "alto_kmh": 21.3,
+    "alto_dir": 106
+   },
+   "codigo": "81",
+   "region": "oriente",
+   "departamento": "Arauca",
+   "puntaje": 1,
+   "probabilidad": "BAJA",
+   "municipios": [],
+   "llueve_en": [],
+   "razones": [
+    "modelo: prob. lluvia 15 %, agua precipitable 55 mm, CAPE 1670 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 0.0,
+   "frio60": 0.0,
+   "btmin": -14.71771240234375,
+   "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 1.0,
+    "viento_dir": 248,
+    "alto_kmh": 17.2,
+    "alto_dir": 78
+   },
    "codigo": "15",
    "region": "andina",
    "departamento": "Boyacá",
@@ -149,19 +349,26 @@
    "probabilidad": "BAJA",
    "municipios": [],
    "llueve_en": [],
-   "razones": [],
+   "razones": [
+    "modelo: prob. lluvia 0 %, agua precipitable 20 mm, CAPE 0 J/kg"
+   ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -10.477447509765625,
+   "btmin": -8.94110107421875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": null,
-   "viento": {},
+   "viento": {
+    "viento_kmh": 9.6,
+    "viento_dir": 127,
+    "alto_kmh": 22.9,
+    "alto_dir": 84
+   },
    "codigo": "17",
    "region": "andina",
    "departamento": "Caldas",
@@ -169,23 +376,26 @@
    "probabilidad": "BAJA",
    "municipios": [],
    "llueve_en": [],
-   "razones": [],
+   "razones": [
+    "modelo: prob. lluvia 0 %, agua precipitable 14 mm, CAPE 0 J/kg"
+   ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -31.064300537109375,
+   "btmin": -32.723541259765625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
-   "movimiento": {
-    "hacia": "occidente",
-    "vel_kmh": 7.3365654945373535,
-    "grados": 270.0
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 1.2,
+    "viento_dir": 219,
+    "alto_kmh": 21.6,
+    "alto_dir": 71
    },
-   "viento": {},
    "codigo": "18",
    "region": "oriente",
    "departamento": "Caquetá",
@@ -197,19 +407,26 @@
    "llueve_en": [
     "Solano"
    ],
-   "razones": [],
-   "lluvia_km2": 193,
+   "razones": [
+    "modelo: prob. lluvia 23 %, agua precipitable 53 mm, CAPE 730 J/kg"
+   ],
+   "lluvia_km2": 203,
    "lluvia_moderada_km2": 0,
-   "frio40": 133.1182004213333,
+   "frio40": 43.37560248374939,
    "frio60": 0.0,
-   "btmin": -42.8018798828125,
-   "crec": 1.5084745220306857,
+   "btmin": -44.645477294921875,
+   "crec": 0.3536585838795596,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": null,
-   "viento": {},
+   "viento": {
+    "viento_kmh": 1.4,
+    "viento_dir": 50,
+    "alto_kmh": 11.1,
+    "alto_dir": 41
+   },
    "codigo": "19",
    "region": "andina",
    "departamento": "Cauca",
@@ -219,59 +436,26 @@
     "Guapi"
    ],
    "llueve_en": [],
-   "razones": [],
+   "razones": [
+    "modelo: prob. lluvia 0 %, agua precipitable 32 mm, CAPE 0 J/kg"
+   ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 65.67844712734222,
+   "frio40": 23.883432030677795,
    "frio60": 0.0,
-   "btmin": -45.075653076171875,
-   "crec": 0.8979687866016621,
+   "btmin": -41.57281494140625,
+   "crec": 0.3200088626796276,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": null,
-   "viento": {},
-   "codigo": "20",
-   "region": "caribe",
-   "departamento": "Cesar",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
-   "razones": [],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
-   "frio60": 0.0,
-   "btmin": -2.119781494140625,
-   "crec": null,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {},
-   "codigo": "23",
-   "region": "caribe",
-   "departamento": "Córdoba",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
-   "razones": [],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
-   "frio60": 0.0,
-   "btmin": -23.198272705078125,
-   "crec": null,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {},
+   "viento": {
+    "viento_kmh": 5.7,
+    "viento_dir": 28,
+    "alto_kmh": 26.4,
+    "alto_dir": 87
+   },
    "codigo": "25",
    "region": "andina",
    "departamento": "Cundinamarca",
@@ -279,7 +463,231 @@
    "probabilidad": "BAJA",
    "municipios": [],
    "llueve_en": [],
-   "razones": [],
+   "razones": [
+    "modelo: prob. lluvia 6 %, agua precipitable 22 mm, CAPE 0 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 0.0,
+   "frio60": 0.0,
+   "btmin": -18.9580078125,
+   "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 3.8,
+    "viento_dir": 262,
+    "alto_kmh": 18.6,
+    "alto_dir": 75
+   },
+   "codigo": "41",
+   "region": "andina",
+   "departamento": "Huila",
+   "puntaje": 0,
+   "probabilidad": "BAJA",
+   "municipios": [],
+   "llueve_en": [],
+   "razones": [
+    "modelo: prob. lluvia 2 %, agua precipitable 35 mm, CAPE 0 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 0.0,
+   "frio60": 0.0,
+   "btmin": -39.360504150390625,
+   "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 4.4,
+    "viento_dir": 261,
+    "alto_kmh": 23.3,
+    "alto_dir": 78
+   },
+   "codigo": "50",
+   "region": "oriente",
+   "departamento": "Meta",
+   "puntaje": 0,
+   "probabilidad": "BAJA",
+   "municipios": [
+    "Uribe",
+    "Lejanías"
+   ],
+   "llueve_en": [
+    "Uribe",
+    "Lejanías"
+   ],
+   "razones": [
+    "modelo: prob. lluvia 60 %, agua precipitable 56 mm, CAPE 1080 J/kg"
+   ],
+   "lluvia_km2": 391,
+   "lluvia_moderada_km2": 34,
+   "frio40": 0.0,
+   "frio60": 0.0,
+   "btmin": -37.39398193359375,
+   "crec": 0.0,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 6.5,
+    "viento_dir": 226,
+    "alto_kmh": 16.0,
+    "alto_dir": 77
+   },
+   "codigo": "54",
+   "region": "andina",
+   "departamento": "Norte de Santander",
+   "puntaje": 0,
+   "probabilidad": "BAJA",
+   "municipios": [],
+   "llueve_en": [],
+   "razones": [
+    "modelo: prob. lluvia 0 %, agua precipitable 30 mm, CAPE 0 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 0.0,
+   "frio60": 0.0,
+   "btmin": 1.137237548828125,
+   "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 1.8,
+    "viento_dir": 90,
+    "alto_kmh": 18.0,
+    "alto_dir": 86
+   },
+   "codigo": "63",
+   "region": "andina",
+   "departamento": "Quindío",
+   "puntaje": 0,
+   "probabilidad": "BAJA",
+   "municipios": [],
+   "llueve_en": [],
+   "razones": [
+    "modelo: prob. lluvia 31 %, agua precipitable 32 mm, CAPE 700 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 0.0,
+   "frio60": 0.0,
+   "btmin": -16.376953125,
+   "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 1.9,
+    "viento_dir": 319,
+    "alto_kmh": 21.6,
+    "alto_dir": 90
+   },
+   "codigo": "66",
+   "region": "andina",
+   "departamento": "Risaralda",
+   "puntaje": 0,
+   "probabilidad": "BAJA",
+   "municipios": [],
+   "llueve_en": [],
+   "razones": [
+    "modelo: prob. lluvia 43 %, agua precipitable 38 mm, CAPE 1020 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 0.0,
+   "frio60": 0.0,
+   "btmin": -30.572662353515625,
+   "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 1.7,
+    "viento_dir": 103,
+    "alto_kmh": 20.5,
+    "alto_dir": 97
+   },
+   "codigo": "68",
+   "region": "andina",
+   "departamento": "Santander",
+   "puntaje": 0,
+   "probabilidad": "BAJA",
+   "municipios": [],
+   "llueve_en": [],
+   "razones": [
+    "modelo: prob. lluvia 7 %, agua precipitable 31 mm, CAPE 0 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 0.0,
+   "frio60": 0.0,
+   "btmin": -9.617095947265625,
+   "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 3.2,
+    "viento_dir": 297,
+    "alto_kmh": 27.1,
+    "alto_dir": 77
+   },
+   "codigo": "73",
+   "region": "andina",
+   "departamento": "Tolima",
+   "puntaje": 0,
+   "probabilidad": "BAJA",
+   "municipios": [],
+   "llueve_en": [],
+   "razones": [
+    "modelo: prob. lluvia 0 %, agua precipitable 39 mm, CAPE 0 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 0.0,
+   "frio60": 0.0,
+   "btmin": -36.533660888671875,
+   "crec": 0.0,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": null,
+   "viento": {
+    "viento_kmh": 4.9,
+    "viento_dir": 324,
+    "alto_kmh": 14.6,
+    "alto_dir": 81
+   },
+   "codigo": "76",
+   "region": "andina",
+   "departamento": "Valle del Cauca",
+   "puntaje": 0,
+   "probabilidad": "BAJA",
+   "municipios": [],
+   "llueve_en": [],
+   "razones": [
+    "modelo: prob. lluvia 2 %, agua precipitable 28 mm, CAPE 330 J/kg"
+   ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
@@ -291,251 +699,12 @@
   },
   {
    "movimiento": null,
-   "viento": {},
-   "codigo": "41",
-   "region": "andina",
-   "departamento": "Huila",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
-   "razones": [],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
-   "frio60": 0.0,
-   "btmin": -35.857666015625,
-   "crec": null,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {},
-   "codigo": "44",
-   "region": "caribe",
-   "departamento": "La Guajira",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
-   "razones": [],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
-   "frio60": 0.0,
-   "btmin": -1.87396240234375,
-   "crec": null,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {},
-   "codigo": "47",
-   "region": "caribe",
-   "departamento": "Magdalena",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
-   "razones": [],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
-   "frio60": 0.0,
-   "btmin": -3.779022216796875,
-   "crec": null,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {},
-   "codigo": "50",
-   "region": "oriente",
-   "departamento": "Meta",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [
-    "Uribe"
-   ],
-   "llueve_en": [
-    "Uribe"
-   ],
-   "razones": [],
-   "lluvia_km2": 362,
-   "lluvia_moderada_km2": 43,
-   "frio40": 0.0,
-   "frio60": 0.0,
-   "btmin": -38.561614990234375,
-   "crec": 0.0,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {},
-   "codigo": "54",
-   "region": "andina",
-   "departamento": "Norte de Santander",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
-   "razones": [],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
-   "frio60": 0.0,
-   "btmin": 1.198699951171875,
-   "crec": null,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {},
-   "codigo": "63",
-   "region": "andina",
-   "departamento": "Quindío",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
-   "razones": [],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
-   "frio60": 0.0,
-   "btmin": -12.443939208984375,
-   "crec": null,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {},
-   "codigo": "66",
-   "region": "andina",
-   "departamento": "Risaralda",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
-   "razones": [],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
-   "frio60": 0.0,
-   "btmin": -29.773773193359375,
-   "crec": null,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {},
-   "codigo": "68",
-   "region": "andina",
-   "departamento": "Santander",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
-   "razones": [],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
-   "frio60": 0.0,
-   "btmin": -6.1142578125,
-   "crec": null,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {},
-   "codigo": "70",
-   "region": "caribe",
-   "departamento": "Sucre",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
-   "razones": [],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
-   "frio60": 0.0,
-   "btmin": 10.9083251953125,
-   "crec": null,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {},
-   "codigo": "73",
-   "region": "andina",
-   "departamento": "Tolima",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
-   "razones": [],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
-   "frio60": 0.0,
-   "btmin": -39.852142333984375,
-   "crec": 0.0,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {},
-   "codigo": "76",
-   "region": "andina",
-   "departamento": "Valle del Cauca",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
-   "razones": [],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
-   "frio60": 0.0,
-   "btmin": -26.086578369140625,
-   "crec": null,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {},
-   "codigo": "81",
-   "region": "oriente",
-   "departamento": "Arauca",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
-   "razones": [],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
-   "frio60": 0.0,
-   "btmin": -17.29876708984375,
-   "crec": null,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {},
+   "viento": {
+    "viento_kmh": 4.9,
+    "viento_dir": 246,
+    "alto_kmh": 19.3,
+    "alto_dir": 83
+   },
    "codigo": "85",
    "region": "oriente",
    "departamento": "Casanare",
@@ -543,19 +712,26 @@
    "probabilidad": "BAJA",
    "municipios": [],
    "llueve_en": [],
-   "razones": [],
+   "razones": [
+    "modelo: prob. lluvia 8 %, agua precipitable 51 mm, CAPE 1060 J/kg"
+   ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -7.097503662109375,
+   "btmin": -6.360076904296875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": null,
-   "viento": {},
+   "viento": {
+    "viento_kmh": 1.7,
+    "viento_dir": 108,
+    "alto_kmh": 19.0,
+    "alto_dir": 55
+   },
    "codigo": "86",
    "region": "oriente",
    "departamento": "Putumayo",
@@ -563,19 +739,26 @@
    "probabilidad": "BAJA",
    "municipios": [],
    "llueve_en": [],
-   "razones": [],
+   "razones": [
+    "modelo: prob. lluvia 18 %, agua precipitable 52 mm, CAPE 890 J/kg"
+   ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -18.46636962890625,
+   "btmin": -20.06414794921875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": null,
-   "viento": {},
+   "viento": {
+    "viento_kmh": 3.6,
+    "viento_dir": 288,
+    "alto_kmh": 24.0,
+    "alto_dir": 87
+   },
    "codigo": "95",
    "region": "oriente",
    "departamento": "Guaviare",
@@ -583,19 +766,26 @@
    "probabilidad": "BAJA",
    "municipios": [],
    "llueve_en": [],
-   "razones": [],
+   "razones": [
+    "modelo: prob. lluvia 12 %, agua precipitable 55 mm, CAPE 840 J/kg"
+   ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -34.997314453125,
+   "btmin": -32.231903076171875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": null,
-   "viento": {},
+   "viento": {
+    "viento_kmh": 2.6,
+    "viento_dir": 196,
+    "alto_kmh": 19.5,
+    "alto_dir": 101
+   },
    "codigo": "99",
    "region": "oriente",
    "departamento": "Vichada",
@@ -603,12 +793,14 @@
    "probabilidad": "BAJA",
    "municipios": [],
    "llueve_en": [],
-   "razones": [],
+   "razones": [
+    "modelo: prob. lluvia 2 %, agua precipitable 56 mm, CAPE 1330 J/kg"
+   ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -16.622772216796875,
+   "btmin": -9.125457763671875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
