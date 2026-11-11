@@ -3,6 +3,44 @@
  "departamentos": [
   {
    "movimiento": {
+    "hacia": "norte",
+    "vel_kmh": 12.155323028564453,
+    "grados": 0.0
+   },
+   "viento": {
+    "viento_kmh": 1.0,
+    "viento_dir": 31,
+    "alto_kmh": 27.7,
+    "alto_dir": 85
+   },
+   "codigo": "27",
+   "region": "pacífico",
+   "departamento": "Chocó",
+   "puntaje": 7,
+   "probabilidad": "ALTA",
+   "municipios": [
+    "Riosucio",
+    "Carmen del Darién",
+    "Medio Atrato"
+   ],
+   "llueve_en": [],
+   "razones": [
+    "nubes densas (cima < −40 °C) en ~5,901 km²",
+    "núcleos de tormenta en ~149 km²",
+    "52 rayos en 15 min",
+    "modelo: prob. lluvia 41 %, agua precipitable 62 mm, CAPE 2590 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 8850.938543915749,
+   "frio60": 224.08074820041656,
+   "btmin": -63.20439147949219,
+   "crec": 0.8508318543742769,
+   "rayos": 52,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": {
     "hacia": "sur",
     "vel_kmh": 7.3353681564331055,
     "grados": 180.0
@@ -58,61 +96,26 @@
    "puntaje": 6,
    "probabilidad": "BAJA",
    "municipios": [
+    "Valdivia",
     "Urrao",
     "Vigía del Fuerte",
     "Frontino"
    ],
-   "llueve_en": [],
+   "llueve_en": [
+    "Valdivia"
+   ],
    "razones": [
     "nubes densas (cima < −40 °C) en ~5,824 km²",
     "núcleos de tormenta (cima < −60 °C) en ~1,916 km²",
     "modelo: prob. lluvia 27 %, agua precipitable 49 mm, CAPE 1530 J/kg"
    ],
-   "lluvia_km2": 0,
+   "lluvia_km2": 65,
    "lluvia_moderada_km2": 0,
    "frio40": 5824.17077422142,
    "frio60": 1916.0587285757065,
    "btmin": -66.27705383300781,
    "crec": 1.0552706371630993,
-   "rayos": 3,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": {
-    "hacia": "norte",
-    "vel_kmh": 12.155323028564453,
-    "grados": 0.0
-   },
-   "viento": {
-    "viento_kmh": 1.0,
-    "viento_dir": 31,
-    "alto_kmh": 27.7,
-    "alto_dir": 85
-   },
-   "codigo": "27",
-   "region": "pacífico",
-   "departamento": "Chocó",
-   "puntaje": 6,
-   "probabilidad": "MEDIA",
-   "municipios": [
-    "Riosucio",
-    "Carmen del Darién",
-    "Medio Atrato"
-   ],
-   "llueve_en": [],
-   "razones": [
-    "nubes densas (cima < −40 °C) en ~5,901 km²",
-    "núcleos de tormenta en ~149 km²",
-    "21 rayos en 15 min",
-    "modelo: prob. lluvia 41 %, agua precipitable 62 mm, CAPE 2590 J/kg"
-   ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 8850.938543915749,
-   "frio60": 224.08074820041656,
-   "btmin": -63.20439147949219,
-   "crec": 0.8508318543742769,
-   "rayos": 21,
+   "rayos": 2,
    "cod_gruesa": 0.0
   },
   {
@@ -137,14 +140,12 @@
     "Dolores",
     "Natagaima"
    ],
-   "llueve_en": [
-    "Alpujarra"
-   ],
+   "llueve_en": [],
    "razones": [
     "nubes densas en ~551 km²",
     "modelo: prob. lluvia 4 %, agua precipitable 36 mm, CAPE 40 J/kg"
    ],
-   "lluvia_km2": 51,
+   "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 551.3697216510773,
    "frio60": 0.0,
@@ -506,7 +507,7 @@
     "nubes disipándose",
     "modelo: prob. lluvia 46 %, agua precipitable 33 mm, CAPE 50 J/kg"
    ],
-   "lluvia_km2": 13,
+   "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 238.5196317434311,
    "frio60": 0.0,
@@ -533,19 +534,19 @@
    "puntaje": 0,
    "probabilidad": "BAJA",
    "municipios": [
+    "San Martín",
     "Castilla la Nueva",
-    "Acacías",
-    "San Martín"
+    "Lejanías"
    ],
    "llueve_en": [
+    "San Martín",
     "Castilla la Nueva",
-    "Acacías",
-    "San Martín"
+    "Lejanías"
    ],
    "razones": [
     "modelo: prob. lluvia 47 %, agua precipitable 34 mm, CAPE 0 J/kg"
    ],
-   "lluvia_km2": 408,
+   "lluvia_km2": 462,
    "lluvia_moderada_km2": 0,
    "frio40": 195.2872484922409,
    "frio60": 0.0,
