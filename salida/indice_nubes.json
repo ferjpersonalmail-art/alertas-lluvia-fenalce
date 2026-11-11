@@ -1,11 +1,11 @@
 {
- "hora_satelite": "2026-11-11 02:20",
+ "hora_satelite": "2026-11-11 02:30",
  "departamentos": [
   {
    "movimiento": {
-    "hacia": "oriente",
-    "vel_kmh": 17.017452239990234,
-    "grados": 90.0
+    "hacia": "suroriente",
+    "vel_kmh": 27.180128580338735,
+    "grados": 116.56505117707799
    },
    "viento": {
     "viento_kmh": 3.0,
@@ -26,19 +26,60 @@
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~5,110 km²",
-    "núcleos de tormenta (cima < −60 °C) en ~3,149 km²",
-    "nubes creciendo (+40 % en 30 min)",
-    "38 rayos en 15 min",
+    "nubes densas (cima < −40 °C) en ~5,527 km²",
+    "núcleos de tormenta (cima < −60 °C) en ~3,397 km²",
+    "nubes creciendo (+33 % en 30 min)",
+    "47 rayos en 15 min",
     "modelo: prob. lluvia 75 %, agua precipitable 58 mm, CAPE 2190 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 7665.699373245239,
-   "frio60": 4723.549631595612,
-   "btmin": -75.31069946289062,
-   "crec": 1.3964999180331081,
-   "rayos": 38,
+   "frio40": 8290.596690893173,
+   "frio60": 5095.986244320869,
+   "btmin": -76.41685485839844,
+   "crec": 1.3276685732043494,
+   "rayos": 47,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": {
+    "hacia": "oriente",
+    "vel_kmh": 20.73648692657775,
+    "grados": 110.55604521958347
+   },
+   "viento": {
+    "viento_kmh": 8.4,
+    "viento_dir": 351,
+    "alto_kmh": 24.1,
+    "alto_dir": 96
+   },
+   "codigo": "05",
+   "region": "andina",
+   "departamento": "Antioquia",
+   "puntaje": 4,
+   "probabilidad": "MEDIA",
+   "municipios": [
+    "El Bagre",
+    "Necoclí",
+    "Dabeiba",
+    "Murindó"
+   ],
+   "llueve_en": [
+    "El Bagre"
+   ],
+   "razones": [
+    "nubes densas en ~755 km²",
+    "nubes disipándose",
+    "33 rayos en 15 min",
+    "modelo: prob. lluvia 79 %, agua precipitable 61 mm, CAPE 2170 J/kg"
+   ],
+   "lluvia_km2": 200,
+   "lluvia_moderada_km2": 40,
+   "frio40": 755.2620680332184,
+   "frio60": 16.167356371879578,
+   "btmin": -62.405487060546875,
+   "crec": 0.31760022604603216,
+   "rayos": 33,
    "cod_gruesa": 0.0
   },
   {
@@ -48,76 +89,34 @@
     "grados": 0.0
    },
    "viento": {
-    "viento_kmh": 1.8,
-    "viento_dir": 90,
+    "viento_kmh": 1.7,
+    "viento_dir": 58,
     "alto_kmh": 21.0,
     "alto_dir": 66
    },
    "codigo": "52",
    "region": "pacífico",
    "departamento": "Nariño",
-   "puntaje": 4,
+   "puntaje": 3,
    "probabilidad": "BAJA",
    "municipios": [
     "San Andrés de Tumaco",
     "Olaya Herrera",
-    "Mosquera",
-    "Francisco Pizarro"
+    "Francisco Pizarro",
+    "Mosquera"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~1,899 km²",
-    "núcleos de tormenta en ~71 km²",
-    "modelo: prob. lluvia 31 %, agua precipitable 59 mm, CAPE 2390 J/kg"
+    "nubes densas en ~1,793 km²",
+    "modelo: prob. lluvia 31 %, agua precipitable 59 mm, CAPE 2220 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 2848.6333252191544,
-   "frio60": 106.11320233345032,
-   "btmin": -62.34405517578125,
-   "crec": 0.9344027570605399,
+   "frio40": 2688.8305698633194,
+   "frio60": 13.451207756996155,
+   "btmin": -60.93061828613281,
+   "crec": 0.9086743024082817,
    "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": {
-    "hacia": "oriente",
-    "vel_kmh": 25.33885586720823,
-    "grados": 106.69924423399362
-   },
-   "viento": {
-    "viento_kmh": 1.4,
-    "viento_dir": 67,
-    "alto_kmh": 24.3,
-    "alto_dir": 99
-   },
-   "codigo": "05",
-   "region": "andina",
-   "departamento": "Antioquia",
-   "puntaje": 3,
-   "probabilidad": "MEDIA",
-   "municipios": [
-    "El Bagre",
-    "Urrao",
-    "Necoclí",
-    "Murindó"
-   ],
-   "llueve_en": [
-    "El Bagre"
-   ],
-   "razones": [
-    "nubes densas en ~1,030 km²",
-    "nubes disipándose",
-    "5 rayos en 15 min",
-    "modelo: prob. lluvia 39 %, agua precipitable 49 mm, CAPE 1530 J/kg"
-   ],
-   "lluvia_km2": 169,
-   "lluvia_moderada_km2": 34,
-   "frio40": 1029.7913582324982,
-   "frio60": 17.64042854309082,
-   "btmin": -63.51165771484375,
-   "crec": 0.3002928121569658,
-   "rayos": 5,
    "cod_gruesa": 0.0
   },
   {
@@ -142,7 +141,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 22.0313720703125,
+   "btmin": 21.847015380859375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -169,7 +168,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 3.288116455078125,
+   "btmin": 3.964080810546875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -223,7 +222,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -23.444091796875,
+   "btmin": -16.131134033203125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -250,7 +249,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -1.751068115234375,
+   "btmin": -1.87396240234375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -331,7 +330,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -9.678558349609375,
+   "btmin": -9.985809326171875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -358,7 +357,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -12.81268310546875,
+   "btmin": -14.226104736328125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -385,7 +384,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -34.812957763671875,
+   "btmin": -30.265411376953125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -393,10 +392,10 @@
   {
    "movimiento": null,
    "viento": {
-    "viento_kmh": 2.3,
-    "viento_dir": 321,
-    "alto_kmh": 22.4,
-    "alto_dir": 74
+    "viento_kmh": 4.5,
+    "viento_dir": 293,
+    "alto_kmh": 20.5,
+    "alto_dir": 69
    },
    "codigo": "18",
    "region": "oriente",
@@ -410,14 +409,14 @@
     "Solano"
    ],
    "razones": [
-    "modelo: prob. lluvia 16 %, agua precipitable 52 mm, CAPE 1280 J/kg"
+    "modelo: prob. lluvia 12 %, agua precipitable 52 mm, CAPE 860 J/kg"
    ],
-   "lluvia_km2": 151,
+   "lluvia_km2": 69,
    "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
+   "frio40": 53.845348954200745,
    "frio60": 0.0,
-   "btmin": -37.8856201171875,
-   "crec": 0.0,
+   "btmin": -54.232208251953125,
+   "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
@@ -443,8 +442,8 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -36.963836669921875,
-   "crec": 0.0,
+   "btmin": -36.1649169921875,
+   "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
@@ -470,7 +469,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -24.120086669921875,
+   "btmin": -22.153564453125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -497,11 +496,11 @@
    "razones": [
     "modelo: prob. lluvia 2 %, agua precipitable 35 mm, CAPE 0 J/kg"
    ],
-   "lluvia_km2": 18,
+   "lluvia_km2": 34,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -33.215179443359375,
+   "btmin": -32.354827880859375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -530,11 +529,11 @@
    "razones": [
     "modelo: prob. lluvia 60 %, agua precipitable 56 mm, CAPE 1080 J/kg"
    ],
-   "lluvia_km2": 383,
-   "lluvia_moderada_km2": 16,
+   "lluvia_km2": 160,
+   "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -37.639801025390625,
+   "btmin": -38.80743408203125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -561,7 +560,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 1.32159423828125,
+   "btmin": 0.768524169921875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -588,7 +587,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -11.09197998046875,
+   "btmin": -10.2930908203125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -615,7 +614,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -34.812957763671875,
+   "btmin": -33.583892822265625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -642,7 +641,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -11.890869140625,
+   "btmin": -8.019317626953125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -669,7 +668,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -31.433013916015625,
+   "btmin": -27.868743896484375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -696,7 +695,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -25.594970703125,
+   "btmin": -24.67315673828125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -723,7 +722,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -10.2930908203125,
+   "btmin": -4.76226806640625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -750,7 +749,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -15.885345458984375,
+   "btmin": -14.28753662109375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -777,7 +776,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -26.70111083984375,
+   "btmin": -32.231903076171875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -804,9 +803,9 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -3.103057861328125,
+   "btmin": 1.137237548828125,
    "crec": null,
-   "rayos": 0,
+   "rayos": 1,
    "cod_gruesa": 0.0
   }
  ]
