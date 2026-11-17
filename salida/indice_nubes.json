@@ -1,8 +1,12 @@
 {
- "hora_satelite": "2026-11-17 02:10",
+ "hora_satelite": "2026-11-17 02:20",
  "departamentos": [
   {
-   "movimiento": null,
+   "movimiento": {
+    "hacia": "norte",
+    "vel_kmh": 12.999999876659007,
+    "grados": 21.80140948635181
+   },
    "viento": {
     "viento_kmh": 7.2,
     "viento_dir": 179,
@@ -20,24 +24,24 @@
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~156 km²",
-    "nubes creciendo (+100 % en 30 min)",
+    "nubes densas en ~197 km²",
+    "nubes creciendo (+283 % en 30 min)",
     "modelo: prob. lluvia 47 %, agua precipitable 50 mm, CAPE 2530 J/kg"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 233.2748543024063,
+   "frio40": 295.9383362531662,
    "frio60": 0.0,
-   "btmin": -56.5059814453125,
-   "crec": 2.0,
+   "btmin": -53.433319091796875,
+   "crec": 3.829069540480411,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": {
     "hacia": "suroriente",
-    "vel_kmh": 17.251463738782125,
-    "grados": 135.0
+    "vel_kmh": 23.016323381728796,
+    "grados": 122.0053832080835
    },
    "viento": {
     "viento_kmh": 3.7,
@@ -58,29 +62,68 @@
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~795 km²",
+    "nubes densas en ~792 km²",
     "modelo: prob. lluvia 72 %, agua precipitable 48 mm, CAPE 850 J/kg"
    ],
-   "lluvia_km2": 4,
+   "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 795.126039981842,
+   "frio40": 792.1354296207428,
    "frio60": 0.0,
-   "btmin": -52.81878662109375,
-   "crec": 1.1190420726196346,
+   "btmin": -53.003143310546875,
+   "crec": 1.100973551876437,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": {
+    "hacia": "oriente",
+    "vel_kmh": 12.135111093521118,
+    "grados": 90.0
+   },
+   "viento": {
+    "viento_kmh": 0.6,
+    "viento_dir": 252,
+    "alto_kmh": 10.9,
+    "alto_dir": 96
+   },
+   "codigo": "05",
+   "region": "andina",
+   "departamento": "Antioquia",
+   "puntaje": 2,
+   "probabilidad": "BAJA",
+   "municipios": [
+    "El Bagre",
+    "Segovia"
+   ],
+   "llueve_en": [
+    "El Bagre",
+    "Segovia"
+   ],
+   "razones": [
+    "nubes densas en ~818 km²",
+    "nubes disipándose",
+    "modelo: prob. lluvia 2 %, agua precipitable 49 mm, CAPE 1920 J/kg"
+   ],
+   "lluvia_km2": 132,
+   "lluvia_moderada_km2": 0,
+   "frio40": 817.7508457899094,
+   "frio60": 0.0,
+   "btmin": -46.48907470703125,
+   "crec": 0.31323129666060157,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": {
     "hacia": "suroriente",
-    "vel_kmh": 17.222269459755598,
-    "grados": 135.0
+    "vel_kmh": 22.977373355392167,
+    "grados": 122.0053832080835
    },
    "viento": {
-    "viento_kmh": 2.3,
-    "viento_dir": 331,
-    "alto_kmh": 13.0,
-    "alto_dir": 124
+    "viento_kmh": 2.6,
+    "viento_dir": 326,
+    "alto_kmh": 18.3,
+    "alto_dir": 113
    },
    "codigo": "17",
    "region": "andina",
@@ -98,23 +141,23 @@
     "Marquetalia"
    ],
    "razones": [
-    "nubes densas en ~1,726 km²",
-    "modelo: prob. lluvia 85 %, agua precipitable 37 mm, CAPE 860 J/kg"
+    "nubes densas en ~1,451 km²",
+    "modelo: prob. lluvia 85 %, agua precipitable 44 mm, CAPE 940 J/kg"
    ],
-   "lluvia_km2": 551,
-   "lluvia_moderada_km2": 0,
-   "frio40": 1725.5545843839645,
+   "lluvia_km2": 517,
+   "lluvia_moderada_km2": 178,
+   "frio40": 1451.324481844902,
    "frio60": 0.0,
-   "btmin": -56.13726806640625,
-   "crec": 0.8198178599316334,
+   "btmin": -55.27691650390625,
+   "crec": 0.7519982868392491,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
   {
    "movimiento": {
     "hacia": "oriente",
-    "vel_kmh": 20.02313564573105,
-    "grados": 104.03624346792648
+    "vel_kmh": 20.746224021910518,
+    "grados": 110.55604521958347
    },
    "viento": {
     "viento_kmh": 3.2,
@@ -136,55 +179,16 @@
     "Cimitarra"
    ],
    "razones": [
-    "nubes densas en ~205 km²",
-    "nubes creciendo (+239 % en 30 min)",
+    "nubes densas en ~221 km²",
+    "nubes creciendo (+69 % en 30 min)",
     "modelo: prob. lluvia 32 %, agua precipitable 50 mm, CAPE 1160 J/kg"
    ],
-   "lluvia_km2": 229,
-   "lluvia_moderada_km2": 19,
-   "frio40": 205.18172526359558,
+   "lluvia_km2": 273,
+   "lluvia_moderada_km2": 12,
+   "frio40": 221.42399287223816,
    "frio60": 0.0,
-   "btmin": -55.461273193359375,
-   "crec": 3.39017345322501,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": {
-    "hacia": "oriente",
-    "vel_kmh": 12.135111093521118,
-    "grados": 90.0
-   },
-   "viento": {
-    "viento_kmh": 2.7,
-    "viento_dir": 274,
-    "alto_kmh": 12.2,
-    "alto_dir": 101
-   },
-   "codigo": "05",
-   "region": "andina",
-   "departamento": "Antioquia",
-   "puntaje": 1,
-   "probabilidad": "BAJA",
-   "municipios": [
-    "Argelia",
-    "El Bagre"
-   ],
-   "llueve_en": [
-    "Argelia",
-    "El Bagre"
-   ],
-   "razones": [
-    "nubes densas en ~1,419 km²",
-    "nubes disipándose",
-    "modelo: prob. lluvia 0 %, agua precipitable 47 mm, CAPE 1090 J/kg"
-   ],
-   "lluvia_km2": 37,
-   "lluvia_moderada_km2": 0,
-   "frio40": 1418.6181890964508,
-   "frio60": 0.0,
-   "btmin": -49.131591796875,
-   "crec": 0.5311070426598175,
+   "btmin": -54.10931396484375,
+   "crec": 1.685420618686091,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
@@ -210,7 +214,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -17.974761962890625,
+   "btmin": -33.3995361328125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -235,9 +239,9 @@
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 7.279503107070923,
+   "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -47.04217529296875,
+   "btmin": -37.39398193359375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -261,7 +265,6 @@
    "probabilidad": "BAJA",
    "municipios": [
     "Montería",
-    "Canalete",
     "Moñitos"
    ],
    "llueve_en": [],
@@ -270,46 +273,10 @@
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 113.86379778385162,
+   "frio40": 144.5336194038391,
    "frio60": 0.0,
-   "btmin": -47.77960205078125,
-   "crec": 1.9528442162105077,
-   "rayos": 0,
-   "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": {
-    "hacia": "oriente",
-    "vel_kmh": 13.091683558555378,
-    "grados": 111.80140948635182
-   },
-   "viento": {
-    "viento_kmh": 3.5,
-    "viento_dir": 246,
-    "alto_kmh": 2.4,
-    "alto_dir": 90
-   },
-   "codigo": "27",
-   "region": "pacífico",
-   "departamento": "Chocó",
-   "puntaje": 1,
-   "probabilidad": "BAJA",
-   "municipios": [
-    "Alto Baudó",
-    "Nuquí",
-    "Acandí"
-   ],
-   "llueve_en": [],
-   "razones": [
-    "nubes densas en ~190 km²",
-    "modelo: prob. lluvia 31 %, agua precipitable 53 mm, CAPE 590 J/kg"
-   ],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 284.9793133735657,
-   "frio60": 0.0,
-   "btmin": -48.824310302734375,
-   "crec": 0.7031584444204501,
+   "btmin": -46.427642822265625,
+   "crec": 2.0,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
@@ -335,7 +302,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -33.46099853515625,
+   "btmin": -36.1649169921875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -360,10 +327,10 @@
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 17.452887058258057,
+   "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -40.651031494140625,
-   "crec": 0.2791034891570647,
+   "btmin": -37.271087646484375,
+   "crec": 0.0,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
@@ -389,7 +356,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -5.74554443359375,
+   "btmin": -5.561187744140625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -416,7 +383,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -2.918670654296875,
+   "btmin": -2.30413818359375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -443,7 +410,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -29.036346435546875,
+   "btmin": -21.907745361328125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -468,10 +435,46 @@
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 4.449931859970093,
+   "frio40": 14.831317663192749,
    "frio60": 0.0,
-   "btmin": -40.4666748046875,
+   "btmin": -41.818634033203125,
    "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 0.0
+  },
+  {
+   "movimiento": {
+    "hacia": "oriente",
+    "vel_kmh": 12.155323028564453,
+    "grados": 90.0
+   },
+   "viento": {
+    "viento_kmh": 0.7,
+    "viento_dir": 90,
+    "alto_kmh": 8.5,
+    "alto_dir": 98
+   },
+   "codigo": "27",
+   "region": "pacífico",
+   "departamento": "Chocó",
+   "puntaje": 0,
+   "probabilidad": "BAJA",
+   "municipios": [
+    "Alto Baudó",
+    "Nuquí"
+   ],
+   "llueve_en": [],
+   "razones": [
+    "nubes densas en ~158 km²",
+    "nubes disipándose",
+    "modelo: prob. lluvia 13 %, agua precipitable 57 mm, CAPE 520 J/kg"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 236.8856838941574,
+   "frio60": 0.0,
+   "btmin": -47.04217529296875,
+   "crec": 0.6687770898544578,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
@@ -497,7 +500,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -12.874114990234375,
+   "btmin": -10.108734130859375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -524,7 +527,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -34.075531005859375,
+   "btmin": -29.036346435546875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -551,7 +554,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -24.6116943359375,
+   "btmin": -24.1815185546875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -578,7 +581,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -38.68450927734375,
+   "btmin": -37.51690673828125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -596,20 +599,16 @@
    "departamento": "Norte de Santander",
    "puntaje": 0,
    "probabilidad": "BAJA",
-   "municipios": [
-    "La Esperanza"
-   ],
-   "llueve_en": [
-    "La Esperanza"
-   ],
+   "municipios": [],
+   "llueve_en": [],
    "razones": [
     "modelo: prob. lluvia 2 %, agua precipitable 24 mm, CAPE 0 J/kg"
    ],
-   "lluvia_km2": 51,
+   "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -33.215179443359375,
+   "btmin": -35.48895263671875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -636,7 +635,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -6.60589599609375,
+   "btmin": -4.02484130859375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -663,7 +662,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -38.80743408203125,
+   "btmin": -37.82415771484375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -690,7 +689,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -9.309814453125,
+   "btmin": -19.32672119140625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -717,7 +716,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -4.700836181640625,
+   "btmin": -3.840484619140625,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -744,7 +743,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -4.700836181640625,
+   "btmin": -3.71759033203125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -771,7 +770,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -21.8463134765625,
+   "btmin": -23.38262939453125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -798,7 +797,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 3.595367431640625,
+   "btmin": 2.91937255859375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -825,7 +824,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 10.109405517578125,
+   "btmin": 11.830108642578125,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
