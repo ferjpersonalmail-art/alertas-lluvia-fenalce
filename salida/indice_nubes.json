@@ -1,5 +1,5 @@
 {
- "hora_satelite": "2026-11-21 10:50",
+ "hora_satelite": "2026-11-21 11:00",
  "departamentos": [
   {
    "movimiento": {
@@ -11,31 +11,33 @@
    "codigo": "99",
    "region": "oriente",
    "departamento": "Vichada",
-   "puntaje": 4,
+   "puntaje": 6,
    "probabilidad": "MEDIA",
    "municipios": [
     "Cumaribo",
+    "La Primavera",
     "Puerto Carreño"
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas (cima < −40 °C) en ~3,812 km²",
-    "25 rayos en 15 min"
+    "nubes densas (cima < −40 °C) en ~3,633 km²",
+    "62 rayos en 15 min",
+    "nubes gruesas (COD ≥ 30) en ~511 km²"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 7623.045487999916,
-   "frio60": 8.914468050003052,
-   "btmin": -60.438995361328125,
-   "crec": 0.9929740794065487,
-   "rayos": 25,
-   "cod_gruesa": 911.1354466676712
+   "frio40": 7266.308793902397,
+   "frio60": 0.0,
+   "btmin": -58.84120178222656,
+   "crec": 0.9758519168360761,
+   "rayos": 62,
+   "cod_gruesa": 1022.6279065608978
   },
   {
    "movimiento": {
-    "hacia": "oriente",
-    "vel_kmh": 2.4270222187042236,
-    "grados": 90.0
+    "hacia": "nororiente",
+    "vel_kmh": 14.151849804985039,
+    "grados": 59.03624346792648
    },
    "viento": {},
    "codigo": "05",
@@ -45,31 +47,35 @@
    "probabilidad": "BAJA",
    "municipios": [
     "Puerto Berrío",
-    "Yolombó",
     "Yalí",
-    "Remedios"
+    "Yolombó",
+    "Maceo"
    ],
    "llueve_en": [
     "Puerto Berrío",
-    "Yolombó",
     "Yalí",
-    "Remedios"
+    "Yolombó",
+    "Maceo"
    ],
    "razones": [
-    "nubes densas en ~102 km²",
-    "nubes creciendo (+100 % en 30 min)"
+    "nubes densas en ~173 km²",
+    "nubes creciendo (+105 % en 30 min)"
    ],
-   "lluvia_km2": 666,
-   "lluvia_moderada_km2": 65,
-   "frio40": 101.85892367362976,
+   "lluvia_km2": 1032,
+   "lluvia_moderada_km2": 269,
+   "frio40": 172.7105087041855,
    "frio60": 0.0,
-   "btmin": -55.031097412109375,
-   "crec": 2.0,
-   "rayos": 1,
-   "cod_gruesa": 368.2112191915512
+   "btmin": -53.064605712890625,
+   "crec": 2.0524014289749672,
+   "rayos": 2,
+   "cod_gruesa": 463.31954526901245
   },
   {
-   "movimiento": null,
+   "movimiento": {
+    "hacia": "oriente",
+    "vel_kmh": 50.05783911432762,
+    "grados": 75.96375653207353
+   },
    "viento": {},
    "codigo": "68",
    "region": "andina",
@@ -81,17 +87,17 @@
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~142 km²",
+    "nubes densas en ~152 km²",
     "nubes creciendo (+100 % en 30 min)"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 141.71279776096344,
+   "frio40": 152.0340268611908,
    "frio60": 0.0,
-   "btmin": -50.7293701171875,
+   "btmin": -51.835540771484375,
    "crec": 2.0,
    "rayos": 0,
-   "cod_gruesa": 274.61506152153015
+   "cod_gruesa": 311.5587306022644
   },
   {
    "movimiento": null,
@@ -104,16 +110,40 @@
    "municipios": [],
    "llueve_en": [],
    "razones": [
-    "nubes gruesas (COD ≥ 30) en ~1,648 km²"
+    "nubes gruesas (COD ≥ 30) en ~1,814 km²"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -20.06414794921875,
+   "btmin": -20.863067626953125,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 1647.5921930074692
+   "cod_gruesa": 1813.7480628490448
+  },
+  {
+   "movimiento": null,
+   "viento": {},
+   "codigo": "50",
+   "region": "oriente",
+   "departamento": "Meta",
+   "puntaje": 1,
+   "probabilidad": "BAJA",
+   "municipios": [
+    "Mapiripán"
+   ],
+   "llueve_en": [],
+   "razones": [
+    "nubes gruesas (COD ≥ 30) en ~506 km²"
+   ],
+   "lluvia_km2": 12,
+   "lluvia_moderada_km2": 0,
+   "frio40": 49.21747434139252,
+   "frio60": 0.0,
+   "btmin": -43.047698974609375,
+   "crec": 0.3933238664156069,
+   "rayos": 0,
+   "cod_gruesa": 1012.7873994112015
   },
   {
    "movimiento": null,
@@ -126,16 +156,38 @@
    "municipios": [],
    "llueve_en": [],
    "razones": [
-    "nubes gruesas (COD ≥ 30) en ~1,357 km²"
+    "nubes gruesas (COD ≥ 30) en ~1,428 km²"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -22.768096923828125,
+   "btmin": -20.248504638671875,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 1357.3186116218567
+   "cod_gruesa": 1427.6837984323502
+  },
+  {
+   "movimiento": null,
+   "viento": {},
+   "codigo": "73",
+   "region": "andina",
+   "departamento": "Tolima",
+   "puntaje": 1,
+   "probabilidad": "BAJA",
+   "municipios": [],
+   "llueve_en": [],
+   "razones": [
+    "nubes gruesas (COD ≥ 30) en ~652 km²"
+   ],
+   "lluvia_km2": 0,
+   "lluvia_moderada_km2": 0,
+   "frio40": 0.0,
+   "frio60": 0.0,
+   "btmin": -9.125457763671875,
+   "crec": null,
+   "rayos": 0,
+   "cod_gruesa": 652.04827439785
   },
   {
    "movimiento": null,
@@ -148,16 +200,16 @@
    "municipios": [],
    "llueve_en": [],
    "razones": [
-    "nubes gruesas (COD ≥ 30) en ~604 km²"
+    "nubes gruesas (COD ≥ 30) en ~647 km²"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -17.360198974609375,
+   "btmin": -20.92449951171875,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 1207.4820610284805
+   "cod_gruesa": 1293.2516609430313
   },
   {
    "movimiento": {
@@ -177,14 +229,14 @@
    ],
    "llueve_en": [],
    "razones": [
-    "nubes densas en ~366 km²"
+    "nubes densas en ~380 km²"
    ],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 731.8570357561111,
+   "frio40": 760.2322998046875,
    "frio60": 0.0,
-   "btmin": -53.802032470703125,
-   "crec": 1.0083613187971692,
+   "btmin": -55.092559814453125,
+   "crec": 1.0283323935507356,
    "rayos": 0,
    "cod_gruesa": 0.0
   },
@@ -203,7 +255,7 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 16.1318359375,
+   "btmin": 12.56756591796875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
@@ -223,10 +275,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -9.125457763671875,
+   "btmin": -8.388031005859375,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 48.459227085113525
+   "cod_gruesa": 13.188589811325073
   },
   {
    "movimiento": null,
@@ -243,10 +295,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -16.622772216796875,
+   "btmin": -11.214874267578125,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 0.0
+   "cod_gruesa": 25.244791984558105
   },
   {
    "movimiento": null,
@@ -263,12 +315,12 @@
    "razones": [],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 80.7194687128067,
+   "frio40": 74.73634088039398,
    "frio60": 0.0,
-   "btmin": -44.15386962890625,
-   "crec": 1.058321917740562,
+   "btmin": -43.78515625,
+   "crec": null,
    "rayos": 0,
-   "cod_gruesa": 0.0
+   "cod_gruesa": 17.91072654724121
   },
   {
    "movimiento": null,
@@ -283,12 +335,12 @@
    "razones": [],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 5.978715181350708,
+   "frio40": 5.978774785995483,
    "frio60": 0.0,
-   "btmin": -40.34375,
+   "btmin": -40.4666748046875,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 98.4508924484253
+   "cod_gruesa": 86.51670777797699
   },
   {
    "movimiento": null,
@@ -305,10 +357,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 6.176422119140625,
+   "btmin": 5.684783935546875,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 8.797162294387817
+   "cod_gruesa": 0.0
   },
   {
    "movimiento": null,
@@ -325,10 +377,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -33.76824951171875,
+   "btmin": -29.405059814453125,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 101.28041303157806
+   "cod_gruesa": 174.69120240211487
   },
   {
    "movimiento": null,
@@ -338,17 +390,21 @@
    "departamento": "Cundinamarca",
    "puntaje": 0,
    "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
+   "municipios": [
+    "Guayabetal"
+   ],
+   "llueve_en": [
+    "Guayabetal"
+   ],
    "razones": [],
-   "lluvia_km2": 0,
+   "lluvia_km2": 16,
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -20.49432373046875,
+   "btmin": -22.399383544921875,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 210.98833763599396
+   "cod_gruesa": 419.19471168518066
   },
   {
    "movimiento": null,
@@ -365,10 +421,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -27.06982421875,
+   "btmin": -23.013916015625,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 263.8998626470566
+   "cod_gruesa": 417.8100609779358
   },
   {
    "movimiento": null,
@@ -379,18 +435,18 @@
    "puntaje": 0,
    "probabilidad": "BAJA",
    "municipios": [
-    "Tarqui"
+    "Altamira"
    ],
    "llueve_en": [],
    "razones": [],
    "lluvia_km2": 0,
    "lluvia_moderada_km2": 0,
-   "frio40": 56.7613844871521,
+   "frio40": 47.800679206848145,
    "frio60": 0.0,
-   "btmin": -43.17059326171875,
-   "crec": null,
+   "btmin": -42.617523193359375,
+   "crec": 0.7804033846287646,
    "rayos": 0,
-   "cod_gruesa": 52.21457099914551
+   "cod_gruesa": 52.210487842559814
   },
   {
    "movimiento": null,
@@ -407,10 +463,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 13.980987548828125,
+   "btmin": 11.645751953125,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 0.0
+   "cod_gruesa": 17.281642198562622
   },
   {
    "movimiento": null,
@@ -427,30 +483,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": 5.193145751953125,
+   "btmin": 2.05902099609375,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {},
-   "codigo": "50",
-   "region": "oriente",
-   "departamento": "Meta",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
-   "razones": [],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 34.29591226577759,
-   "frio60": 0.0,
-   "btmin": -42.740447998046875,
-   "crec": 0.28427093677004817,
-   "rayos": 0,
-   "cod_gruesa": 968.3064659833908
   },
   {
    "movimiento": null,
@@ -467,10 +503,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -35.181671142578125,
+   "btmin": -34.567138671875,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 536.8200620412827
+   "cod_gruesa": 587.6923714876175
   },
   {
    "movimiento": null,
@@ -487,10 +523,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -4.270660400390625,
+   "btmin": -8.51092529296875,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 157.57280492782593
+   "cod_gruesa": 144.206303358078
   },
   {
    "movimiento": null,
@@ -507,10 +543,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -7.220428466796875,
+   "btmin": -11.52215576171875,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 54.924694418907166
+   "cod_gruesa": 74.25604617595673
   },
   {
    "movimiento": null,
@@ -527,30 +563,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -11.706512451171875,
+   "btmin": -10.415985107421875,
    "crec": null,
    "rayos": 0,
    "cod_gruesa": 0.0
-  },
-  {
-   "movimiento": null,
-   "viento": {},
-   "codigo": "73",
-   "region": "andina",
-   "departamento": "Tolima",
-   "puntaje": 0,
-   "probabilidad": "BAJA",
-   "municipios": [],
-   "llueve_en": [],
-   "razones": [],
-   "lluvia_km2": 0,
-   "lluvia_moderada_km2": 0,
-   "frio40": 0.0,
-   "frio60": 0.0,
-   "btmin": -13.365753173828125,
-   "crec": null,
-   "rayos": 0,
-   "cod_gruesa": 447.90651273727417
   },
   {
    "movimiento": null,
@@ -567,10 +583,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -15.08642578125,
+   "btmin": -12.321044921875,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 90.89046084880829
+   "cod_gruesa": 98.33119797706604
   },
   {
    "movimiento": null,
@@ -587,10 +603,10 @@
    "lluvia_moderada_km2": 0,
    "frio40": 0.0,
    "frio60": 0.0,
-   "btmin": -20.18707275390625,
+   "btmin": -23.259735107421875,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 114.07913386821747
+   "cod_gruesa": 198.55870115756989
   },
   {
    "movimiento": null,
@@ -610,7 +626,7 @@
    "btmin": -39.54486083984375,
    "crec": null,
    "rayos": 0,
-   "cod_gruesa": 236.25799107551575
+   "cod_gruesa": 352.8883920907974
   }
  ]
 }
